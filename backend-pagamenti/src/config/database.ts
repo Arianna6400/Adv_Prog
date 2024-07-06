@@ -7,7 +7,13 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
+const db_name: string = process.env.DB_NAME || 'dbName';
+const db_username: string = process.env.DB_USERNAME || 'root';
+const db_password: string = process.env.DB_PASSWORD || 'root';
+
+const sequelize = new Sequelize(db_name, 
+                                db_username,
+                                db_password, {
   host: process.env.DB_HOST,
   dialect: 'postgres',
   pool: {
