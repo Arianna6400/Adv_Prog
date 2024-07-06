@@ -4,7 +4,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import transitRoutes from './routes/transitRoutes';
-import { authenticateJWT } from './middleware/auth';
+import { authMiddleware } from './middleware/auth';
 import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
@@ -12,7 +12,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use('/api/transits', authenticateJWT, transitRoutes);
+app.use('/api/transiti', authMiddleware, transitRoutes);
 
 //Middleware per gestione degli errori
 app.use(errorHandler());

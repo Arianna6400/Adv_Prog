@@ -15,7 +15,7 @@ services:
       - .env
     depends_on:
       - db
-      - pagamentis
+      - pagamenti
 
   pagamenti:
     container_name: pagamenti
