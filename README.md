@@ -54,6 +54,79 @@ graph TD
     VerificaMulte ----|Controlla| CreazioneAutomaticaMulta
 ```
 
+### Diagramma E-R
+
+```mermaid
+erDiagram
+    TIPO_VEICOLO {
+        int id_tipo_veicolo PK
+        string descrizione 
+        float tariffa_base
+    }
+
+    VEICOLO {
+        string targa PK
+        bool esente
+        int tipo_veicolo FK
+        int utente FK
+    }
+
+    TRANSITO {
+        int id_transito PK
+        datetime data_ora
+        string veicolo FK
+        int varco FK
+    }
+
+    MULTA {
+        int id_multa PK
+        datetime data_multa
+        bool pagata
+        int importo_token
+        int uuid_pagamento
+        int transito FK
+    }
+
+    UTENTE {
+        int id_utente PK
+        string nome
+        string cognome
+        string email
+        string ruolo
+        int token_rimanenti
+    }
+
+    ZONA_ZTL {
+        int id_zona PK
+        string nome
+    }
+
+    VARCO_ZTL {
+        int id_varco PK
+        string nome
+        string via
+        int zona_ztl FK
+        int orario_chiusura FK
+    }
+
+    ORARIO_CHIUSURA {
+        int id_orario PK
+        string giorni_settimana_festivi
+        datetime fascia_oraria_F
+        datetime fascia_oraria_L
+        float tariffa_F
+        float tariffa_L
+    }
+
+    UTENTE ||--o{ VEICOLO : "owns"
+    TIPO_VEICOLO ||--o{ VEICOLO : "is"
+    VEICOLO ||--o{ TRANSITO : "executes"
+    TRANSITO |o--o| MULTA : "creates"
+    ZONA_ZTL ||--o{ VARCO_ZTL : "include"
+    ORARIO_CHIUSURA ||--o{ VARCO_ZTL : "has"
+    VARCO_ZTL ||--o{ TRANSITO : "crosses"
+```
+
 ## API
 
 ## Set-up

@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   transiti:
+    container_name: transiti
     build:
       context: ./backend-transiti
       dockerfile: Dockerfile
@@ -14,8 +15,10 @@ services:
       - .env
     depends_on:
       - db
+      - pagamentis
 
   pagamenti:
+    container_name: pagamenti
     build:
       context: ./backend-pagamenti
       dockerfile: Dockerfile
@@ -30,9 +33,10 @@ services:
       - db
 
   db:
+    container_name: postgres
     image: postgres:13
     environment:
-      POSTGRES_USER: ${DB_USER}
+      POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
