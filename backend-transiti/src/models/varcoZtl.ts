@@ -1,7 +1,9 @@
 import { DataTypes, Model, Optional } from 'sequelize';
-import sequelize from '../config/database';
+import Database from '../config/database';
 import ZonaZtl from './zonaZtl';
 import OrarioChiusura from './orarioChiusura';
+
+const sequelize = Database.getInstance();
 
 interface VarcoZtlAttributes {
   id_varco: number;

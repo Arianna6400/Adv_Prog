@@ -1,4 +1,4 @@
-import sequelize from '../config/database';
+import Database from '../config/database';
 import User from './user';
 import TipoVeicolo from './tipoVeicolo';
 import Veicolo from './veicolo';
@@ -7,6 +7,8 @@ import OrarioChiusura from './orarioChiusura';
 import VarcoZtl from './varcoZtl';
 import Transito from './transito';
 import Multa from './multa';
+
+const sequelize = Database.getInstance();
 
 // Inizializzare le relazioni
 User.hasMany(Veicolo, { foreignKey: 'utente_FK' });

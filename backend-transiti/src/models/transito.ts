@@ -1,7 +1,9 @@
 import { DataTypes, Model, Optional } from 'sequelize';
-import sequelize from '../config/database';
+import Database from '../config/database';
 import Veicolo from './veicolo';
 import VarcoZtl from './varcoZtl';
+
+const sequelize = Database.getInstance();
 
 interface TransitoAttributes {
   id_transito: number;

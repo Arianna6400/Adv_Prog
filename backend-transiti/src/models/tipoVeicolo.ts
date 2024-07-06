@@ -1,5 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize';
-import sequelize from '../config/database';
+import Database from '../config/database';
+
+const sequelize = Database.getInstance();
 
 interface TipoVeicoloAttributes {
   id: number;

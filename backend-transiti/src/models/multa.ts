@@ -1,6 +1,8 @@
 import { DataTypes, Model, Optional } from 'sequelize';
-import sequelize from '../config/database';
+import Database from '../config/database';
 import Transito from './transito';
+
+const sequelize = Database.getInstance();
 
 interface MultaAttributes {
   id_multa: number;
