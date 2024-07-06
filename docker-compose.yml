@@ -4,7 +4,7 @@ services:
   transiti:
     build:
       context: ./backend-transiti
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     volumes:
       - ./backend-transiti:/usr/src/app
       - /usr/src/app/node_modules
@@ -18,7 +18,7 @@ services:
   pagamenti:
     build:
       context: ./backend-pagamenti
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     volumes:
       - ./backend-pagamenti:/usr/src/app
       - /usr/src/app/node_modules
