@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  transiti:
+    build:
+      context: ./backend-transiti
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend-transiti:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  pagamenti:
+    build:
+      context: ./backend-pagamenti
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend-pagamenti:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
