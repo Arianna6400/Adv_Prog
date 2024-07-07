@@ -4,13 +4,13 @@ import Database from '../utils/database';
 const sequelize = Database.getInstance();
 
 // Interfaccia che definisce tutte le proprietà del modello
-interface ZonaZtlAttributes {
+export interface ZonaZtlAttributes {
   id_zona: number;
   nome: string;
 }
 
 // Interfaccia per la creazione del modello, rende 'id_zona' opzionale
-interface ZonaZtlCreationAttributes extends Optional<ZonaZtlAttributes, 'id_zona'> {}
+export interface ZonaZtlCreationAttributes extends Optional<ZonaZtlAttributes, 'id_zona'> {}
 
 // Implementazione del modello
 class ZonaZtl extends Model<ZonaZtlAttributes, ZonaZtlCreationAttributes> implements ZonaZtlAttributes {

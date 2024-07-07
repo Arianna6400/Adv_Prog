@@ -4,7 +4,7 @@ import Database from '../utils/database';
 const sequelize = Database.getInstance();
 
 // Interfaccia che definisce tutte le proprietà del modello
-interface OrarioChiusuraAttributes {
+export interface OrarioChiusuraAttributes {
   id_orario: number;
   giorni_settimana_festivi: string;
   fascia_oraria_F: Date;
@@ -14,7 +14,7 @@ interface OrarioChiusuraAttributes {
 }
 
 // Interfaccia per la creazione del modello, rende 'id_orario' opzionale
-interface OrarioChiusuraCreationAttributes extends Optional<OrarioChiusuraAttributes, 'id_orario'> {}
+export interface OrarioChiusuraCreationAttributes extends Optional<OrarioChiusuraAttributes, 'id_orario'> {}
 
 // Implementazione del modello
 class OrarioChiusura extends Model<OrarioChiusuraAttributes, OrarioChiusuraCreationAttributes> implements OrarioChiusuraAttributes {

@@ -6,7 +6,7 @@ import VarcoZtl from './varcoZtl';
 const sequelize = Database.getInstance();
 
 // Interfaccia che definisce tutte le proprietà del modello
-interface TransitoAttributes {
+export interface TransitoAttributes {
   id_transito: number;
   veicolo: string;
   varco: number;
@@ -14,7 +14,7 @@ interface TransitoAttributes {
 }
 
 // Interfaccia per la creazione del modello, rende 'id_transito' opzionale
-interface TransitoCreationAttributes extends Optional<TransitoAttributes, 'id_transito'> {}
+export interface TransitoCreationAttributes extends Optional<TransitoAttributes, 'id_transito'> {}
 
 // Implementazione del modello
 class Transito extends Model<TransitoAttributes, TransitoCreationAttributes> implements TransitoAttributes {

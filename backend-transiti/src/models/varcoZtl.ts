@@ -6,7 +6,7 @@ import OrarioChiusura from './orarioChiusura';
 const sequelize = Database.getInstance();
 
 // Interfaccia che definisce tutte le proprietà del modello
-interface VarcoZtlAttributes {
+export interface VarcoZtlAttributes {
   id_varco: number;
   nome: string;
   via: string;
@@ -15,7 +15,7 @@ interface VarcoZtlAttributes {
 }
 
 // Interfaccia per la creazione del modello, rende 'id_varco' opzionale
-interface VarcoZtlCreationAttributes extends Optional<VarcoZtlAttributes, 'id_varco'> {}
+export interface VarcoZtlCreationAttributes extends Optional<VarcoZtlAttributes, 'id_varco'> {}
 
 // Implementazione del modello
 class VarcoZtl extends Model<VarcoZtlAttributes, VarcoZtlCreationAttributes> implements VarcoZtlAttributes {
