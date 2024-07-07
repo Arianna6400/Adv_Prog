@@ -1,9 +1,14 @@
 
 // errore riga 29 e 38 da verificare
 
-import { UtenteDAO } from '../interfaces/utenteDaoI';
 import Utente from '../models/utente';
 import { HttpError } from '../middleware/errorHandler';
+import { DAO } from '../dao/daoInterface';
+import { UtenteAttributes } from '../models/utente';
+
+interface UtenteDAO extends DAO<UtenteAttributes, number> {
+  // metodi specifici per l'utentee, se necessari
+}
 
 class UtenteDao implements UtenteDAO {
   public async getAll(): Promise<Utente[]> {

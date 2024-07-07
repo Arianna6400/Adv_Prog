@@ -1,18 +1,27 @@
 
-// Avvia il server e sincronizza i modelli con il database
+/*
+  Gestisce l’avvio del server e la connessione al database
+ */
 
-import dotenv from 'dotenv';
-dotenv.config();
+import app from './app'; // Importa l'applicazione Express
+import { initModels } from './models'; // Importa la funzione per sincronizzare i modelli con il database
 
-import app from './app';
-import { sequelize } from './models/index';
+const PORT = process.env.TRANSITI_PORT || 3000; // Definisce la porta su cui ascolterà il server
 
-const PORT = process.env.TRANSITI_PORT || 3000;
+// Funzione per avviare il server
+const startServer = async () => {
+  try {
+    // Sincronizza i modelli con il database
+    await initModels();
+    console.log('Database sincronizzato con successo.');
 
-sequelize.sync().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Backend dei Transiti is running on port ${PORT}`);
-  });
-}).catch((err: Error) => {
-  console.error('Unable to connect to the database:', err);
-});
+    // Avvia il server e ascolta le richieste sulla porta definita
+    app.listen(PORT, () => {
+      console.log(`Server in esecuzione sulla porta ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Impossibile connettersi al database:', error);
+  }
+};
+
+startServer(); // Esegue la funzione per avviare il server

@@ -1,3 +1,8 @@
+
+/*
+    Contiene la configurazione e la logica dell’applicazione Express (middleware, rrotte e gestione errori)
+*/
+
 import express from 'express';
 import dotenv from 'dotenv';
 import utenteRoutes from './routes/utenteRoutes';

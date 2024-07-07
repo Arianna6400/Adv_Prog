@@ -1,5 +1,5 @@
-import sequelize from '../utils/database';
-import User from './utente';
+import Database from '../utils/database';
+import Utente from './utente';
 import TipoVeicolo from './tipoVeicolo';
 import Veicolo from './veicolo';
 import ZonaZtl from './zonaZtl';
@@ -8,31 +8,33 @@ import VarcoZtl from './varcoZtl';
 import Transito from './transito';
 import Multa from './multa';
 
+const sequelize = Database.getInstance();
+
 // Inizializzare le relazioni
-User.hasMany(Veicolo, { foreignKey: 'utente_FK' });
-Veicolo.belongsTo(User, { foreignKey: 'utente_FK' });
+Utente.hasMany(Veicolo, { foreignKey: 'utente' });
+Veicolo.belongsTo(Utente, { foreignKey: 'utente' });
 
-TipoVeicolo.hasMany(Veicolo, { foreignKey: 'tipo_veicolo_FK' });
-Veicolo.belongsTo(TipoVeicolo, { foreignKey: 'tipo_veicolo_FK' });
+TipoVeicolo.hasMany(Veicolo, { foreignKey: 'tipo_veicolo' });
+Veicolo.belongsTo(TipoVeicolo, { foreignKey: 'tipo_veicolo' });
 
-ZonaZtl.hasMany(VarcoZtl, { foreignKey: 'zona_ztl_FK' });
-VarcoZtl.belongsTo(ZonaZtl, { foreignKey: 'zona_ztl_FK' });
+ZonaZtl.hasMany(VarcoZtl, { foreignKey: 'zona_ztl' });
+VarcoZtl.belongsTo(ZonaZtl, { foreignKey: 'zona_ztl' });
 
-OrarioChiusura.hasMany(VarcoZtl, { foreignKey: 'orario_chiusura_FK' });
-VarcoZtl.belongsTo(OrarioChiusura, { foreignKey: 'orario_chiusura_FK' });
+OrarioChiusura.hasMany(VarcoZtl, { foreignKey: 'orario_chiusura' });
+VarcoZtl.belongsTo(OrarioChiusura, { foreignKey: 'orario_chiusura' });
 
-Veicolo.hasMany(Transito, { foreignKey: 'veicolo_FK' });
-Transito.belongsTo(Veicolo, { foreignKey: 'veicolo_FK' });
+Veicolo.hasMany(Transito, { foreignKey: 'veicolo' });
+Transito.belongsTo(Veicolo, { foreignKey: 'veicolo' });
 
 VarcoZtl.hasMany(Transito, { foreignKey: 'varco' });
 Transito.belongsTo(VarcoZtl, { foreignKey: 'varco' });
 
-Transito.hasMany(Multa, { foreignKey: 'transito_FK' });
-Multa.belongsTo(Transito, { foreignKey: 'transito_FK' });
+Transito.hasMany(Multa, { foreignKey: 'transito' });
+Multa.belongsTo(Transito, { foreignKey: 'transito' });
 
 const db = {
   sequelize,
-  User,
+  Utente,
   TipoVeicolo,
   Veicolo,
   ZonaZtl,
@@ -40,6 +42,11 @@ const db = {
   VarcoZtl,
   Transito,
   Multa,
+};
+
+// Funzione per sincronizzare i modelli con il database
+export const initModels = async () => {
+  await sequelize.sync({ alter: true }); // Usa { alter: true } per aggiornare le tabelle esistenti
 };
 
 export default db;
