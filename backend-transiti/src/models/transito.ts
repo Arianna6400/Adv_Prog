@@ -1,27 +1,34 @@
 import { DataTypes, Model, Optional } from 'sequelize';
+<<<<<<< HEAD
 import sequelize from '../utils/database';
+=======
+import Database from '../config/database';
+>>>>>>> 11ebb8d (aggiornati model, creato dao per utente con interfacce annesse, creata prova controllerUtente)
 import Veicolo from './veicolo';
 import VarcoZtl from './varcoZtl';
 
+const sequelize = Database.getInstance();
+
+// Interfaccia che definisce tutte le proprietà del modello
 interface TransitoAttributes {
   id_transito: number;
-  veicolo_FK: string;
+  veicolo: string;
   varco: number;
-  dataOra: Date;
+  data_ora: Date;
 }
 
+// Interfaccia per la creazione del modello, rende 'id_transito' opzionale
 interface TransitoCreationAttributes extends Optional<TransitoAttributes, 'id_transito'> {}
 
+// Implementazione del modello
 class Transito extends Model<TransitoAttributes, TransitoCreationAttributes> implements TransitoAttributes {
   public id_transito!: number;
-  public veicolo_FK!: string;
+  public veicolo!: string;
   public varco!: number;
-  public dataOra!: Date;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  public data_ora!: Date;
 }
 
+// Inizializzazione del modello
 Transito.init(
   {
     id_transito: {
@@ -29,7 +36,7 @@ Transito.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    veicolo_FK: {
+    veicolo: {
       type: DataTypes.STRING,
       references: {
         model: Veicolo,
@@ -43,7 +50,7 @@ Transito.init(
         key: 'id_varco',
       },
     },
-    dataOra: {
+    data_ora: {
       type: DataTypes.DATE,
       allowNull: false,
     },
@@ -53,10 +60,5 @@ Transito.init(
     tableName: 'TRANSITO',
   }
 );
-
-Veicolo.hasMany(Transito, { foreignKey: 'veicolo_FK' });
-VarcoZtl.hasMany(Transito, { foreignKey: 'varco' });
-Transito.belongsTo(Veicolo, { foreignKey: 'veicolo_FK' });
-Transito.belongsTo(VarcoZtl, { foreignKey: 'varco' });
 
 export default Transito;

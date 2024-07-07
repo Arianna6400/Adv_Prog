@@ -1,7 +1,14 @@
 import { DataTypes, Model, Optional } from 'sequelize';
+<<<<<<< HEAD:backend-transiti/src/models/user.ts
 import sequelize from '../utils/database';
+=======
+import Database from '../config/database';
+>>>>>>> 11ebb8d (aggiornati model, creato dao per utente con interfacce annesse, creata prova controllerUtente):backend-transiti/src/models/utente.ts
 
-interface UserAttributes {
+const sequelize = Database.getInstance();
+
+// Interfaccia che definisce tutte le proprietà del modello
+export interface UtenteAttributes {
   id_utente: number;
   nome: string;
   cognome: string;
@@ -10,9 +17,11 @@ interface UserAttributes {
   token_rimanenti: number;
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, 'id_utente'> {}
+// Interfaccia per la creazione del modello, rende 'id_utente' opzionale
+export interface UtenteCreationAttributes extends Optional<UtenteAttributes, 'id_utente'> {}
 
-class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
+// Implementazione del modello
+class Utente extends Model<UtenteAttributes, UtenteCreationAttributes> implements UtenteAttributes {
   public id_utente!: number;
   public nome!: string;
   public cognome!: string;
@@ -20,15 +29,17 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public ruolo!: string;
   public token_rimanenti!: number;
 
+  // Definizione delle proprietà di sola lettura per i timestamp
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
 
-User.init(
+// Inizializzazione del modello
+Utente.init(
   {
     id_utente: {
       type: DataTypes.INTEGER,
-      autoIncrement: true,
+      autoIncrement: true, // Il database gestisce l'auto-incremento
       primaryKey: true,
     },
     nome: {
@@ -59,4 +70,4 @@ User.init(
   }
 );
 
-export default User;
+export default Utente;

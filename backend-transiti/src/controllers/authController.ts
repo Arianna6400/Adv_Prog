@@ -1,7 +1,7 @@
 // Controller di autenticazione per generare il JWT tramite email e ruolo dell'utente
 
 import { Request, Response } from 'express';
-import User from '../models/user';
+import User from '../models/utente';
 import { generateToken } from '../utils/jwt';
 
 export const login = async (req: Request, res: Response) => {

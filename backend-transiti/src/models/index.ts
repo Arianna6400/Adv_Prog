@@ -1,4 +1,4 @@
-import sequelize from '../utils/database';
+import sequelize from '../config/database';
 import User from './user';
 import TipoVeicolo from './tipoVeicolo';
 import Veicolo from './veicolo';

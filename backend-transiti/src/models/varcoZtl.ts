@@ -1,29 +1,36 @@
 import { DataTypes, Model, Optional } from 'sequelize';
+<<<<<<< HEAD
 import sequelize from '../utils/database';
+=======
+import Database from '../config/database';
+>>>>>>> 11ebb8d (aggiornati model, creato dao per utente con interfacce annesse, creata prova controllerUtente)
 import ZonaZtl from './zonaZtl';
 import OrarioChiusura from './orarioChiusura';
 
+const sequelize = Database.getInstance();
+
+// Interfaccia che definisce tutte le proprietà del modello
 interface VarcoZtlAttributes {
   id_varco: number;
   nome: string;
   via: string;
-  zona_ztl_FK: number;
-  orario_chiusura_FK: number;
+  zona_ztl: number;
+  orario_chiusura: number;
 }
 
+// Interfaccia per la creazione del modello, rende 'id_varco' opzionale
 interface VarcoZtlCreationAttributes extends Optional<VarcoZtlAttributes, 'id_varco'> {}
 
+// Implementazione del modello
 class VarcoZtl extends Model<VarcoZtlAttributes, VarcoZtlCreationAttributes> implements VarcoZtlAttributes {
   public id_varco!: number;
   public nome!: string;
   public via!: string;
-  public zona_ztl_FK!: number;
-  public orario_chiusura_FK!: number;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  public zona_ztl!: number;
+  public orario_chiusura!: number;
 }
 
+// Inizializzazione del modello
 VarcoZtl.init(
   {
     id_varco: {
@@ -39,18 +46,20 @@ VarcoZtl.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    zona_ztl_FK: {
+    zona_ztl: {
       type: DataTypes.INTEGER,
+      allowNull: false,
       references: {
         model: ZonaZtl,
         key: 'id_zona',
       },
     },
-    orario_chiusura_FK: {
+    orario_chiusura: {
       type: DataTypes.INTEGER,
+      allowNull: false,
       references: {
         model: OrarioChiusura,
-        key: 'id',
+        key: 'id_orario',
       },
     },
   },
@@ -59,10 +68,5 @@ VarcoZtl.init(
     tableName: 'VARCO_ZTL',
   }
 );
-
-ZonaZtl.hasMany(VarcoZtl, { foreignKey: 'zona_ztl_FK' });
-OrarioChiusura.hasMany(VarcoZtl, { foreignKey: 'orario_chiusura_FK' });
-VarcoZtl.belongsTo(ZonaZtl, { foreignKey: 'zona_ztl_FK' });
-VarcoZtl.belongsTo(OrarioChiusura, { foreignKey: 'orario_chiusura_FK' });
 
 export default VarcoZtl;

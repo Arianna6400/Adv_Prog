@@ -1,49 +1,56 @@
 import { DataTypes, Model, Optional } from 'sequelize';
+<<<<<<< HEAD
 import sequelize from '../utils/database';
+=======
+import Database from '../config/database';
+>>>>>>> 11ebb8d (aggiornati model, creato dao per utente con interfacce annesse, creata prova controllerUtente)
 import TipoVeicolo from './tipoVeicolo';
-import User from './user';
+import Utente from './utente';
 
-interface VeicoloAttributes {
+const sequelize = Database.getInstance();
+
+// Interfaccia che definisce tutte le proprietà del modello
+export interface VeicoloAttributes {
   targa: string;
   esente: boolean;
-  tipo_veicolo_FK: number;
-  utente_FK: number;
+  tipo_veicolo: number;
+  utente: number;
 }
 
-interface VeicoloCreationAttributes extends Optional<VeicoloAttributes, 'esente'> {}
+// Interfaccia per la creazione del modello, 'targa' non è opzionale perché è la chiave primaria
+export interface VeicoloCreationAttributes extends Optional<VeicoloAttributes, 'esente'> {}
 
+// Implementazione del modello
 class Veicolo extends Model<VeicoloAttributes, VeicoloCreationAttributes> implements VeicoloAttributes {
   public targa!: string;
   public esente!: boolean;
-  public tipo_veicolo_FK!: number;
-  public utente_FK!: number;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  public tipo_veicolo!: number;
+  public utente!: number;
 }
 
+// Inizializzazione del modello
 Veicolo.init(
   {
     targa: {
       type: DataTypes.STRING,
       primaryKey: true,
+      allowNull: false,
     },
     esente: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
       defaultValue: false,
     },
-    tipo_veicolo_FK: {
+    tipo_veicolo: {
       type: DataTypes.INTEGER,
       references: {
         model: TipoVeicolo,
-        key: 'id',
+        key: 'id_tipo_veicolo',
       },
     },
-    utente_FK: {
+    utente: {
       type: DataTypes.INTEGER,
       references: {
-        model: User,
+        model: Utente,
         key: 'id_utente',
       },
     },
@@ -53,10 +60,5 @@ Veicolo.init(
     tableName: 'VEICOLO',
   }
 );
-
-TipoVeicolo.hasMany(Veicolo, { foreignKey: 'tipo_veicolo_FK' });
-User.hasMany(Veicolo, { foreignKey: 'utente_FK' });
-Veicolo.belongsTo(TipoVeicolo, { foreignKey: 'tipo_veicolo_FK' });
-Veicolo.belongsTo(User, { foreignKey: 'utente_FK' });
 
 export default Veicolo;

@@ -1,20 +1,16 @@
-
-// Configura starting point applicazione Express
-
 import express from 'express';
-import bodyParser from 'body-parser';
-import transitRoutes from './routes/transitRoutes';
-import { authMiddleware } from './middleware/auth';
+import dotenv from 'dotenv';
+import utenteRoutes from './routes/utenteRoutes';
 import { errorHandler } from './middleware/errorHandler';
+
+dotenv.config(); // Carica le variabili d'ambiente dal file .env
 
 const app = express();
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json()); // Middleware per il parsing del corpo delle richieste in formato JSON
+app.use('/api', utenteRoutes); // Registra le rotte dell'API
 
-app.use('/api/transiti', authMiddleware, transitRoutes);
-
-//Middleware per gestione degli errori
+// Registra il middleware per la gestione degli errori dopo tutte le altre rotte e middleware
 app.use(errorHandler());
 
 export default app;

@@ -1,55 +1,53 @@
 import { DataTypes, Model, Optional } from 'sequelize';
-import sequelize from '../utils/database';
+import Database from '../config/database';
 
+const sequelize = Database.getInstance();
+
+// Interfaccia che definisce tutte le proprietà del modello
 interface OrarioChiusuraAttributes {
-  id: number;
+  id_orario: number;
   giorni_settimana_festivi: string;
-  fascia_oraria_F: string;
-  fascia_oraria_L: string;
+  fascia_oraria_F: Date;
+  fascia_oraria_L: Date;
   tariffa_F: number;
   tariffa_L: number;
 }
 
-interface OrarioChiusuraCreationAttributes extends Optional<OrarioChiusuraAttributes, 'id'> {}
+// Interfaccia per la creazione del modello, rende 'id_orario' opzionale
+interface OrarioChiusuraCreationAttributes extends Optional<OrarioChiusuraAttributes, 'id_orario'> {}
 
+// Implementazione del modello
 class OrarioChiusura extends Model<OrarioChiusuraAttributes, OrarioChiusuraCreationAttributes> implements OrarioChiusuraAttributes {
-  public id!: number;
+  public id_orario!: number;
   public giorni_settimana_festivi!: string;
-  public fascia_oraria_F!: string;
-  public fascia_oraria_L!: string;
+  public fascia_oraria_F!: Date;
+  public fascia_oraria_L!: Date;
   public tariffa_F!: number;
   public tariffa_L!: number;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
 }
 
+// Inizializzazione del modello
 OrarioChiusura.init(
   {
-    id: {
+    id_orario: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
     giorni_settimana_festivi: {
       type: DataTypes.STRING,
-      allowNull: true,
     },
     fascia_oraria_F: {
-      type: DataTypes.STRING,
-      allowNull: true,
+      type: DataTypes.TIME,
     },
     fascia_oraria_L: {
-      type: DataTypes.STRING,
-      allowNull: true,
+      type: DataTypes.TIME,
     },
     tariffa_F: {
       type: DataTypes.DECIMAL(10, 2),
-      allowNull: true,
     },
     tariffa_L: {
       type: DataTypes.DECIMAL(10, 2),
-      allowNull: true,
     },
   },
   {

@@ -1,26 +1,33 @@
 import { DataTypes, Model, Optional } from 'sequelize';
+<<<<<<< HEAD
 import sequelize from '../utils/database';
+=======
+import Database from '../config/database';
+>>>>>>> 11ebb8d (aggiornati model, creato dao per utente con interfacce annesse, creata prova controllerUtente)
 
+const sequelize = Database.getInstance();
+
+// Interfaccia che definisce tutte le proprietà del modello
 interface TipoVeicoloAttributes {
-  id: number;
+  id_tipo_veicolo: number;
   descrizione: string;
   tariffa_base: number;
 }
 
-interface TipoVeicoloCreationAttributes extends Optional<TipoVeicoloAttributes, 'id'> {}
+// Interfaccia per la creazione del modello, rende 'id_tipo_veicolo' opzionale
+interface TipoVeicoloCreationAttributes extends Optional<TipoVeicoloAttributes, 'id_tipo_veicolo'> {}
 
+// Implementazione del modello
 class TipoVeicolo extends Model<TipoVeicoloAttributes, TipoVeicoloCreationAttributes> implements TipoVeicoloAttributes {
-  public id!: number;
+  public id_tipo_veicolo!: number;
   public descrizione!: string;
   public tariffa_base!: number;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
 }
 
+// Inizializzazione del modello
 TipoVeicolo.init(
   {
-    id: {
+    id_tipo_veicolo: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
