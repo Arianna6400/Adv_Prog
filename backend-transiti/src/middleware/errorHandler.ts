@@ -1,20 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
+import { HttpError } from '../utils/errorFactory';
 
-export class HttpError extends Error {
-  statusCode: number;
-  message: string;
-
-  constructor(statusCode: number, message: string) {
-    super(message);
-    this.statusCode = statusCode;
-    this.message = message;
-  }
-}
-
+// Middleware per la gestione centralizzata degli errori
 export const errorHandler = () => {
   return (err: HttpError, req: Request, res: Response, next: NextFunction) => {
     const statusCode = err.statusCode || 500;
     const message = err.message || 'Internal Server Error';
-    res.status(statusCode).json({ error: message });
+    const code = err.code || 'INTERNAL_SERVER_ERROR';
+
+    // Log dell'errore (opzionale, utile per il debugging)
+    console.error(`Error: ${message} (Status code: ${statusCode}, Code: ${code})`);
+
+    res.status(statusCode).json({ error: message, code: code });
   };
 };

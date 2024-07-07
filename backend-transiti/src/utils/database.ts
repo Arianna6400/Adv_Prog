@@ -20,9 +20,10 @@ class Database {
       const dbName: string = process.env.DB_NAME || '';
       const dbUsername: string = process.env.DB_USERNAME || '';
       const dbPassword: string = process.env.DB_PASSWORD || '';
+      const dbHost: string = process.env.DB_HOST || '';
 
       Database.instance = new Sequelize(dbName, dbUsername, dbPassword, {
-        host: process.env.DB_HOST,
+        host: dbHost,
         dialect: 'postgres',
         pool: { // utile in produzione per gestione efficiente del carico di lavoro
           max: 5, // numero max di connessioni attive

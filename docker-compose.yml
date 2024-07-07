@@ -1,6 +1,3 @@
-# docker-compose up --build
-# docker logs nome_container
-
 version: '3.8'
 
 services:
@@ -18,22 +15,25 @@ services:
       - .env
     depends_on:
       - db
-      - pagamenti
+    networks:
+      - backend
 
-  pagamenti:
-    container_name: pagamenti
-    build:
-      context: ./backend-pagamenti
-      dockerfile: Dockerfile
-    volumes:
-      - ./backend-pagamenti:/usr/src/app
-      - /usr/src/app/node_modules
-    ports:
-      - "3001:3001"
-    env_file:
-      - .env
-    depends_on:
-      - db
+  # pagamenti:
+  #   container_name: pagamenti
+  #   build:
+  #     context: ./backend-pagamenti
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./backend-pagamenti:/usr/src/app
+  #     - /usr/src/app/node_modules
+  #   ports:
+  #     - "3001:3001"
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - backend
 
   db:
     container_name: postgres

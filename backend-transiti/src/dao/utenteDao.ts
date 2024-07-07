@@ -1,10 +1,6 @@
-
-// errore riga 29 e 38 da verificare
-
-import Utente from '../models/utente';
-import { HttpError } from '../middleware/errorHandler';
+import Utente, { UtenteAttributes, UtenteCreationAttributes } from '../models/utente';
 import { DAO } from '../dao/daoInterface';
-import { UtenteAttributes } from '../models/utente';
+import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 
 interface UtenteDAO extends DAO<UtenteAttributes, number> {
   // metodi specifici per l'utentee, se necessari
@@ -16,7 +12,7 @@ class UtenteDao implements UtenteDAO {
       return await Utente.findAll();
     } catch (error) {
       console.error('Errore nel recupero degli utenti:', error);
-      throw new HttpError(500, 'Errore nel recupero degli utenti');
+      throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero degli utenti');
     }
   }
 
@@ -25,25 +21,27 @@ class UtenteDao implements UtenteDAO {
       return await Utente.findByPk(id);
     } catch (error) {
       console.error(`Errore nel recupero dell'utente con id ${id}:`, error);
-      throw new HttpError(500, `Errore nel recupero dell'utente con id ${id}`);
+      throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero dell'utente con id ${id}`);
     }
   }
 
-  public async create(data: Partial<Utente>): Promise<Utente> {
+  public async create(data: UtenteCreationAttributes): Promise<Utente> {
     try {
       return await Utente.create(data);
     } catch (error) {
       console.error('Errore nella creazione dell\'utente:', error);
-      throw new HttpError(500, 'Errore nella creazione dell\'utente');
+      throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione dell\'utente');
     }
   }
 
-  public async update(id: number, data: Partial<Utente>): Promise<[number, Utente[]]> {
+  public async update(id: number, data: Partial<UtenteAttributes>): Promise<[number, Utente[]]> {
     try {
-      return await Utente.update(data, { where: { id_utente: id } });
+      const [affectedCount] = await Utente.update(data, { where: { id_utente: id } });
+      const updatedUtenti = await Utente.findAll({ where: { id_utente: id } });
+      return [affectedCount, updatedUtenti];
     } catch (error) {
       console.error(`Errore nell'aggiornamento dell'utente con id ${id}:`, error);
-      throw new HttpError(500, `Errore nell'aggiornamento dell'utente con id ${id}`);
+      throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nell'aggiornamento dell'utente con id ${id}`);
     }
   }
 
@@ -52,7 +50,7 @@ class UtenteDao implements UtenteDAO {
       return await Utente.destroy({ where: { id_utente: id } });
     } catch (error) {
       console.error(`Errore nella cancellazione dell'utente con id ${id}:`, error);
-      throw new HttpError(500, `Errore nella cancellazione dell'utente con id ${id}`);
+      throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione dell'utente con id ${id}`);
     }
   }
 }

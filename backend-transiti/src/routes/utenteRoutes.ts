@@ -5,7 +5,7 @@ import {
   createUtente,
   updateUtente,
   deleteUtente,
-  getVeicoliByUtenteId,
+  getVeicoliByUtenteId
 } from '../controllers/utenteController';
 
 const router = Router();

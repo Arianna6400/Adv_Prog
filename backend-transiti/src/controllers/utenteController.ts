@@ -1,6 +1,6 @@
-
 import { Request, Response, NextFunction } from 'express';
 import utenteRepository from '../repositories/utenteRepository';
+import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 
 // Controller per ottenere tutti gli utenti
 export const getUtenti = async (req: Request, res: Response, next: NextFunction) => {
@@ -15,12 +15,16 @@ export const getUtenti = async (req: Request, res: Response, next: NextFunction)
 // Controller per ottenere un utente per ID
 export const getUtenteById = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id) || id < 0) {
+      throw ErrorFactory.createError(ErrorTypes.InvalidID, 'ID non valido');
+    }
+
     const utente = await utenteRepository.getUtenteById(id);
     if (utente) {
       res.status(200).json(utente);
     } else {
-      res.status(404).json({ message: 'Utente non trovato' });
+      throw ErrorFactory.createError(ErrorTypes.NotFound, 'Utente non trovato');
     }
   } catch (error) {
     next(error);
@@ -40,13 +44,17 @@ export const createUtente = async (req: Request, res: Response, next: NextFuncti
 // Controller per aggiornare un utente esistente
 export const updateUtente = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id) || id < 0) {
+      throw ErrorFactory.createError(ErrorTypes.InvalidID, 'ID non valido');
+    }
+
     const [updated] = await utenteRepository.updateUtente(id, req.body);
     if (updated) {
       const updatedUtente = await utenteRepository.getUtenteById(id);
       res.status(200).json(updatedUtente);
     } else {
-      res.status(404).json({ message: 'Utente non trovato' });
+      throw ErrorFactory.createError(ErrorTypes.NotFound, 'Utente non trovato');
     }
   } catch (error) {
     next(error);
@@ -56,12 +64,16 @@ export const updateUtente = async (req: Request, res: Response, next: NextFuncti
 // Controller per cancellare un utente per ID
 export const deleteUtente = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id) || id < 0) {
+      throw ErrorFactory.createError(ErrorTypes.InvalidID, 'ID non valido');
+    }
+
     const deleted = await utenteRepository.deleteUtente(id);
     if (deleted) {
       res.status(204).send();
     } else {
-      res.status(404).json({ message: 'Utente non trovato' });
+      throw ErrorFactory.createError(ErrorTypes.NotFound, 'Utente non trovato');
     }
   } catch (error) {
     next(error);
@@ -71,12 +83,17 @@ export const deleteUtente = async (req: Request, res: Response, next: NextFuncti
 // Controller per ottenere tutti i veicoli di un utente
 export const getVeicoliByUtenteId = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id, 10);
+
+    if (isNaN(id) || id < 0) {
+      throw ErrorFactory.createError(ErrorTypes.InvalidID, 'ID non valido');
+    }
+
     const veicoli = await utenteRepository.getVeicoliByUtenteId(id);
     if (veicoli.length > 0) {
       res.status(200).json(veicoli);
     } else {
-      res.status(404).json({ message: 'Nessun veicolo trovato per questo utente' });
+      throw ErrorFactory.createError(ErrorTypes.NotFound, 'Nessun veicolo trovato per questo utente');
     }
   } catch (error) {
     next(error);
