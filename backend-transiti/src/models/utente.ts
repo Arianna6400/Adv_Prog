@@ -25,9 +25,6 @@ class Utente extends Model<UtenteAttributes, UtenteCreationAttributes> implement
   public ruolo!: string;
   public token_rimanenti!: number;
 
-  // Definizione delle proprietà di sola lettura per i timestamp
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
 }
 
 // Inizializzazione del modello
@@ -62,7 +59,8 @@ Utente.init(
   },
   {
     sequelize,
-    tableName: 'UTENTE',
+    tableName: 'utente',
+    timestamps: false, // Disabilita i timestamp
   }
 );
 

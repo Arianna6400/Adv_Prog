@@ -33,7 +33,8 @@ ZonaZtl.init(
   },
   {
     sequelize,
-    tableName: 'ZONA_ZTL',
+    tableName: 'zona_ztl',
+    timestamps: false, // Disabilita i timestamp
   }
 );
 

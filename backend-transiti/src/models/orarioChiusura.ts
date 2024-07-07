@@ -52,7 +52,8 @@ OrarioChiusura.init(
   },
   {
     sequelize,
-    tableName: 'ORARIO_CHIUSURA',
+    tableName: 'orario_chiusura',
+    timestamps: false, // Disabilita i timestamp
   }
 );
 

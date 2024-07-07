@@ -25,13 +25,13 @@ const app = express();
 app.use(bodyParser.json());
 // Registra le rotte dell'API
 app.use('/api', utenteRoutes); // Registra le rotte dell'API
-app.use('/api', varcoZtlRoutes);
-app.use('/api', zonaZtlRoutes);
-app.use('/api', transitoRoutes);
-app.use('/api', multaRoutes);
-app.use('/api', tipoVeicoloRoutes);
-app.use('/api', veicoloRoutes);
-app.use('/api', orarioChiusuraRoutes);
+// app.use('/api', varcoZtlRoutes);
+// app.use('/api', zonaZtlRoutes);
+// app.use('/api', transitoRoutes);
+// app.use('/api', multaRoutes);
+// app.use('/api', tipoVeicoloRoutes);
+// app.use('/api', veicoloRoutes);
+// app.use('/api', orarioChiusuraRoutes);
 
 // Registra il middleware per la gestione degli errori dopo tutte le altre rotte e middleware
 app.use(errorHandler());

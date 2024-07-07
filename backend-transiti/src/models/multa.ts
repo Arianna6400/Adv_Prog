@@ -60,7 +60,8 @@ Multa.init(
   },
   {
     sequelize,
-    tableName: 'MULTA',
+    tableName: 'multa',
+    timestamps: false, // Disabilita i timestamp
   }
 );
 

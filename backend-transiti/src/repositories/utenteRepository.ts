@@ -4,6 +4,7 @@ import Veicolo from '../models/veicolo';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 
 class UtenteRepository {
+  
   public async getAllUtenti(): Promise<Utente[]> {
     try {
       return await utenteDao.getAll();

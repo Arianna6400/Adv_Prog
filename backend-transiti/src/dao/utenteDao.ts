@@ -7,21 +7,26 @@ interface UtenteDAO extends DAO<UtenteAttributes, number> {
 }
 
 class UtenteDao implements UtenteDAO {
+  
   public async getAll(): Promise<Utente[]> {
     try {
-      return await Utente.findAll();
+      const utenti = await Utente.findAll();
+      console.log('Utenti recuperati dal DAO:', utenti);
+      return utenti;
     } catch (error) {
-      console.error('Errore nel recupero degli utenti:', error);
-      throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero degli utenti');
+      console.error('Errore nel recupero degli utenti dal DAO:', error);
+      throw error;
     }
   }
 
   public async getById(id: number): Promise<Utente | null> {
     try {
-      return await Utente.findByPk(id);
+      const utente = await Utente.findByPk(id);
+      console.log('Utente recuperato dal DAO:', utente);
+      return utente;
     } catch (error) {
-      console.error(`Errore nel recupero dell'utente con id ${id}:`, error);
-      throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero dell'utente con id ${id}`);
+      console.error(`Errore nel recupero dell\'utente con id ${id} dal DAO:`, error);
+      throw error;
     }
   }
 

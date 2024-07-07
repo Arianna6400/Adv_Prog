@@ -53,7 +53,8 @@ Veicolo.init(
   },
   {
     sequelize,
-    tableName: 'VEICOLO',
+    tableName: 'veicolo',
+    timestamps: false, // Disabilita i timestamp
   }
 );
 

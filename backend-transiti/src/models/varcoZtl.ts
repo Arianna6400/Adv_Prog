@@ -61,7 +61,8 @@ VarcoZtl.init(
   },
   {
     sequelize,
-    tableName: 'VARCO_ZTL',
+    tableName: 'varco_ztl',
+    timestamps: false, // Disabilita i timestamp
   }
 );
 

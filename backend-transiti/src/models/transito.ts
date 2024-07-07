@@ -53,7 +53,8 @@ Transito.init(
   },
   {
     sequelize,
-    tableName: 'TRANSITO',
+    tableName: 'transito',
+    timestamps: false, // Disabilita i timestamp
   }
 );
 

@@ -6,7 +6,7 @@ import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 export const getUtenti = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const utenti = await utenteRepository.getAllUtenti();
-    res.status(200).json(utenti);
+    res.status(200).json(utenti); // O res.status(200).send(utenti);
   } catch (error) {
     next(error);
   }
