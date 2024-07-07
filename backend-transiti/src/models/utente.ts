@@ -1,9 +1,5 @@
 import { DataTypes, Model, Optional } from 'sequelize';
-<<<<<<< HEAD:backend-transiti/src/models/user.ts
-import sequelize from '../utils/database';
-=======
-import Database from '../config/database';
->>>>>>> 11ebb8d (aggiornati model, creato dao per utente con interfacce annesse, creata prova controllerUtente):backend-transiti/src/models/utente.ts
+import Database from '../utils/database';
 
 const sequelize = Database.getInstance();
 

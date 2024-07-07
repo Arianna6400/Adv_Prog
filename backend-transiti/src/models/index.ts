@@ -1,5 +1,5 @@
-import sequelize from '../config/database';
-import User from './user';
+import sequelize from '../utils/database';
+import User from './utente';
 import TipoVeicolo from './tipoVeicolo';
 import Veicolo from './veicolo';
 import ZonaZtl from './zonaZtl';

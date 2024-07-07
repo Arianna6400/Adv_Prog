@@ -1,5 +1,5 @@
 import { DataTypes, Model, Optional } from 'sequelize';
-import Database from '../config/database';
+import Database from '../utils/database';
 import Transito from './transito';
 
 const sequelize = Database.getInstance();

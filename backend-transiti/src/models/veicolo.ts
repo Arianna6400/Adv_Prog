@@ -1,9 +1,5 @@
 import { DataTypes, Model, Optional } from 'sequelize';
-<<<<<<< HEAD
-import sequelize from '../utils/database';
-=======
-import Database from '../config/database';
->>>>>>> 11ebb8d (aggiornati model, creato dao per utente con interfacce annesse, creata prova controllerUtente)
+import Database from '../utils/database';
 import TipoVeicolo from './tipoVeicolo';
 import Utente from './utente';
 
