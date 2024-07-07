@@ -1,5 +1,5 @@
 import { DataTypes, Model, Optional } from 'sequelize';
-import sequelize from '../config/database';
+import sequelize from '../utils/database';
 import Veicolo from './veicolo';
 import VarcoZtl from './varcoZtl';
 
