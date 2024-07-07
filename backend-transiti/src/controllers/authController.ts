@@ -5,7 +5,7 @@ import User from '../models/utente';
 import { generateToken } from '../utils/jwt';
 
 export const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { email } = req.body;
 
   try {
     const user = await User.findOne({ where: { email } });

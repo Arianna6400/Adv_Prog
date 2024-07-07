@@ -1,5 +1,5 @@
 import Transito from '../models/transito';
-import { HttpError } from '../middleware/errorHandler';
+import { HttpError } from '../middleware/errorHandlerMiddleware';
 import { DAO } from './daoInterface';
 import { TransitoAttributes, TransitoCreationAttributes } from '../models/transito';
 

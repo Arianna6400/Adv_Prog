@@ -1,5 +1,5 @@
 import VarcoZtl from '../models/varcoZtl';
-import { HttpError } from '../middleware/errorHandler';
+import { HttpError } from '../middleware/errorHandlerMiddleware';
 import { DAO } from './daoInterface';
 import { VarcoZtlAttributes, VarcoZtlCreationAttributes } from '../models/varcoZtl';
 

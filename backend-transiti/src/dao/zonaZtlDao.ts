@@ -1,5 +1,5 @@
 import ZonaZtl from '../models/zonaZtl';
-import { HttpError } from '../middleware/errorHandler';
+import { HttpError } from '../middleware/errorHandlerMiddleware';
 import { DAO } from './daoInterface';
 import { ZonaZtlAttributes, ZonaZtlCreationAttributes } from '../models/zonaZtl';
 

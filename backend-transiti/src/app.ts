@@ -14,7 +14,7 @@ import multaRoutes from './routes/multaRoutes';
 import tipoVeicoloRoutes from './routes/tipoVeicoloRoutes';
 import veicoloRoutes from './routes/veicoloRoutes';
 import orarioChiusuraRoutes from './routes/orarioChiusuraRoutes';
-import { errorHandler } from './middleware/errorHandler';
+import { errorHandler } from './middleware/errorHandlerMiddleware';
 
 // Carica le variabili d'ambiente dal file .env
 dotenv.config();
@@ -24,15 +24,14 @@ const app = express();
 // Middleware per il parsing del corpo delle richieste in formato JSON, superfluo per Express >= 4.16.0
 app.use(bodyParser.json());
 // Registra le rotte dell'API
-// app.use('/api', utenteRoutes); 
-// app.use('/api', utenteRoutes); // Registra le rotte dell'API
-// app.use('/api', varcoZtlRoutes);
-// app.use('/api', zonaZtlRoutes);
-// app.use('/api', transitoRoutes);
-// app.use('/api', multaRoutes);
-// app.use('/api', tipoVeicoloRoutes);
-// app.use('/api', veicoloRoutes);
-// app.use('/api', orarioChiusuraRoutes);
+app.use('/api', utenteRoutes); // Registra le rotte dell'API
+app.use('/api', varcoZtlRoutes);
+app.use('/api', zonaZtlRoutes);
+app.use('/api', transitoRoutes);
+app.use('/api', multaRoutes);
+app.use('/api', tipoVeicoloRoutes);
+app.use('/api', veicoloRoutes);
+app.use('/api', orarioChiusuraRoutes);
 
 // Registra il middleware per la gestione degli errori dopo tutte le altre rotte e middleware
 app.use(errorHandler());

@@ -1,5 +1,5 @@
 import TipoVeicolo from '../models/tipoVeicolo';
-import { HttpError } from '../middleware/errorHandler';
+import { HttpError } from '../middleware/errorHandlerMiddleware';
 import { DAO } from './daoInterface';
 import { TipoVeicoloAttributes, TipoVeicoloCreationAttributes } from '../models/tipoVeicolo';
 

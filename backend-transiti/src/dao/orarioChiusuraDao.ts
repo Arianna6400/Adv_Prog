@@ -1,5 +1,5 @@
 import OrarioChiusura from '../models/orarioChiusura';
-import { HttpError } from '../middleware/errorHandler';
+import { HttpError } from '../middleware/errorHandlerMiddleware';
 import { DAO } from './daoInterface';
 import { OrarioChiusuraAttributes, OrarioChiusuraCreationAttributes } from '../models/orarioChiusura';
 

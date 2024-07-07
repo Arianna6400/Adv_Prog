@@ -1,5 +1,5 @@
 import Veicolo from '../models/veicolo';
-import { HttpError } from '../middleware/errorHandler';
+import { HttpError } from '../middleware/errorHandlerMiddleware';
 import { DAO } from './daoInterface';
 import { VeicoloAttributes, VeicoloCreationAttributes } from '../models/veicolo';
 
