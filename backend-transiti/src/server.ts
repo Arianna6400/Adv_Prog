@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import app from './app';
-import { sequelize } from './models';
+import { sequelize } from './models/index';
 
 const PORT = process.env.TRANSITI_PORT || 3000;
 

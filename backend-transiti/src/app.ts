@@ -1,5 +1,5 @@
 
-// Configura l'applicazione Express e le rotte
+// Configura starting point applicazione Express
 
 import express from 'express';
 import bodyParser from 'body-parser';
