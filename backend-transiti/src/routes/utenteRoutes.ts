@@ -7,13 +7,13 @@ import {
   deleteUtente,
   getVeicoliByUtenteId
 } from '../controllers/utenteController';
-import { authMiddleware, authorize} from '../middleware/authMiddleware';
 import {
   validateGetUtenteById,
   validateCreateUtente,
   validateUpdateUtente,
   validateDeleteUtente
 } from '../middleware/validate/utenteValidate';
+import { authMiddleware, authorize} from '../middleware/authMiddleware';
 
 const router = Router();
 

@@ -17,6 +17,8 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     }
 
     const token = generateToken({ email: user.email, ruolo: user.ruolo });
+    //setAuthToken(token); // Salva il token nella variabile
+    //console.log(token);
     res.status(200).json({ token });
   } catch (error) {
     next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore del server'));
