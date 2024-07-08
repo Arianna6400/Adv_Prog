@@ -96,29 +96,34 @@ export const downloadBollettino = async (req: Request, res: Response, next: Next
                 return res.status(404).json({ message: 'Transito non trovato' });
             }
 
-            const targa = transito.veicolo; // Per prendere la targa del veicolo
+            const targa = transito.veicolo; // Associa la targa del veicolo al transito
 
             // Genera il QR-code stringa
             const qrString = `${multa.uuid_pagamento}|${multa.id_multa}|${targa}|${multa.importo_token}`;
             const qrCodeUrl = await QRCode.toDataURL(qrString);
 
             // Crea un nuovo documento PDF
-            const doc = new PDFDocument();
+            const doc = new PDFDocument({ margin: 50 });
 
             // Imposta il tipo di risposta come PDF
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', `attachment; filename=bollettino_${multa.id_multa}.pdf`);
 
-            // Aggiunge testo e QR-code al documento PDF
-            doc.fontSize(25).text('Bollettino di Pagamento', { align: 'center' });
-            doc.moveDown();
-            doc.fontSize(20).text(`Targa: ${targa}`);
-            doc.fontSize(20).text(`Importo: ${multa.importo_token}€`);
+            // Layout per il PDF
+            doc.fontSize(25).text('Bollettino di Pagamento', { align: 'center', underline: true });
+            doc.moveDown(2);
+            doc.fontSize(20).text(`Targa: ${targa}`, { align: 'left' });
+            doc.fontSize(20).text(`Importo: ${multa.importo_token}€`, { align: 'left' });
+            doc.moveDown(2);
+
+            // Aggiunge QR-code al PDF
+            const qrImageSize = 150;
             doc.image(qrCodeUrl, {
-                fit: [250, 250],
+                fit: [qrImageSize, qrImageSize],
                 align: 'center',
                 valign: 'center'
             });
+            doc.moveDown(2);
 
             // Finalizza il documento PDF e lo invia come risposta
             doc.pipe(res);
