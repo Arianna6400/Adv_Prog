@@ -15,6 +15,8 @@ export enum ErrorTypes {
     BadRequest = 'BadRequest',
     InvalidID = 'InvalidID',
     InternalServerError = 'InternalServerError',
+    Unauthorized = 'Unauthorized',
+    InvalidToken = 'InvalidToken',
   }
   
   export class ErrorFactory {
@@ -26,6 +28,10 @@ export enum ErrorTypes {
           return new HttpError(400, message, 'BAD_REQUEST');
         case ErrorTypes.InvalidID:
           return new HttpError(400, message, 'INVALID_ID');
+        case ErrorTypes.Unauthorized:
+          return new HttpError(401, message, 'UNAUTHORIZED');
+          case ErrorTypes.InvalidToken:
+        return new HttpError(400, message, 'INVALID_TOKEN');
         case ErrorTypes.InternalServerError:
         default:
           return new HttpError(500, message, 'INTERNAL_SERVER_ERROR');
