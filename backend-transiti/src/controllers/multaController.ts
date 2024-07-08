@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import multaRepository from '../repositories/multaRepository';
+import transitoRepository from '../repositories/transitoRepository';
 import PDFDocument from 'pdfkit';
 import QRCode from 'qrcode';
 
@@ -90,8 +91,15 @@ export const downloadBollettino = async (req: Request, res: Response, next: Next
         const id = parseInt(req.params.id);
         const multa = await multaRepository.getMultaById(id);
         if (multa) {
+            const transito = await transitoRepository.getTransitoById(multa.transito);
+            if (!transito) {
+                return res.status(404).json({ message: 'Transito non trovato' });
+            }
+
+            const targa = transito.veicolo; // Per prendere la targa del veicolo
+
             // Genera il QR-code stringa
-            const qrString = `${multa.uuid_pagamento}|${multa.id_multa}|${multa.transito}|${multa.importo_token}`;
+            const qrString = `${multa.uuid_pagamento}|${multa.id_multa}|${targa}|${multa.importo_token}`;
             const qrCodeUrl = await QRCode.toDataURL(qrString);
 
             // Crea un nuovo documento PDF
@@ -104,7 +112,7 @@ export const downloadBollettino = async (req: Request, res: Response, next: Next
             // Aggiunge testo e QR-code al documento PDF
             doc.fontSize(25).text('Bollettino di Pagamento', { align: 'center' });
             doc.moveDown();
-            doc.fontSize(20).text(`Targa: ${multa.transito}`);
+            doc.fontSize(20).text(`Targa: ${targa}`);
             doc.fontSize(20).text(`Importo: ${multa.importo_token}€`);
             doc.image(qrCodeUrl, {
                 fit: [250, 250],
