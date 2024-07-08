@@ -18,25 +18,26 @@ services:
       - .env
     depends_on:
       - db
+      - pagamenti
     networks: # rete in cui il servizio sarà collegato
       - backend
 
-  # pagamenti:
-  #   container_name: pagamenti
-  #   build:
-  #     context: ./backend-pagamenti
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./backend-pagamenti:/usr/src/app # monta directory nel container
-  #     - /usr/src/app/node_modules
-  #   ports:
-  #     - "3001:3001"
-  #   env_file:
-  #     - .env
-  #   depends_on:
-  #     - db
-  #   networks: # rete in cui il servizio sarà collegato
-  #     - backend
+  pagamenti:
+     container_name: pagamenti
+     build:
+       context: ./backend-pagamenti
+       dockerfile: Dockerfile
+     volumes:
+       - ./backend-pagamenti:/usr/src/app # monta directory nel container
+       - /usr/src/app/node_modules
+     ports:
+       - "3001:3001"
+     env_file:
+       - .env
+     depends_on:
+       - db
+     networks: # rete in cui il servizio sarà collegato
+       - backend
 
   db:
     container_name: postgres
