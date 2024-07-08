@@ -1,6 +1,4 @@
 
-//Servizio per istanziare una connessione con il backend-transiti utilizzando Axios
-
 import axios from 'axios';
 
 const connection = axios.create({
@@ -8,5 +6,16 @@ const connection = axios.create({
   timeout: 5000,
 });
 
-export default connection;
+// Aggiungi un interceptor per aggiungere il token a ogni richiesta
+connection.interceptors.request.use(config => {
+  const token = localStorage.getItem('token'); // Assicurati di ottenere il token in modo sicuro
+  console.log(token);
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, error => {
+  return Promise.reject(error);
+});
 
+export default connection;

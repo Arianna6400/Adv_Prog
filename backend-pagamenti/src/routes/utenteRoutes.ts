@@ -5,19 +5,22 @@ import {
   ricaricaCredito,
   verificaCredito,
   pagaMulta
-} from '../controllers/utenteController';
-import { authMiddleware, adminMiddleware } from '../middleware/authMiddleware'; 
+} from '../controllers/utenteController'; 
 import {
   ricaricaCreditoValidation,
   verificaCreditoValidation,
   pagaMultaValidation
 } from '../middleware/validate/utenteValidate';
+import { authMiddleware, authorize} from '../middleware/authMiddleware';
 
 const router = Router();
 
-router.post('/utenti/ricarica', authMiddleware, adminMiddleware, ricaricaCreditoValidation, ricaricaCredito);
-router.get('/utenti/:id/credito', authMiddleware, verificaCreditoValidation, verificaCredito);
-router.post('/utenti/paga', authMiddleware, pagaMultaValidation, pagaMulta);
+// Applica il middleware di autenticazione per tutte le rotte
+router.use(authMiddleware);
+
+router.post('/ricarica', authorize(['automobilista']), ricaricaCreditoValidation, ricaricaCredito);
+router.get('/credito/:id', authorize(['automobilista']),  verificaCreditoValidation, verificaCredito);
+router.post('/paga', authorize(['automobilista']), pagaMultaValidation, pagaMulta);
 
 export default router;
 

@@ -6,7 +6,7 @@ import {
     updateOrarioChiusura,
     deleteOrarioChiusura
 } from '../controllers/orarioChiusuraController';
-import authMiddleware from '../middleware/authMiddleware'; 
+import { authMiddleware, authorize} from '../middleware/authMiddleware';
 import {
     validateGetOrarioChiusuraById,
     validateCreateOrarioChiusura,
@@ -17,7 +17,7 @@ import {
 const router = Router();
 
 // Applica il middleware di autenticazione per tutte le rotte
-//router.use(authMiddleware);
+router.use(authMiddleware);
 
 router.get('/orariChiusura', getAllOrariChiusura);
 router.get('/orariChiusura/:id', validateGetOrarioChiusuraById, getOrarioChiusuraById);

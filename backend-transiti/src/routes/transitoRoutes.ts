@@ -6,8 +6,7 @@ import {
     updateTransito,
     deleteTransito
 } from '../controllers/transitoController';
-import authMiddleware from '../middleware/authMiddleware'; 
-import {
+import { authMiddleware, authorize} from '../middleware/authMiddleware';import {
     validateGetTransitoById,
     validateCreateTransito,
     validateUpdateTransito,
@@ -17,7 +16,7 @@ import {
 const router = Router();
 
 // Applica il middleware di autenticazione per tutte le rotte
-//router.use(authMiddleware);
+router.use(authMiddleware);
 
 router.get('/transiti', getAllTransiti);
 router.get('/transiti/:id', validateGetTransitoById, getTransitoById);

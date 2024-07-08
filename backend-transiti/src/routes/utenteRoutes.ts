@@ -25,7 +25,6 @@ router.get('/utenti/:id', validateGetUtenteById, getUtenteById);
 router.post('/utenti', validateCreateUtente, createUtente);
 router.put('/utenti/:id', validateUpdateUtente, updateUtente);
 router.delete('/utenti/:id', validateDeleteUtente, deleteUtente);
-
 // Rotta per ottenere tutti i veicoli di un utente
 router.get('/utenti/:id/veicoli', validateGetUtenteById, getVeicoliByUtenteId);
 

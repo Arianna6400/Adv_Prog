@@ -7,8 +7,7 @@ import {
     deleteVeicolo,
     getTransitiByVeicolo
 } from '../controllers/veicoloController';
-import { authMiddleware } from '../middleware/authMiddleware'; 
-import {
+import { authMiddleware, authorize} from '../middleware/authMiddleware';import {
     validateGetVeicoloById,
     validateCreateVeicolo,
     validateUpdateVeicolo,
@@ -18,7 +17,7 @@ import {
 const router = Router();
 
 // Applica il middleware di autenticazione per tutte le rotte
-//router.use(authMiddleware);
+router.use(authMiddleware);
 
 router.get('/veicoli', getAllVeicoli);
 router.get('/veicoli/:targa', validateGetVeicoloById, getVeicoloById);

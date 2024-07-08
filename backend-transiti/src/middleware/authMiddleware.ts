@@ -24,11 +24,20 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
 
 export const authorize = (roles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    const user = (req as any).user;
-    if (!roles.includes(user.ruolo)) {
-      return next(ErrorFactory.createError(ErrorTypes.Forbidden, 'Accesso negato.'));
+    try {
+      const user = (req as any).user;
+      if (!user) {
+        throw ErrorFactory.createError(ErrorTypes.Unauthorized, 'Utente non autenticato in transiti.');
+      }
+
+      if (!roles.includes(user.ruolo)) {
+        throw ErrorFactory.createError(ErrorTypes.Forbidden, 'Accesso negato.');
+      }
+
+      next();
+    } catch (error) {
+      next(error);
     }
-    next();
   };
 };
 

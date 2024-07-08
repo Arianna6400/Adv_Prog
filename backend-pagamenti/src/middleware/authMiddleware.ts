@@ -1,31 +1,44 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken } from '../utils/jwt'; // Assicurati di esportare JwtPayload dal tuo modulo JWT
-import { JwtPayload } from 'jsonwebtoken';
+import { verifyToken } from '../utils/jwt';
+import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 
-interface AuthenticatedRequest extends Request {
-    user?: JwtPayload;
-}
-
-export const authMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
+    //const token = getAuthToken(); // Utilizza il token memorizzato
     if (!token) {
-        return res.status(401).json({ message: 'Access denied. No token provided.' });
+      throw ErrorFactory.createError(ErrorTypes.Unauthorized, 'Accesso negato. Nessun token fornito.');
     }
 
     const decoded = verifyToken(token);
     if (!decoded) {
-        return res.status(400).json({ message: 'Invalid token.' });
+      throw ErrorFactory.createError(ErrorTypes.InvalidToken, 'Token non valido.');
     }
 
-    req.user = decoded;
+    (req as any).user = decoded;
     next();
+  } catch (error) {
+    next(error);
+  }
 };
 
-export const adminMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    if (!req.user || req.user.role !== 'admin') {
-        return res.status(403).json({ message: 'Access denied. Admins only.' });
+export const authorize = (roles: string[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = (req as any).user;
+      if (!user) {
+        throw ErrorFactory.createError(ErrorTypes.Unauthorized, 'Utente non autenticato in pagamenti.');
+      }
+
+      if (!roles.includes(user.ruolo)) {
+        throw ErrorFactory.createError(ErrorTypes.Forbidden, 'Accesso negato.');
+      }
+
+      next();
+    } catch (error) {
+      next(error);
     }
-    next();
+  };
 };
 
-export default authMiddleware;
+export default { authMiddleware, authorize };

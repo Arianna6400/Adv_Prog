@@ -6,8 +6,7 @@ import {
     updateVarcoZtl,
     deleteVarcoZtl
 } from '../controllers/varcoZtlController';
-import authMiddleware from '../middleware/authMiddleware';
-import {
+import { authMiddleware, authorize} from '../middleware/authMiddleware';import {
     validateGetVarcoZtlById,
     validateCreateVarcoZtl,
     validateUpdateVarcoZtl,
@@ -17,7 +16,7 @@ import {
 const router = Router();
 
 //Applica il middleware di autenticazione per tutte le rotte
-//router.use(authMiddleware);
+router.use(authMiddleware);
 
 router.get('/varchiZtl', getAllVarcoZtl);
 router.get('/varchiZtl/:id', validateGetVarcoZtlById, getVarcoZtlById);

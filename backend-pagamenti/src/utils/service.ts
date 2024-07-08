@@ -1,15 +1,15 @@
-import connection from './connection';
+// src/utils/transitiService.ts
+import axios from './connection';
 
-class TransitiService {
-  public async getMultaById(id: number) {
+const transitiService = {
+  getMultaById: async (id: number) => {
     try {
-      const response = await connection.get(`/multe/${id}`);
+      const response = await axios.get(`/multe/${id}`);
       return response.data;
     } catch (error) {
-      console.error('Errore nella comunicazione con il backend-transiti:', error);
-      throw new Error('Impossibile ottenere la multa dal backend-transiti');
+      throw new Error('Errore nel recupero della multa dal backend transiti');
     }
   }
-}
+};
 
-export default new TransitiService();
+export default transitiService;

@@ -8,8 +8,7 @@ import {
     getMulteNonPagate,
     downloadBollettino
 } from '../controllers/multaController';
-import authMiddleware from '../middleware/authMiddleware'; 
-import {
+import { authMiddleware, authorize} from '../middleware/authMiddleware';import {
     validateGetMultaById,
     validateCreateMulta,
     validateUpdateMulta,
@@ -21,7 +20,7 @@ import {
 const router = Router();
 
 // Applica il middleware di autenticazione per tutte le rotte
-//router.use(authMiddleware);
+router.use(authMiddleware);
 
 router.get('/multe', getAllMulte);
 router.get('/multe/:id', validateGetMultaById, getMultaById);

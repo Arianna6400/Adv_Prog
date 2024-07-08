@@ -1,6 +1,6 @@
-/*
-    Contiene la configurazione e la logica dell’applicazione Express (middleware, rotte e gestione errori)
-*/
+/**
+ * Contiene la configurazione e la logica dell’applicazione Express (middleware, rotte e gestione errori)
+ */
 
 import express from 'express';
 import dotenv from 'dotenv';
@@ -22,7 +22,7 @@ dotenv.config();
 const app = express();
 
 // Middleware per il parsing del corpo delle richieste in formato JSON
-app.use(express.json()); // Utilizza express.json() invece di bodyParser.json()
+app.use(express.json());
 // Middleware di autenticazione
 app.use('/', authRoutes);
 // Registra le rotte dell'API
@@ -34,13 +34,14 @@ app.use('/', multaRoutes);
 app.use('/', tipoVeicoloRoutes);
 app.use('/', veicoloRoutes);
 app.use('/', orarioChiusuraRoutes);
+
 // Middleware per gestire le rotte non trovate
 app.use((req, res, next) => {
   const error = ErrorFactory.createError(ErrorTypes.NotFound, 'Rotta non trovata');
   next(error);
 });
 
-// Registra il middleware per la gestione degli errori dopo tutte le altre rotte e middleware
+// Middleware per la gestione degli errori
 app.use(errorHandler);
 
 export default app; // Esporta l'applicazione Express
