@@ -1,3 +1,6 @@
+# docker-compose up --build
+# docker-compose down
+
 version: '3.8'
 
 services:
@@ -7,15 +10,15 @@ services:
       context: ./backend-transiti
       dockerfile: Dockerfile
     volumes:
-      - ./backend-transiti:/usr/src/app
+      - ./backend-transiti:/usr/src/app # monta directory nel container
       - /usr/src/app/node_modules
     ports:
-      - "3000:3000"
+      - "3000:3000" # porta 3000 container su porta 3000 host
     env_file:
       - .env
     depends_on:
       - db
-    networks:
+    networks: # rete in cui il servizio sarà collegato
       - backend
 
   # pagamenti:
@@ -24,7 +27,7 @@ services:
   #     context: ./backend-pagamenti
   #     dockerfile: Dockerfile
   #   volumes:
-  #     - ./backend-pagamenti:/usr/src/app
+  #     - ./backend-pagamenti:/usr/src/app # monta directory nel container
   #     - /usr/src/app/node_modules
   #   ports:
   #     - "3001:3001"
@@ -32,13 +35,13 @@ services:
   #     - .env
   #   depends_on:
   #     - db
-  #   networks:
+  #   networks: # rete in cui il servizio sarà collegato
   #     - backend
 
   db:
     container_name: postgres
     image: postgres:13
-    environment:
+    environment: # variabili d'aambiente per configurare Postgres
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
@@ -46,9 +49,9 @@ services:
       - "5432:5432"
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
+    networks: # rete in cui il servizio sarà collegato
       - backend
 
 networks:
   backend:
-    driver: bridge
+    driver: bridge # driver bridge permette ai container di comunicare tra loro
