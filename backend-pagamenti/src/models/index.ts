@@ -1,14 +1,19 @@
 
 // Inizializza i modelli di Sequelize e definisce le relazioni tra i modelli
 
-import sequelize from '../config/database';
-import Payment from './payment';
+import Database from '../utils/database';
+import Utente from './utente';
 
-const models = {
-  Payment: Payment.initModel(sequelize),
+const sequelize = Database.getInstance();
+
+const db = {
+  sequelize,
+  Utente,
 };
 
-Payment.associate(models);
+// Funzione per sincronizzare i modelli con il database
+export const initModels = async () => {
+  await sequelize.sync({ alter: true }); // Usa { alter: true } per aggiornare le tabelle esistenti
+};
 
-export { sequelize };
-export default models;
+export default db;
