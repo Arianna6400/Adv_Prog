@@ -7,8 +7,12 @@ import {
     deleteTransito
 } from '../controllers/transitoController';
 import authMiddleware from '../middleware/authMiddleware'; 
-import validateRequest from '../middleware/validateRequestMiddleware';
-import { param, body } from 'express-validator';
+import {
+    validateGetTransitoById,
+    validateCreateTransito,
+    validateUpdateTransito,
+    validateDeleteTransito
+} from '../middleware/validate/transitoValidate';
 
 const router = Router();
 
@@ -16,34 +20,9 @@ const router = Router();
 //router.use(authMiddleware);
 
 router.get('/transiti', getAllTransiti);
-
-router.get('/transiti/:id', 
-    param('id').isInt().withMessage('ID must be an integer'), 
-    validateRequest, 
-    getTransitoById
-);
-
-router.post('/transiti', 
-    body('veicolo').isString().withMessage('Veicolo must be a string'),
-    body('varco').isInt().withMessage('Varco ID must be an integer'),
-    body('data_ora').isISO8601().withMessage('Data Ora must be a valid date'),
-    validateRequest, 
-    createTransito
-);
-
-router.put('/transiti/:id', 
-    param('id').isInt().withMessage('ID must be an integer'),
-    body('veicolo').optional().isString().withMessage('Veicolo must be a string'),
-    body('varco').optional().isInt().withMessage('Varco ID must be an integer'),
-    body('data_ora').optional().isISO8601().withMessage('Data Ora must be a valid date'),
-    validateRequest, 
-    updateTransito
-);
-
-router.delete('/transiti/:id', 
-    param('id').isInt().withMessage('ID must be an integer'), 
-    validateRequest, 
-    deleteTransito
-);
+router.get('/transiti/:id', validateGetTransitoById, getTransitoById);
+router.post('/transiti', validateCreateTransito, createTransito);
+router.put('/transiti/:id', validateUpdateTransito, updateTransito);
+router.delete('/transiti/:id', validateDeleteTransito, deleteTransito);
 
 export default router;

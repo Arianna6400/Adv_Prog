@@ -9,8 +9,14 @@ import {
     downloadBollettino
 } from '../controllers/multaController';
 import authMiddleware from '../middleware/authMiddleware'; 
-import validateRequest from '../middleware/validateRequestMiddleware';
-import { param, body } from 'express-validator';
+import {
+    validateGetMultaById,
+    validateCreateMulta,
+    validateUpdateMulta,
+    validateDeleteMulta,
+    validateGetMulteNonPagate,
+    validateDownloadBollettino
+} from '../middleware/validate/multaValidate';
 
 const router = Router();
 
@@ -18,45 +24,11 @@ const router = Router();
 //router.use(authMiddleware);
 
 router.get('/multe', getAllMulte);
-
-router.get('/multe/:id', 
-    param('id').isInt().withMessage('ID must be an integer'), 
-    validateRequest, 
-    getMultaById
-);
-
-router.post('/multe', 
-    body('transito').isInt().withMessage('Transito ID must be an integer'),
-    body('importo_token').isNumeric().withMessage('Importo must be a number'),
-    validateRequest, 
-    createMulta
-);
-
-router.put('/multe/:id', 
-    param('id').isInt().withMessage('ID must be an integer'),
-    body('transito').optional().isInt().withMessage('Transito ID must be an integer'),
-    body('importo_token').optional().isNumeric().withMessage('Importo must be a number'),
-    validateRequest, 
-    updateMulta
-);
-
-router.delete('/multe/:id', 
-    param('id').isInt().withMessage('ID must be an integer'), 
-    validateRequest, 
-    deleteMulta
-);
-
-router.get('/multe/veicolo/:veicolo', 
-    param('veicolo').isString().withMessage('Veicolo must be a string'), 
-    validateRequest, 
-    getMulteNonPagate
-);
-
-router.get('/multe/:id/bollettino', 
-    param('id').isInt().withMessage('ID must be an integer'), 
-    validateRequest, 
-    downloadBollettino
-);
-
+router.get('/multe/:id', validateGetMultaById, getMultaById);
+router.post('/multe', validateCreateMulta, createMulta);
+router.put('/multe/:id', validateUpdateMulta, updateMulta);
+router.delete('/multe/:id', validateDeleteMulta, deleteMulta);
+router.get('/multe/veicolo/:veicolo', validateGetMulteNonPagate, getMulteNonPagate);
+router.get('/multe/:id/bollettino', validateDownloadBollettino, downloadBollettino);
 
 export default router;

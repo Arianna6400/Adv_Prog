@@ -8,8 +8,12 @@ import {
     getTransitiByVeicolo
 } from '../controllers/veicoloController';
 import { authMiddleware } from '../middleware/authMiddleware'; 
-import validateRequest from '../middleware/validateRequestMiddleware';
-import { param, body } from 'express-validator';
+import {
+    validateGetVeicoloById,
+    validateCreateVeicolo,
+    validateUpdateVeicolo,
+    validateDeleteVeicolo
+} from '../middleware/validate/veicoloValidate';
 
 const router = Router();
 
@@ -17,41 +21,10 @@ const router = Router();
 //router.use(authMiddleware);
 
 router.get('/veicoli', getAllVeicoli);
-
-router.get('/veicoli/:targa', 
-    param('targa').isString().withMessage('Targa must be a string'), 
-    validateRequest, 
-    getVeicoloById
-);
-
-router.post('/veicoli', 
-    body('targa').isString().withMessage('Targa must be a string'),
-    body('esente').isBoolean().withMessage('Esente must be a boolean'),
-    body('tipo_veicolo').isInt().withMessage('Tipo Veicolo ID must be an integer'),
-    body('utente').isInt().withMessage('Utente ID must be an integer'),
-    validateRequest, 
-    createVeicolo
-);
-
-router.put('/veicoli/:targa', 
-    param('targa').isString().withMessage('Targa must be a string'),
-    body('esente').optional().isBoolean().withMessage('Esente must be a boolean'),
-    body('tipo_veicolo').optional().isInt().withMessage('Tipo Veicolo ID must be an integer'),
-    body('utente').optional().isInt().withMessage('Utente ID must be an integer'),
-    validateRequest, 
-    updateVeicolo
-);
-
-router.delete('/veicoli/:targa', 
-    param('targa').isString().withMessage('Targa must be a string'), 
-    validateRequest, 
-    deleteVeicolo
-);
-
-router.get('/veicoli/:targa/transiti', 
-    param('targa').isString().withMessage('Targa must be a string'), 
-    validateRequest, 
-    getTransitiByVeicolo
-);
+router.get('/veicoli/:targa', validateGetVeicoloById, getVeicoloById);
+router.post('/veicoli', validateCreateVeicolo, createVeicolo);
+router.put('/veicoli/:targa', validateUpdateVeicolo, updateVeicolo);
+router.delete('/veicoli/:targa', validateDeleteVeicolo, deleteVeicolo);
+router.get('/veicoli/:targa/transiti', validateGetVeicoloById, getTransitiByVeicolo);
 
 export default router;

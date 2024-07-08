@@ -7,8 +7,12 @@ import {
     deleteTipoVeicolo
 } from '../controllers/tipoVeicoloController';
 import authMiddleware from '../middleware/authMiddleware'; 
-import validateRequest from '../middleware/validateRequestMiddleware';
-import { param, body } from 'express-validator';
+import {
+    validateGetTipoVeicoloById,
+    validateCreateTipoVeicolo,
+    validateUpdateTipoVeicolo,
+    validateDeleteTipoVeicolo
+} from '../middleware/validate/tipoVeicoloValidate';
 
 const router = Router();
 
@@ -16,32 +20,9 @@ const router = Router();
 //router.use(authMiddleware);
 
 router.get('/tipiVeicolo', getAllTipoVeicolo);
-
-router.get('/tipiVeicolo/:id', 
-    param('id').isInt().withMessage('ID must be an integer'), 
-    validateRequest, 
-    getTipoVeicoloById
-);
-
-router.post('/tipiVeicolo', 
-    body('descrizione').isString().withMessage('Descrizione must be a string'),
-    body('tariffa_base').isFloat().withMessage('Tariffa Base must be a float'),
-    validateRequest, 
-    createTipoVeicolo
-);
-
-router.put('/tipiVeicolo/:id', 
-    param('id').isInt().withMessage('ID must be an integer'),
-    body('descrizione').optional().isString().withMessage('Descrizione must be a string'),
-    body('tariffa_base').optional().isFloat().withMessage('Tariffa Base must be a float'),
-    validateRequest, 
-    updateTipoVeicolo
-);
-
-router.delete('/tipiVeicolo/:id', 
-    param('id').isInt().withMessage('ID must be an integer'), 
-    validateRequest, 
-    deleteTipoVeicolo
-);
+router.get('/tipiVeicolo/:id', validateGetTipoVeicoloById, getTipoVeicoloById);
+router.post('/tipiVeicolo', validateCreateTipoVeicolo, createTipoVeicolo);
+router.put('/tipiVeicolo/:id', validateUpdateTipoVeicolo, updateTipoVeicolo);
+router.delete('/tipiVeicolo/:id', validateDeleteTipoVeicolo, deleteTipoVeicolo);
 
 export default router;

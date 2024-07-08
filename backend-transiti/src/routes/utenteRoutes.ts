@@ -8,8 +8,12 @@ import {
   getVeicoliByUtenteId
 } from '../controllers/utenteController';
 import authMiddleware from '../middleware/authMiddleware';
-import validateRequest from '../middleware/validateRequestMiddleware';
-import { param, body } from 'express-validator';
+import {
+  validateGetUtenteById,
+  validateCreateUtente,
+  validateUpdateUtente,
+  validateDeleteUtente
+} from '../middleware/validate/utenteValidate';
 
 const router = Router();
 
@@ -17,41 +21,12 @@ const router = Router();
 //router.use(authMiddleware);
 
 router.get('/utenti', getUtenti);
-
-router.get('/utenti/:id', 
-  param('id').isInt().withMessage('ID must be an integer'), 
-  validateRequest, 
-  getUtenteById
-);
-
-router.post('/utenti', 
-  body('nome').isString().withMessage('Nome must be a string'),
-  body('cognome').isString().withMessage('Cognome must be a string'),
-  body('email').isEmail().withMessage('Email must be a valid email address'),
-  validateRequest, 
-  createUtente
-);
-
-router.put('/utenti/:id', 
-  param('id').isInt().withMessage('ID must be an integer'),
-  body('nome').optional().isString().withMessage('Nome must be a string'),
-  body('cognome').optional().isString().withMessage('Cognome must be a string'),
-  body('email').optional().isEmail().withMessage('Email must be a valid email address'),
-  validateRequest, 
-  updateUtente
-);
-
-router.delete('/utenti/:id', 
-  param('id').isInt().withMessage('ID must be an integer'), 
-  validateRequest, 
-  deleteUtente
-);
+router.get('/utenti/:id', validateGetUtenteById, getUtenteById);
+router.post('/utenti', validateCreateUtente, createUtente);
+router.put('/utenti/:id', validateUpdateUtente, updateUtente);
+router.delete('/utenti/:id', validateDeleteUtente, deleteUtente);
 
 // Rotta per ottenere tutti i veicoli di un utente
-router.get('/utenti/:id/veicoli', 
-  param('id').isInt().withMessage('ID must be an integer'), 
-  validateRequest, 
-  getVeicoliByUtenteId
-);
+router.get('/utenti/:id/veicoli', validateGetUtenteById, getVeicoliByUtenteId);
 
 export default router;

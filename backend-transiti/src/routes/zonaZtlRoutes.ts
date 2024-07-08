@@ -7,8 +7,13 @@ import {
     deleteZonaZtl
 } from '../controllers/zonaZtlController';
 import authMiddleware from '../middleware/authMiddleware';
-import validateRequest from '../middleware/validateRequestMiddleware';
-import { param, body } from 'express-validator';
+import {
+    validateGetZonaZtlById,
+    validateCreateZonaZtl,
+    validateUpdateZonaZtl,
+    validateDeleteZonaZtl
+} from '../middleware/validate/zonaZtlValidate';
+
 
 const router = Router();
 
@@ -16,30 +21,9 @@ const router = Router();
 //router.use(authMiddleware);
 
 router.get('/zoneZtl', getAllZonaZtl);
-
-router.get('/zoneZtl/:id', 
-    param('id').isInt().withMessage('ID must be an integer'), 
-    validateRequest, 
-    getZonaZtlById
-);
-
-router.post('/zoneZtl', 
-    body('nome').isString().withMessage('Nome must be a string'),
-    validateRequest, 
-    createZonaZtl
-);
-
-router.put('/zoneZtl/:id', 
-    param('id').isInt().withMessage('ID must be an integer'),
-    body('nome').optional().isString().withMessage('Nome must be a string'),
-    validateRequest, 
-    updateZonaZtl
-);
-
-router.delete('/zoneZtl/:id', 
-    param('id').isInt().withMessage('ID must be an integer'), 
-    validateRequest, 
-    deleteZonaZtl
-);
+router.get('/zoneZtl/:id', validateGetZonaZtlById, getZonaZtlById);
+router.post('/zoneZtl', validateCreateZonaZtl, createZonaZtl);
+router.put('/zoneZtl/:id', validateUpdateZonaZtl, updateZonaZtl);
+router.delete('/zoneZtl/:id', validateDeleteZonaZtl, deleteZonaZtl);
 
 export default router;
