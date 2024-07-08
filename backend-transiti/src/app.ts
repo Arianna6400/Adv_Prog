@@ -29,7 +29,6 @@ app.use(express.json()); // Utilizza express.json() invece di bodyParser.json()
 
 // Middleware di autenticazione
 app.use('/', authRoutes);
-//app.use(authMiddleware);
 
 // Registra le rotte dell'API
 app.use('/', utenteRoutes); 

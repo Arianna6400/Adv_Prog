@@ -7,7 +7,7 @@ import {
   deleteUtente,
   getVeicoliByUtenteId
 } from '../controllers/utenteController';
-import authMiddleware from '../middleware/authMiddleware';
+import { authMiddleware, authorize} from '../middleware/authMiddleware';
 import {
   validateGetUtenteById,
   validateCreateUtente,
@@ -18,9 +18,9 @@ import {
 const router = Router();
 
 // Applica il middleware di autenticazione per tutte le rotte
-//router.use(authMiddleware);
+router.use(authMiddleware);
 
-router.get('/utenti', getUtenti);
+router.get('/utenti', authorize(['automobilista']), getUtenti);
 router.get('/utenti/:id', validateGetUtenteById, getUtenteById);
 router.post('/utenti', validateCreateUtente, createUtente);
 router.put('/utenti/:id', validateUpdateUtente, updateUtente);
