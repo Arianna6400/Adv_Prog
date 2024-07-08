@@ -16,6 +16,8 @@ import orarioChiusuraRoutes from './routes/orarioChiusuraRoutes';
 import { errorHandler } from './middleware/errorHandlerMiddleware';
 import { ErrorFactory, ErrorTypes } from './utils/errorFactory'
 import { authMiddleware } from './middleware/authMiddleware';
+import authRoutes from './routes/authRoutes';
+
 
 // Carica le variabili d'ambiente dal file .env
 dotenv.config();
@@ -26,6 +28,7 @@ const app = express();
 app.use(express.json()); // Utilizza express.json() invece di bodyParser.json()
 
 // Middleware di autenticazione
+app.use('/', authRoutes);
 //app.use(authMiddleware);
 
 // Registra le rotte dell'API
