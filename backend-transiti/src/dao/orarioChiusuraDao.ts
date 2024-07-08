@@ -1,5 +1,5 @@
 import OrarioChiusura from '../models/orarioChiusura';
-import { HttpError } from '../middleware/errorHandlerMiddleware';
+import { ErrorFactory, ErrorTypes, HttpError } from '../utils/errorFactory';
 import { DAO } from './daoInterface';
 import { OrarioChiusuraAttributes, OrarioChiusuraCreationAttributes } from '../models/orarioChiusura';
 
@@ -13,16 +13,23 @@ class OrarioChiusuraDao implements OrarioChiusuraDAO {
             return await OrarioChiusura.findAll();
         } catch (error) {
             console.error('Errore nel recupero degli orari di chiusura:', error);
-            throw new HttpError(500, 'Errore nel recupero degli orari di chiusura');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero degli orari di chiusura');
         }
     }
 
     public async getById(id: number): Promise<OrarioChiusura | null> {
         try {
-            return await OrarioChiusura.findByPk(id);
+            const orarioChiusura = await OrarioChiusura.findByPk(id);
+            if (!orarioChiusura) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Orario di chiusura con id ${id} non trovato`);
+            }
+            return orarioChiusura;
         } catch (error) {
-            console.error(`Errore nel recupero dell\'orario di chiusura con id ${id}:`, error);
-            throw new HttpError(500, `Errore nel recupero dell\'orario di chiusura con id ${id}`);
+            console.error(`Errore nel recupero dell'orario di chiusura con id ${id}:`, error);
+            if (error instanceof HttpError) {
+                throw error; // Rilancia l'errore personalizzato
+            }
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero dell'orario di chiusura con id ${id}`);
         }
     }
 
@@ -31,27 +38,35 @@ class OrarioChiusuraDao implements OrarioChiusuraDAO {
             return await OrarioChiusura.create(data);
         } catch (error) {
             console.error('Errore nella creazione dell\'orario di chiusura:', error);
-            throw new HttpError(500, 'Errore nella creazione dell\'orario di chiusura');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione dell\'orario di chiusura');
         }
     }
 
     public async update(id: number, data: Partial<OrarioChiusuraAttributes>): Promise<[number, OrarioChiusura[]]> {
         try {
+            const orarioChiusura = await OrarioChiusura.findByPk(id);
+            if (!orarioChiusura) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Orario di chiusura con id ${id} non trovato`);
+            }
             const [affectedCount] = await OrarioChiusura.update(data, { where: { id_orario: id }, returning: true });
             const updatedItems = await OrarioChiusura.findAll({ where: { id_orario: id } });
             return [affectedCount, updatedItems];
         } catch (error) {
-            console.error(`Errore nell\'aggiornamento dell\'orario di chiusura con id ${id}:`, error);
-            throw new HttpError(500, `Errore nell\'aggiornamento dell\'orario di chiusura con id ${id}`);
+            console.error(`Errore nell'aggiornamento dell'orario di chiusura con id ${id}:`, error);
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nell'aggiornamento dell'orario di chiusura con id ${id}`);
         }
     }
 
     public async delete(id: number): Promise<number> {
         try {
+            const orarioChiusura = await OrarioChiusura.findByPk(id);
+            if (!orarioChiusura) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Orario di chiusura con id ${id} non trovato`);
+            }
             return await OrarioChiusura.destroy({ where: { id_orario: id } });
         } catch (error) {
-            console.error(`Errore nella cancellazione dell\'orario di chiusura con id ${id}:`, error);
-            throw new HttpError(500, `Errore nella cancellazione dell\'orario di chiusura con id ${id}`);
+            console.error(`Errore nella cancellazione dell'orario di chiusura con id ${id}:`, error);
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione dell'orario di chiusura con id ${id}`);
         }
     }
 }

@@ -1,5 +1,5 @@
 import VarcoZtl from '../models/varcoZtl';
-import { HttpError } from '../middleware/errorHandlerMiddleware';
+import { ErrorFactory, ErrorTypes, HttpError } from '../utils/errorFactory';
 import { DAO } from './daoInterface';
 import { VarcoZtlAttributes, VarcoZtlCreationAttributes } from '../models/varcoZtl';
 
@@ -13,16 +13,23 @@ class VarcoZtlDao implements VarcoZtlDAO {
             return await VarcoZtl.findAll();
         } catch (error) {
             console.error('Errore nel recupero dei varchi ZTL:', error);
-            throw new HttpError(500, 'Errore nel recupero dei varchi ZTL');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero dei varchi ZTL');
         }
     }
 
     public async getById(id: number): Promise<VarcoZtl | null> {
         try {
-            return await VarcoZtl.findByPk(id);
+            const varcoZtl = await VarcoZtl.findByPk(id);
+            if (!varcoZtl) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Varco ZTL con id ${id} non trovato`);
+            }
+            return varcoZtl;
         } catch (error) {
             console.error(`Errore nel recupero del varco ZTL con id ${id}:`, error);
-            throw new HttpError(500, `Errore nel recupero del varco ZTL con id ${id}`);
+            if (error instanceof HttpError) {
+                throw error; // Rilancia l'errore personalizzato
+            }
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero del varco ZTL con id ${id}`);
         }
     }
 
@@ -31,27 +38,35 @@ class VarcoZtlDao implements VarcoZtlDAO {
             return await VarcoZtl.create(data);
         } catch (error) {
             console.error('Errore nella creazione del varco ZTL:', error);
-            throw new HttpError(500, 'Errore nella creazione del varco ZTL');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione del varco ZTL');
         }
     }
 
     public async update(id: number, data: Partial<VarcoZtlAttributes>): Promise<[number, VarcoZtl[]]> {
         try {
+            const varcoZtl = await VarcoZtl.findByPk(id);
+            if (!varcoZtl) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Varco ZTL con id ${id} non trovato`);
+            }
             const [affectedCount] = await VarcoZtl.update(data, { where: { id_varco: id }, returning: true });
             const updatedItems = await VarcoZtl.findAll({ where: { id_varco: id } });
             return [affectedCount, updatedItems];
         } catch (error) {
             console.error(`Errore nell'aggiornamento del varco ZTL con id ${id}:`, error);
-            throw new HttpError(500, `Errore nell'aggiornamento del varco ZTL con id ${id}`);
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nell'aggiornamento del varco ZTL con id ${id}`);
         }
     }
 
     public async delete(id: number): Promise<number> {
         try {
+            const varcoZtl = await VarcoZtl.findByPk(id);
+            if (!varcoZtl) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Varco ZTL con id ${id} non trovato`);
+            }
             return await VarcoZtl.destroy({ where: { id_varco: id } });
         } catch (error) {
             console.error(`Errore nella cancellazione del varco ZTL con id ${id}:`, error);
-            throw new HttpError(500, `Errore nella cancellazione del varco ZTL con id ${id}`);
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione del varco ZTL con id ${id}`);
         }
     }
 }

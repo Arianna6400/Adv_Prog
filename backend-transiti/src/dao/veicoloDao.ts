@@ -1,5 +1,5 @@
 import Veicolo from '../models/veicolo';
-import { HttpError } from '../middleware/errorHandlerMiddleware';
+import { ErrorFactory, ErrorTypes, HttpError } from '../utils/errorFactory';
 import { DAO } from './daoInterface';
 import { VeicoloAttributes, VeicoloCreationAttributes } from '../models/veicolo';
 
@@ -14,16 +14,23 @@ class VeicoloDao implements VeicoloDAO {
             return await Veicolo.findAll();
         } catch (error) {
             console.error('Errore nel recupero dei veicoli:', error);
-            throw new HttpError(500, 'Errore nel recupero dei veicoli');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero dei veicoli');
         }
     }
 
     public async getById(targa: string): Promise<Veicolo | null> {
         try {
-            return await Veicolo.findByPk(targa);
+            const veicolo = await Veicolo.findByPk(targa);
+            if (!veicolo) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Veicolo con targa ${targa} non trovato`);
+            }
+            return veicolo;
         } catch (error) {
             console.error(`Errore nel recupero del veicolo con targa ${targa}:`, error);
-            throw new HttpError(500, `Errore nel recupero del veicolo con targa ${targa}`);
+            if (error instanceof HttpError) {
+                throw error; // Rilancia l'errore personalizzato
+            }
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero del veicolo con targa ${targa}`);
         }
     }
 
@@ -32,27 +39,35 @@ class VeicoloDao implements VeicoloDAO {
             return await Veicolo.create(data);
         } catch (error) {
             console.error('Errore nella creazione del veicolo:', error);
-            throw new HttpError(500, 'Errore nella creazione del veicolo');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione del veicolo');
         }
     }
 
     public async update(targa: string, data: Partial<VeicoloAttributes>): Promise<[number, Veicolo[]]> {
         try {
+            const veicolo = await Veicolo.findByPk(targa);
+            if (!veicolo) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Veicolo con targa ${targa} non trovato`);
+            }
             const [affectedCount] = await Veicolo.update(data, { where: { targa }, returning: true });
             const updatedItems = await this.getAllByTarga(targa);
             return [affectedCount, updatedItems];
         } catch (error) {
             console.error(`Errore nell'aggiornamento del veicolo con targa ${targa}:`, error);
-            throw new HttpError(500, `Errore nell'aggiornamento del veicolo con targa ${targa}`);
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nell'aggiornamento del veicolo con targa ${targa}`);
         }
     }
 
     public async delete(targa: string): Promise<number> {
         try {
+            const veicolo = await Veicolo.findByPk(targa);
+            if (!veicolo) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Veicolo con targa ${targa} non trovato`);
+            }
             return await Veicolo.destroy({ where: { targa } });
         } catch (error) {
             console.error(`Errore nella cancellazione del veicolo con targa ${targa}:`, error);
-            throw new HttpError(500, `Errore nella cancellazione del veicolo con targa ${targa}`);
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione del veicolo con targa ${targa}`);
         }
     }
 
@@ -61,7 +76,7 @@ class VeicoloDao implements VeicoloDAO {
             return await Veicolo.findAll({ where: { targa } });
         } catch (error) {
             console.error(`Errore nel recupero dei veicoli con targa ${targa}:`, error);
-            throw new HttpError(500, `Errore nel recupero dei veicoli con targa ${targa}`);
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero dei veicoli con targa ${targa}`);
         }
     }
 }

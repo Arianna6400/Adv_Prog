@@ -1,5 +1,5 @@
 import Multa from '../models/multa';
-import { HttpError } from '../middleware/errorHandlerMiddleware';
+import { ErrorFactory, ErrorTypes, HttpError } from '../utils/errorFactory';
 import { DAO } from './daoInterface';
 import { MultaAttributes, MultaCreationAttributes } from '../models/multa';
 
@@ -12,17 +12,22 @@ class MultaDao implements MultaDAO {
         try {
             return await Multa.findAll();
         } catch (error) {
-            console.error('Errore nel recupero delle multe:', error);
-            throw new HttpError(500, 'Errore nel recupero delle multe');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero delle multe');
         }
     }
 
     public async getById(id: number): Promise<Multa | null> {
         try {
-            return await Multa.findByPk(id);
+          const multa = await Multa.findByPk(id);
+          if (!multa) {
+            throw ErrorFactory.createError(ErrorTypes.NotFound, `Multa con id ${id} non trovata`);
+          }
+          return multa;
         } catch (error) {
-            console.error(`Errore nel recupero della multa con id ${id}:`, error);
-            throw new HttpError(500, `Errore nel recupero della multa con id ${id}`);
+          if (error instanceof HttpError) {
+            throw error; // Rilancia l'errore personalizzato
+          }
+          throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero della multa con id ${id}`);
         }
     }
 
@@ -30,8 +35,7 @@ class MultaDao implements MultaDAO {
         try {
             return await Multa.create(data);
         } catch (error) {
-            console.error('Errore nella creazione della multa:', error);
-            throw new HttpError(500, 'Errore nella creazione della multa');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione della multa');
         }
     }
 
@@ -41,8 +45,7 @@ class MultaDao implements MultaDAO {
             const updatedItems = await Multa.findAll({ where: { id_multa: id } });
             return [affectedCount, updatedItems];
         } catch (error) {
-            console.error(`Errore nell'aggiornamento della multa con id ${id}:`, error);
-            throw new HttpError(500, `Errore nell'aggiornamento della multa con id ${id}`);
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nell'aggiornamento della multa con id ${id}`);
         }
     }
 
@@ -50,8 +53,7 @@ class MultaDao implements MultaDAO {
         try {
             return await Multa.destroy({ where: { id_multa: id } });
         } catch (error) {
-            console.error(`Errore nella cancellazione della multa con id ${id}:`, error);
-            throw new HttpError(500, `Errore nella cancellazione della multa con id ${id}`);
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione della multa con id ${id}`);
         }
     }
 }

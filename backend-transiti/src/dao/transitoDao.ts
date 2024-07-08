@@ -1,5 +1,5 @@
 import Transito from '../models/transito';
-import { HttpError } from '../middleware/errorHandlerMiddleware';
+import { ErrorFactory, ErrorTypes, HttpError } from '../utils/errorFactory';
 import { DAO } from './daoInterface';
 import { TransitoAttributes, TransitoCreationAttributes } from '../models/transito';
 
@@ -13,16 +13,23 @@ class TransitoDao implements TransitoDAO {
             return await Transito.findAll();
         } catch (error) {
             console.error('Errore nel recupero dei transiti:', error);
-            throw new HttpError(500, 'Errore nel recupero dei transiti');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero dei transiti');
         }
     }
 
     public async getById(id: number): Promise<Transito | null> {
         try {
-            return await Transito.findByPk(id);
+            const transito = await Transito.findByPk(id);
+            if (!transito) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Transito con id ${id} non trovato`);
+            }
+            return transito;
         } catch (error) {
             console.error(`Errore nel recupero del transito con id ${id}:`, error);
-            throw new HttpError(500, `Errore nel recupero del transito con id ${id}`);
+            if (error instanceof HttpError) {
+                throw error; // Rilancia l'errore personalizzato
+            }
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero del transito con id ${id}`);
         }
     }
 
@@ -31,27 +38,35 @@ class TransitoDao implements TransitoDAO {
             return await Transito.create(data);
         } catch (error) {
             console.error('Errore nella creazione del transito:', error);
-            throw new HttpError(500, 'Errore nella creazione del transito');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione del transito');
         }
     }
 
     public async update(id: number, data: Partial<TransitoAttributes>): Promise<[number, Transito[]]> {
         try {
+            const transito = await Transito.findByPk(id);
+            if (!transito) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Transito con id ${id} non trovato`);
+            }
             const [affectedCount] = await Transito.update(data, { where: { id_transito: id }, returning: true });
             const updatedItems = await Transito.findAll({ where: { id_transito: id } });
             return [affectedCount, updatedItems];
         } catch (error) {
             console.error(`Errore nell'aggiornamento del transito con id ${id}:`, error);
-            throw new HttpError(500, `Errore nell'aggiornamento del transito con id ${id}`);
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nell'aggiornamento del transito con id ${id}`);
         }
     }
 
     public async delete(id: number): Promise<number> {
         try {
+            const transito = await Transito.findByPk(id);
+            if (!transito) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Transito con id ${id} non trovato`);
+            }
             return await Transito.destroy({ where: { id_transito: id } });
         } catch (error) {
             console.error(`Errore nella cancellazione del transito con id ${id}:`, error);
-            throw new HttpError(500, `Errore nella cancellazione del transito con id ${id}`);
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione del transito con id ${id}`);
         }
     }
 
@@ -60,7 +75,7 @@ class TransitoDao implements TransitoDAO {
             return await Transito.findAll({ where: { veicolo: targa } });
         } catch (error) {
             console.error(`Errore nel recupero dei transiti per il veicolo con targa ${targa}:`, error);
-            throw new HttpError(500, `Errore nel recupero dei transiti per il veicolo con targa ${targa}`);
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero dei transiti per il veicolo con targa ${targa}`);
         }
     }
 }
