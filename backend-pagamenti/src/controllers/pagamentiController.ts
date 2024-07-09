@@ -7,7 +7,7 @@ import Database from '../utils/database';
 
 export const payMulta = async (req: Request, res: Response, next: NextFunction) => {
     const uuid = req.query.uuid as string; // Assumi che l'UUID sia passato come parametro URL
-    const { email } = (req as any).user; // Assumi che l'email dell'utente sia nel payload del token JWT
+    const { id } = (req as any).user; // Assumi che l'email dell'utente sia nel payload del token JWT
     console.log('UUID ', uuid);
 
     const sequelize = Database.getInstance();
@@ -25,7 +25,7 @@ export const payMulta = async (req: Request, res: Response, next: NextFunction) 
             return next(ErrorFactory.createError(ErrorTypes.BadRequest, 'Multa già pagata'));
         }
 
-        const utente = await utenteDao.getByEmail(email, { transaction });
+        const utente = await utenteDao.getById(id, { transaction });
         if (!utente) {
             await transaction.rollback();
             return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Utente non trovato'));

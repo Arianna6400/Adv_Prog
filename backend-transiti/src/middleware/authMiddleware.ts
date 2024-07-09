@@ -5,7 +5,6 @@ import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
-    //const token = getAuthToken(); // Utilizza il token memorizzato
     if (!token) {
       throw ErrorFactory.createError(ErrorTypes.Unauthorized, 'Accesso negato. Nessun token fornito.');
     }

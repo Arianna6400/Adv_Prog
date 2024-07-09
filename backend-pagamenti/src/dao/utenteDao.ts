@@ -7,7 +7,7 @@ interface UtenteDAO<T, K> {
     getById(id: K): Promise<T | null>;
     checkTokenByEmail(email: string): Promise<number>;
     rechargeTokens(email: string, tokens: number): Promise<Utente>;
-    getByEmail(email: string, options?: FindOptions): Promise<Utente | null>;
+    //getByEmail(email: string, options?: FindOptions): Promise<Utente | null>;
 }
 
 class UtenteDao implements UtenteDAO<UtenteAttributes, number> {
@@ -28,22 +28,6 @@ class UtenteDao implements UtenteDAO<UtenteAttributes, number> {
         }
     }
 
-    public async getByEmail(email: string, options?: FindOptions): Promise<Utente | null> {
-        try {
-            const utente = await Utente.findOne({ where: { email }, ...options });
-            if (!utente) {
-                throw ErrorFactory.createError(ErrorTypes.NotFound, `Utente con email ${email} non trovato`);
-            }
-            return utente;
-        } catch (error) {
-            console.error(`Errore nel recupero dell'utente con email ${email}:`, error);
-            if (error instanceof HttpError) {
-                throw error;
-            }
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero dell'utente con email ${email}`);
-        }
-    }
-    
     // metodo per controllare i token rimanenti
     public async checkTokenByEmail(email: string): Promise<number> {
         try {
