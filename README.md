@@ -94,7 +94,7 @@ erDiagram
         int id_multa PK
         datetime data_multa
         bool pagata
-        int importo_token
+        float importo_token
         int uuid_pagamento
         int transito FK
     }
@@ -124,12 +124,12 @@ erDiagram
     ORARIO_CHIUSURA {
         int id_orario PK
         string giorni_settimana_festivi
-        datetime orario_inizio_L
-        datetime orario_fine_L
-        datetime orario_inizio_F
-        datetime orario_fine_F
-        float tariffa_F
-        float tariffa_L
+        datetime orario_inizio_l
+        datetime orario_fine_l
+        datetime orario_inizio_f
+        datetime orario_fine_f
+        float tariffa_f
+        float tariffa_l
     }
 
     UTENTE ||--o{ VEICOLO : "owns"

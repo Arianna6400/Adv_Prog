@@ -7,12 +7,12 @@ const sequelize = Database.getInstance();
 export interface OrarioChiusuraAttributes {
   id_orario: number;
   giorni_settimana_festivi: string;
-  orario_inizio_F: Date;
-  orario_fine_F: Date;
-  orario_inizio_L: Date;
-  orario_fine_L: Date;
-  tariffa_F: number;
-  tariffa_L: number;
+  orario_inizio_f: string;
+  orario_fine_f: string;
+  orario_inizio_l: string;
+  orario_fine_l: string;
+  tariffa_f: number;
+  tariffa_l: number;
 }
 
 // Interfaccia per la creazione del modello, rende 'id_orario' opzionale
@@ -22,12 +22,12 @@ export interface OrarioChiusuraCreationAttributes extends Optional<OrarioChiusur
 class OrarioChiusura extends Model<OrarioChiusuraAttributes, OrarioChiusuraCreationAttributes> implements OrarioChiusuraAttributes {
   public id_orario!: number;
   public giorni_settimana_festivi!: string;
-  public orario_inizio_F!: Date;
-  public orario_fine_F!: Date;
-  public orario_inizio_L!: Date;
-  public orario_fine_L!: Date;
-  public tariffa_F!: number;
-  public tariffa_L!: number;
+  public orario_inizio_f!: string;
+  public orario_fine_f!: string;
+  public orario_inizio_l!: string;
+  public orario_fine_l!: string;
+  public tariffa_f!: number;
+  public tariffa_l!: number;
 }
 
 // Inizializzazione del modello
@@ -41,27 +41,27 @@ OrarioChiusura.init(
     giorni_settimana_festivi: {
       type: DataTypes.STRING,
     },
-    orario_inizio_F: {
+    orario_inizio_f: {
       type: DataTypes.TIME,
       allowNull: false,
     },
-    orario_fine_F: {
+    orario_fine_f: {
       type: DataTypes.TIME,
       allowNull: false,
     },
-    orario_inizio_L: {
+    orario_inizio_l: {
       type: DataTypes.TIME,
       allowNull: false,
     },
-    orario_fine_L: {
+    orario_fine_l: {
       type: DataTypes.TIME,
       allowNull: false,
     },
-    tariffa_F: {
+    tariffa_f: {
       type: DataTypes.DECIMAL(10, 2),
       defaultValue: 0,
     },
-    tariffa_L: {
+    tariffa_l: {
       type: DataTypes.DECIMAL(10, 2),
       defaultValue: 0,
     },

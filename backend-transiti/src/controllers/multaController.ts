@@ -96,7 +96,9 @@ export const downloadBollettino = async (req: Request, res: Response, next: Next
                 return res.status(404).json({ message: 'Transito non trovato' });
             }
 
+            const dataTransito = transito.data_ora.toLocaleString();
             const targa = transito.veicolo; // Associa la targa del veicolo al transito
+            const statoPagamento = multa.pagata ? 'Pagata' : 'Non pagata';
 
             // Genera il QR-code stringa
             const qrString = `${multa.uuid_pagamento}|${multa.id_multa}|${targa}|${multa.importo_token}`;
@@ -109,11 +111,19 @@ export const downloadBollettino = async (req: Request, res: Response, next: Next
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', `attachment; filename=bollettino_${multa.id_multa}.pdf`);
 
-            // Layout per il PDF
-            doc.fontSize(25).text('Bollettino di Pagamento', { align: 'center', underline: true });
-            doc.moveDown(2);
-            doc.fontSize(20).text(`Targa: ${targa}`, { align: 'left' });
-            doc.fontSize(20).text(`Importo: ${multa.importo_token}€`, { align: 'left' });
+            // Aggiunge un'intestazione
+            const headerHeight = 50;
+            doc.rect(0, 0, doc.page.width, headerHeight).fill('#4CAF50').stroke();
+            doc.fill('#fff').fontSize(25).text('Bollettino di Pagamento', 0, headerHeight / 4, { align: 'center' });
+            doc.moveDown(3);
+
+            // Aggiunge informazioni di pagamento
+            const sideMargin = 50;
+            doc.fill('#000').fontSize(20);
+            doc.text(`Targa: ${targa}`, sideMargin, doc.y, { align: 'left' });
+            doc.text(`Data Transito: ${dataTransito}`, sideMargin, doc.y, { align: 'left' });
+            doc.text(`Importo Token: ${multa.importo_token}€`, sideMargin, doc.y, { align: 'left' });
+            doc.text(`Stato Pagamento: ${statoPagamento}`, sideMargin, doc.y, { align: 'left' });
             doc.moveDown(2);
 
             // Aggiunge QR-code al PDF
@@ -123,7 +133,6 @@ export const downloadBollettino = async (req: Request, res: Response, next: Next
                 align: 'center',
                 valign: 'center'
             });
-            doc.moveDown(2);
 
             // Finalizza il documento PDF e lo invia come risposta
             doc.pipe(res);

@@ -52,7 +52,7 @@ Multa.init(
       defaultValue: false,
     },
     importo_token: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DECIMAL(10, 2),
     },
     uuid_pagamento: {
       type: DataTypes.UUID,

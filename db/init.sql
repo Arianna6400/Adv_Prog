@@ -35,12 +35,12 @@ CREATE TABLE IF NOT EXISTS "zona_ztl" (
 CREATE TABLE IF NOT EXISTS "orario_chiusura" (
     id_orario SERIAL PRIMARY KEY,
     giorni_settimana_festivi VARCHAR(50),
-    orario_inizio_F TIME NOT NULL,
-    orario_fine_F TIME NOT NULL,
-    orario_inizio_L TIME NOT NULL,
-    orario_fine_L TIME NOT NULL,
-    tariffa_F DECIMAL(10, 2) DEFAULT 0,
-    tariffa_L DECIMAL(10, 2) DEFAULT 0
+    orario_inizio_f TIME NOT NULL,
+    orario_fine_f TIME NOT NULL,
+    orario_inizio_l TIME NOT NULL,
+    orario_fine_l TIME NOT NULL,
+    tariffa_f DECIMAL(10, 2) DEFAULT 0,
+    tariffa_l DECIMAL(10, 2) DEFAULT 0
 );
 
 -- Crea la tabella VARCO_ZTL
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS "multa" (
     transito INTEGER REFERENCES transito(id_transito),
     data_multa TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     pagata BOOLEAN DEFAULT FALSE,
-    importo_token INTEGER,
+    importo_token DECIMAL(10, 2),
     uuid_pagamento UUID
 );
 
