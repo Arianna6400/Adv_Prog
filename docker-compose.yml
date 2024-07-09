@@ -1,5 +1,6 @@
 # docker-compose up --build
 # docker-compose down
+# docker-compose down -v -> elimina anche i volumi
 
 version: '3.8'
 
@@ -42,16 +43,20 @@ services:
   db:
     container_name: postgres
     image: postgres:13
-    environment: # variabili d'aambiente per configurare Postgres
+    environment: # variabili d'ambiente per configurare Postgres
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
       - "5432:5432"
     volumes:
+      - db_data:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks: # rete in cui il servizio sarà collegato
       - backend
+
+volumes:
+  db_data:
 
 networks:
   backend:

@@ -7,7 +7,6 @@ interface UtenteDAO<T, K> {
     getById(id: K): Promise<T | null>;
     checkTokenByEmail(email: string): Promise<number>;
     rechargeTokens(email: string, tokens: number): Promise<Utente>;
-    //getByEmail(email: string, options?: FindOptions): Promise<Utente | null>;
 }
 
 class UtenteDao implements UtenteDAO<UtenteAttributes, number> {
