@@ -3,12 +3,14 @@
 
 import Database from '../utils/database';
 import Utente from './utente';
+import Multa from './multa';
 
 const sequelize = Database.getInstance();
 
 const db = {
   sequelize,
   Utente,
+  Multa,
 };
 
 // Funzione per sincronizzare i modelli con il database

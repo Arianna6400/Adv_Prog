@@ -123,6 +123,6 @@ INSERT INTO "transito" (veicolo, varco, data_ora) VALUES
 -- Inserisci dati nella tabella MULTA
 INSERT INTO "multa" (transito, data_multa, pagata, importo_token, uuid_pagamento) VALUES
 (1, '2024-07-07 10:00:00', FALSE, 5, '550e8400-e29b-41d4-a716-446655440000'),
-(2, '2024-07-07 11:00:00', TRUE, 3, '550e8400-e29b-41d4-a716-446655440001'),
+(2, '2024-07-07 11:00:00', FALSE, 3, '550e8400-e29b-41d4-a716-446655440001'),
 (3, '2024-07-07 12:30:00', FALSE, 6, '550e8400-e29b-41d4-a716-446655440002'),
-(4, '2024-07-07 13:45:00', TRUE, 2, '550e8400-e29b-41d4-a716-446655440003');
+(4, '2024-07-07 13:45:00', FALSE, 2, '550e8400-e29b-41d4-a716-446655440003');
