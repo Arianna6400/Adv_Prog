@@ -8,8 +8,10 @@ export const validateGetOrarioChiusuraById = [
 
 export const validateCreateOrarioChiusura = [
     body('giorni_settimana_festivi').isString().withMessage('Giorni Settimana Festivi must be a string'),
-    body('fascia_oraria_F').isISO8601().withMessage('Fascia Oraria F must be a valid date'),
-    body('fascia_oraria_L').isISO8601().withMessage('Fascia Oraria L must be a valid date'),
+    body('orario_inizio_F').isISO8601().withMessage('Orario Inizio F must be a valid date'),
+    body('orario_fine_F').isISO8601().withMessage('Orario Fine F must be a valid date'),
+    body('orario_inizio_L').isISO8601().withMessage('Orario Inizio L must be a valid date'),
+    body('orario_inizio_L').isISO8601().withMessage('Orario Fine L must be a valid date'),
     body('tariffa_F').isFloat().withMessage('Tariffa F must be a float'),
     body('tariffa_L').isFloat().withMessage('Tariffa L must be a float'),
     validateRequest
@@ -18,8 +20,10 @@ export const validateCreateOrarioChiusura = [
 export const validateUpdateOrarioChiusura = [
     param('id').isInt().withMessage('ID must be an integer'),
     body('giorni_settimana_festivi').optional().isString().withMessage('Giorni Settimana Festivi must be a string'),
-    body('fascia_oraria_F').optional().isISO8601().withMessage('Fascia Oraria F must be a valid date'),
-    body('fascia_oraria_L').optional().isISO8601().withMessage('Fascia Oraria L must be a valid date'),
+    body('orario_inizio_F').optional().isISO8601().withMessage('Orario Inizio F must be a valid date'),
+    body('orario_fine_F').optional().isISO8601().withMessage('Orario Fine F must be a valid date'),
+    body('orario_inizio_L').optional().isISO8601().withMessage('Orario Inizio L must be a valid date'),
+    body('orario_inizio_L').optional().isISO8601().withMessage('Orario Fine L must be a valid date'),
     body('tariffa_F').optional().isFloat().withMessage('Tariffa F must be a float'),
     body('tariffa_L').optional().isFloat().withMessage('Tariffa L must be a float'),
     validateRequest

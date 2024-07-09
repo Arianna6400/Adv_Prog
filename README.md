@@ -105,7 +105,7 @@ erDiagram
         string cognome
         string email
         string ruolo
-        int token_rimanenti
+        float token_rimanenti
     }
 
     ZONA_ZTL {
@@ -124,8 +124,10 @@ erDiagram
     ORARIO_CHIUSURA {
         int id_orario PK
         string giorni_settimana_festivi
-        datetime fascia_oraria_F
-        datetime fascia_oraria_L
+        datetime orario_inizio_L
+        datetime orario_fine_L
+        datetime orario_inizio_F
+        datetime orario_fine_F
         float tariffa_F
         float tariffa_L
     }

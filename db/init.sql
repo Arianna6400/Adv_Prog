@@ -6,8 +6,8 @@ CREATE TABLE IF NOT EXISTS "utente" (
     nome VARCHAR(100),
     cognome VARCHAR(100),
     email VARCHAR(100) UNIQUE NOT NULL,
-    ruolo VARCHAR(50) CHECK (ruolo IN ('operatore', 'varco', 'automobilista', 'admin')),
-    token_rimanenti INTEGER
+    ruolo VARCHAR(50) CHECK (ruolo IN ('operatore', 'varco', 'automobilista', 'admin')) NOT NULL,
+    token_rimanenti DECIMAL(10, 2)
 );
 
 -- Crea la tabella TIPO_VEICOLO
@@ -35,17 +35,19 @@ CREATE TABLE IF NOT EXISTS "zona_ztl" (
 CREATE TABLE IF NOT EXISTS "orario_chiusura" (
     id_orario SERIAL PRIMARY KEY,
     giorni_settimana_festivi VARCHAR(50),
-    fascia_oraria_F TIME,
-    fascia_oraria_L TIME,
-    tariffa_F DECIMAL(10, 2),
-    tariffa_L DECIMAL(10, 2)
+    orario_inizio_F TIME NOT NULL,
+    orario_fine_F TIME NOT NULL,
+    orario_inizio_L TIME NOT NULL,
+    orario_fine_L TIME NOT NULL,
+    tariffa_F DECIMAL(10, 2) DEFAULT 0,
+    tariffa_L DECIMAL(10, 2) DEFAULT 0
 );
 
 -- Crea la tabella VARCO_ZTL
 CREATE TABLE IF NOT EXISTS "varco_ztl" (
     id_varco SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    via VARCHAR(100),
+    via VARCHAR(100) NOT NULL,
     zona_ztl INTEGER REFERENCES zona_ztl(id_zona),
     orario_chiusura INTEGER REFERENCES orario_chiusura(id_orario)
 );
@@ -72,11 +74,11 @@ CREATE TABLE IF NOT EXISTS "multa" (
 
 -- Inserisci dati nella tabella UTENTE
 INSERT INTO "utente" (nome, cognome, email, ruolo, token_rimanenti) VALUES
-('Arianna', 'Agresta', 'arianna.agresta@gmail.com', 'automobilista', 15),
-('Andrea', 'Iasenzaniro', 'andrea.iasenzaniro@gmail.com', 'operatore', 10),
-('Luca', 'Bianchi', 'luca.bianchi@example.com', 'automobilista', 20),
-('Maria', 'Rossi', 'maria.rossi@example.com', 'varco', 5),
-('Giulia', 'Verdi', 'giulia.verdi@example.com', 'admin', 50);
+('Arianna', 'Agresta', 'arianna.agresta@gmail.com', 'automobilista', 20.00),
+('Andrea', 'Iasenzaniro', 'andrea.iasenzaniro@gmail.com', 'operatore', 20.00),
+('Luca', 'Bianchi', 'luca.bianchi@example.com', 'automobilista', 20.00),
+('Maria', 'Rossi', 'maria.rossi@example.com', 'varco', 20.00),
+('Giulia', 'Verdi', 'giulia.verdi@example.com', 'admin', 20.00);
 
 -- Inserisci dati nella tabella TIPO_VEICOLO
 INSERT INTO "tipo_veicolo" (descrizione, tariffa_base) VALUES
@@ -97,21 +99,20 @@ INSERT INTO "veicolo" (targa, esente, tipo_veicolo, utente) VALUES
 INSERT INTO "zona_ztl" (nome) VALUES
 ('Centro Storico'),
 ('Zona Industriale'),
-('Zona Residenziale'),
-('Zona Commerciale');
+('Zona Residenziale');
 
 -- Inserisci dati nella tabella ORARIO_CHIUSURA
-INSERT INTO "orario_chiusura" (giorni_settimana_festivi, fascia_oraria_F, fascia_oraria_L, tariffa_F, tariffa_L) VALUES
-('Lun-Ven', '08:00', '18:00', 2.00, 1.50),
-('Sab-Dom', '10:00', '20:00', 3.00, 2.50),
-('Lun-Sab', '07:00', '19:00', 2.50, 1.75);
+INSERT INTO "orario_chiusura" (giorni_settimana_festivi, orario_inizio_F, orario_fine_F, orario_inizio_L, orario_fine_L, tariffa_F, tariffa_L) VALUES
+('Lun-Ven', '08:00:00', '18:00:00', '08:00:00', '18:00:00', 2.00, 1.50),
+('Sab-Dom', '10:00:00', '20:00:00', '10:00:00', '20:00:00', 3.00, 2.50),
+('Lun-Sab', '07:00:00', '19:00:00', '07:00:00', '19:00:00', 2.50, 1.75);
 
 -- Inserisci dati nella tabella VARCO_ZTL
 INSERT INTO "varco_ztl" (nome, via, zona_ztl, orario_chiusura) VALUES
 ('Varco 1', 'Via Roma', 1, 1),
-('Varco 2', 'Via Milano', 2, 2),
-('Varco 3', 'Via Napoli', 3, 3),
-('Varco 4', 'Via Torino', 4, 1);
+('Varco 2', 'Via Milano', 1, 2),
+('Varco 3', 'Via Napoli', 2, 3),
+('Varco 4', 'Via Torino', 3, 1);
 
 -- Inserisci dati nella tabella TRANSITO
 INSERT INTO "transito" (veicolo, varco, data_ora) VALUES

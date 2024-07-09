@@ -53,7 +53,7 @@ Utente.init(
       allowNull: false,
     },
     token_rimanenti: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
     },
   },

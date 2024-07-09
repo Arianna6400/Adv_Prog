@@ -40,7 +40,7 @@ VarcoZtl.init(
     },
     via: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
     zona_ztl: {
       type: DataTypes.INTEGER,
