@@ -6,8 +6,8 @@ const router = Router();
 
 router.use(authMiddleware);
 
-router.post('/pagamulta', authorize(['automobilista']), payMulta);
-router.post('/ricaricatoken', rechargeTokens);
+router.post('/pagamulta', payMulta);
 router.get('/tokenresidui', checkToken);
+router.post('/ricaricatoken', rechargeTokens);
 
 export default router;

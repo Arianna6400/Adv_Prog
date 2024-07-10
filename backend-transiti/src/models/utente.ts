@@ -123,6 +123,7 @@ Utente.init(
     token_rimanenti: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
+      defaultValue: 0.00,
       get() {
         return this.getDataValue('token_rimanenti');
       },

@@ -112,6 +112,7 @@ Multa.init(
     },
     importo_token: {
       type: DataTypes.DECIMAL(10, 2),
+      defaultValue: 0.00,
       get() {
         return this.getDataValue('importo_token');
       },

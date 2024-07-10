@@ -5,8 +5,8 @@ import { Transaction, FindOptions } from 'sequelize';
 
 interface UtenteDAO<T, K> {
     getById(id: K): Promise<T | null>;
-    checkTokenByEmail(email: string): Promise<number>;
-    rechargeTokens(email: string, tokens: number): Promise<Utente>;
+    checkToken(id: number): Promise<number>;
+    rechargeTokens(id: number, tokens: number): Promise<Utente>;
 }
 
 class UtenteDao implements UtenteDAO<UtenteAttributes, number> {
@@ -28,35 +28,38 @@ class UtenteDao implements UtenteDAO<UtenteAttributes, number> {
     }
 
     // metodo per controllare i token rimanenti
-    public async checkTokenByEmail(email: string): Promise<number> {
+    public async checkToken(id: number): Promise<number> {
         try {
-            const utente = await Utente.findOne({ where: { email }, attributes: ['token_rimanenti'] });
+            const utente = await this.getById(id);
             if (!utente) {
-                throw ErrorFactory.createError(ErrorTypes.NotFound, `Utente con email ${email} non trovato`);
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Utente con email ${id} non trovato`);
             }
-            return utente.token_rimanenti;
+            return Number(utente.token_rimanenti);
         } catch (error) {
-            console.error(`Errore nel controllo dei token per l'utente con email ${email}:`, error);
+            console.error(`Errore nel controllo dei token per l'utente con email ${id}:`, error);
             if (error instanceof HttpError) {
                 throw error;
             }
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel controllo dei token per l'utente con email ${email}`);
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel controllo dei token per l'utente con email ${id}`);
         }
     }
 
     // metodo per ricaricare i token di un utente dato l'email
-    public async rechargeTokens(email: string, tokens: number): Promise<Utente> {
+    public async rechargeTokens(id: number, tokens: number): Promise<Utente> {
         try {
-            const utente = await Utente.findOne({ where: { email } });
+            const utente = await this.getById(id);
             if (!utente) {
-                throw ErrorFactory.createError(ErrorTypes.NotFound, `Utente con email ${email} non trovato`);
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Utente con email ${id} non trovato`);
             }
-            utente.token_rimanenti += tokens;
+            console.log('token precedenti ---------------------->', utente.token_rimanenti);
+            const newToken = parseFloat(utente.token_rimanenti.toString()) as number + tokens;
+            console.log('token aggiunti ---------------------->', tokens);
+            utente.token_rimanenti = newToken
             await utente.save();
             return utente;
         } catch (error) {
-            console.error(`Errore nell'aggiornamento dei token per l'utente con email ${email}:`, error);
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nell'aggiornamento dei token per l'utente con email ${email}`);
+            console.error(`Errore nell'aggiornamento dei token per l'utente con email ${id}:`, error);
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nell'aggiornamento dei token per l'utente con email ${id}`);
         }
     }
 }

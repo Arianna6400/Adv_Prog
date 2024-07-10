@@ -6,9 +6,8 @@ import { JwtPayload } from 'jsonwebtoken';
 import Database from '../utils/database';
 
 export const payMulta = async (req: Request, res: Response, next: NextFunction) => {
-    const uuid = req.query.uuid as string; // Assumi che l'UUID sia passato come parametro URL
-    const { id } = (req as any).user; // Assumi che l'email dell'utente sia nel payload del token JWT
-    console.log('UUID ', uuid);
+    const uuid = req.query.uuid as string; // UUID multa passato come parametro
+    const { id } = (req as any).user; // id preso nel payload
 
     const sequelize = Database.getInstance();
     const transaction = await sequelize.transaction();
@@ -31,12 +30,14 @@ export const payMulta = async (req: Request, res: Response, next: NextFunction) 
             return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Utente non trovato'));
         }
 
-        if (utente.token_rimanenti < multa.importo_token) {
+        if (parseFloat(utente.token_rimanenti.toString()) < multa.importo_token) {
             await transaction.rollback();
             return next(ErrorFactory.createError(ErrorTypes.BadRequest, 'Token insufficienti'));
         }
 
-        utente.token_rimanenti -= multa.importo_token;
+
+        const newTokens = parseFloat(utente.token_rimanenti.toString()) - multa.importo_token;
+        utente.token_rimanenti = newTokens;
         multa.pagata = true;
         
         await utente.save({ transaction });
@@ -44,7 +45,11 @@ export const payMulta = async (req: Request, res: Response, next: NextFunction) 
 
         await transaction.commit();
 
-        res.status(200).json({ message: 'Pagamento effettuato con successo' });
+        res.status(200).json({ 
+            multa_numero: multa.id_multa,
+            esito: 'Pagamento effettuato con successo',
+            token_residui: utente.token_rimanenti,
+        });
     } catch (error) {
         await transaction.rollback();
         next(error);
@@ -53,11 +58,16 @@ export const payMulta = async (req: Request, res: Response, next: NextFunction) 
 
 
 export const rechargeTokens = async (req: Request, res: Response, next: NextFunction) => {
-    const { email, tokens } = req.query;
+    const id = parseInt(req.query.id as string, 10);
+    const tokens = Number(req.query.tokens as string)
 
     try {
-        const utente = await utenteDao.rechargeTokens(email as string, parseInt(tokens as string, 10));
-        res.status(200).json({ message: 'Token ricaricati con successo', utente });
+        const utente = await utenteDao.rechargeTokens(id, tokens);
+        res.status(200).json({ 
+            utente: utente.email,
+            message: 'Token ricaricati con successo', 
+            nuovo_credito: utente.token_rimanenti,
+        });
     } catch (error) {
         next(error);
     }
@@ -65,9 +75,11 @@ export const rechargeTokens = async (req: Request, res: Response, next: NextFunc
 
 export const checkToken = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email } = (req as any).user as JwtPayload;
-        const tokenRimanenti = await utenteDao.checkTokenByEmail(email);
-        res.status(200).json({ token_rimanenti: tokenRimanenti });
+        const { id } = (req as any).user as JwtPayload;
+        const tokenRimanenti = await utenteDao.checkToken(id);
+        res.status(200).json({
+            token_rimanenti: tokenRimanenti, 
+        });
     } catch (error) {
         next(error);
     }

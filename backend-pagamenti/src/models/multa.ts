@@ -108,14 +108,14 @@ Multa.init(
       },
     },
     importo_token: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
+      type: DataTypes.DECIMAL(10, 2),
+      defaultValue: 0.00,
       get() {
         return this.getDataValue('importo_token');
       },
       set(value: number) {
         this.setDataValue('importo_token', value);
-      },
+      }
     },
     uuid_pagamento: {
       type: DataTypes.UUID,
