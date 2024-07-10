@@ -88,14 +88,14 @@ class TransitoRepository {
 
         const dataTransito = new Date(transito.data_ora);
         const giornoSettimana = dataTransito.getDay(); // 0 (domenica) a 6 (sabato)
-        const oraTransito = `${dataTransito.getHours()}:${dataTransito.getMinutes()}`; // Es. 14:30
+        const oraTransito = dataTransito.toTimeString().split(' ')[0]; // Ottieni l'ora del transito in formato HH:MM:SS
 
         // Verifica se il transito avviene in un giorno festivo
-        const giorniFestivi = orarioChiusura.giorno_chiusura.split(',');
-        const isFestivo = giorniFestivi.includes(giornoSettimana.toString());
+        const giornoChiusura = orarioChiusura.giorno_chiusura.split(',');
+        const isChiusura = giornoChiusura.includes(giornoSettimana.toString());
 
-        // Converti gli orari di inizio e fine in Date
-        const [oraInizio, oraFine] = isFestivo
+        // Determina gli orari di chiusura per il giorno del transito
+        const [oraInizio, oraFine] = isChiusura
             ? [orarioChiusura.orario_inizio_f, orarioChiusura.orario_fine_f]
             : [orarioChiusura.orario_inizio_l, orarioChiusura.orario_fine_l];
 
@@ -130,13 +130,14 @@ class TransitoRepository {
         }
 
         const dataTransito = new Date(transito.data_ora);
-        const giornoSettimana = dataTransito.getDay(); // 0 (domenica) a 6 (sabato)
-        const isFestivo = orarioChiusura.giorno_chiusura.split(',').includes(giornoSettimana.toString());
+        const giornoSettimana = dataTransito.getDay().toString(); // 0 (domenica) a 6 (sabato)
+        const isChiusura = orarioChiusura.giorno_chiusura.split(',').includes(giornoSettimana);
 
-        const tariffa = isFestivo ? orarioChiusura.tariffa_f : orarioChiusura.tariffa_l;
+        const tariffa = isChiusura ? Number(orarioChiusura.tariffa_f) : Number(orarioChiusura.tariffa_l);
+        const tariffaBase = Number(tipoVeicolo.tariffa_base);
 
         // Calcola l'importo totale della multa
-        const importo = tipoVeicolo.tariffa_base + tariffa;
+        const importo = tariffaBase + tariffa;
 
         const multa: MultaCreationAttributes = {
             transito: transito.id_transito,
