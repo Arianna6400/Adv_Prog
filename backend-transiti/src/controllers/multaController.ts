@@ -100,6 +100,9 @@ export const downloadBollettino = async (req: Request, res: Response, next: Next
             const targa = transito.veicolo; // Associa la targa del veicolo al transito
             const statoPagamento = multa.pagata ? 'Pagata' : 'Non pagata';
 
+            // Determina il colore dell'intestazione in base allo stato del pagamento
+            const headerColor = multa.pagata ? '#4CAF50' : '#FF0000'; // Verde se pagata, rosso se non pagata
+
             // Genera il QR-code stringa
             const qrString = `${multa.uuid_pagamento}|${multa.id_multa}|${targa}|${multa.importo_token}`;
             const qrCodeUrl = await QRCode.toDataURL(qrString);
@@ -113,7 +116,7 @@ export const downloadBollettino = async (req: Request, res: Response, next: Next
 
             // Aggiunge un'intestazione
             const headerHeight = 50;
-            doc.rect(0, 0, doc.page.width, headerHeight).fill('#4CAF50').stroke();
+            doc.rect(0, 0, doc.page.width, headerHeight).fill(headerColor).stroke();
             doc.fill('#fff').fontSize(25).text('Bollettino di Pagamento', 0, headerHeight / 4, { align: 'center' });
             doc.moveDown(3);
 
@@ -122,7 +125,7 @@ export const downloadBollettino = async (req: Request, res: Response, next: Next
             doc.fill('#000').fontSize(20);
             doc.text(`Targa: ${targa}`, sideMargin, doc.y, { align: 'left' });
             doc.text(`Data Transito: ${dataTransito}`, sideMargin, doc.y, { align: 'left' });
-            doc.text(`Importo Token: ${multa.importo_token}€`, sideMargin, doc.y, { align: 'left' });
+            doc.text(`Importo Token: ${multa.importo_token}`, sideMargin, doc.y, { align: 'left' });
             doc.text(`Stato Pagamento: ${statoPagamento}`, sideMargin, doc.y, { align: 'left' });
             doc.moveDown(2);
 
