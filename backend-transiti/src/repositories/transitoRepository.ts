@@ -7,6 +7,8 @@ import varcoZtlDao from '../dao/varcoZtlDao'; // Importa il DAO per i varchi ZTL
 import orarioChiusuraDao from '../dao/orarioChiusuraDao'; // Importa il DAO per gli orari di chiusura
 import tipoVeicoloDao from '../dao/tipoVeicoloDao'; // Importa il DAO per i tipi di veicolo
 import { v4 as uuidv4 } from 'uuid'; // Importa il pacchetto per generare UUID
+import { Transaction } from 'sequelize';
+import Database from '../utils/database';
 
 class TransitoRepository {
     public async getAllTransiti(): Promise<Transito[]> {
@@ -28,19 +30,28 @@ class TransitoRepository {
     }
 
     public async createTransito(data: TransitoCreationAttributes): Promise<Transito> {
+        const sequelize = Database.getInstance(); // Ottieni l'istanza del database
+
+        // Inizia una transazione
+        const transaction: Transaction = await sequelize.transaction();
         try {
-            const newTransito = await transitoDao.create(data);
+            // Crea il transito all'interno della transazione
+            const newTransito = await transitoDao.create(data, { transaction });
 
             // Verifica se è necessario calcolare la multa
             const shouldCalculateMulta = await this.shouldCalculateMulta(newTransito);
 
             if (shouldCalculateMulta) {
                 const multa: MultaCreationAttributes = await this.calcolaMulta(newTransito);
-                await multaDao.create(multa); // Crea la multa nel database
+                await multaDao.create(multa, { transaction }); // Crea la multa nel database all'interno della transazione
             }
 
+            // Commetti la transazione se tutto è andato a buon fine
+            await transaction.commit();
             return newTransito;
         } catch (error) {
+            // Annulla la transazione in caso di errore
+            await transaction.rollback();
             console.error('Errore nella creazione del transito nel repository:', error);
             throw new Error('Impossibile creare il transito');
         }
@@ -99,15 +110,30 @@ class TransitoRepository {
         const dataTransito = new Date(transito.data_ora);
         const giornoSettimana = dataTransito.getDay(); // 0 (domenica) a 6 (sabato)
         const oraTransito = dataTransito.toTimeString().split(' ')[0]; // Ottieni l'ora del transito in formato HH:MM:SS
+        
+            // Conversione dei nomi dei giorni in numeri (0 per domenica, 1 per lunedì, ecc.)
+        const giorni: { [key: string]: number } = {
+            'domenica': 0,
+            'lunedì': 1,
+            'martedì': 2,
+            'mercoledì': 3,
+            'giovedì': 4,
+            'venerdì': 5,
+            'sabato': 6
+        };
 
-        // Verifica se il transito avviene in un giorno festivo
-        const giornoChiusura = orarioChiusura.giorno_chiusura.split(',');
-        const isChiusura = giornoChiusura.includes(giornoSettimana.toString());
+        // Verifica se il transito avviene in un giorno di chiusura
+        const giornoChiusura = orarioChiusura.giorno_chiusura.split(',').map(g => giorni[g.trim().toLowerCase()]);
+        const isChiusura = giornoChiusura.includes(giornoSettimana);
+
+        // Se non è un giorno di chiusura, non calcolare la multa
+        if (!isChiusura) {
+            return false;
+        }
 
         // Determina gli orari di chiusura per il giorno del transito
-        const [oraInizio, oraFine] = isChiusura
-            ? [orarioChiusura.orario_inizio_f, orarioChiusura.orario_fine_f]
-            : [orarioChiusura.orario_inizio_l, orarioChiusura.orario_fine_l];
+        const oraInizio = isChiusura ? orarioChiusura.orario_inizio_f : orarioChiusura.orario_inizio_l;
+        const oraFine = isChiusura ? orarioChiusura.orario_fine_f : orarioChiusura.orario_fine_l;
 
         // Verifica se l'ora del transito è all'interno degli orari di chiusura
         if (oraTransito >= oraInizio && oraTransito <= oraFine) {

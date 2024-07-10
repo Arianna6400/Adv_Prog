@@ -110,9 +110,9 @@ INSERT INTO "zona_ztl" (nome) VALUES
 
 -- Inserisci dati nella tabella ORARIO_CHIUSURA
 INSERT INTO "orario_chiusura" (giorno_chiusura, orario_inizio_f, orario_fine_f, orario_inizio_l, orario_fine_l, tariffa_f, tariffa_l) VALUES
-('Lunedì', '08:00:00', '18:00:00', '08:00:00', '18:00:00', 2.00, 1.50),
-('Martedì', '10:00:00', '20:00:00', '10:00:00', '20:00:00', 3.00, 2.50),
-('Mercoledì', '07:00:00', '19:00:00', '07:00:00', '19:00:00', 2.50, 1.75);
+('lunedì', '08:00:00', '18:00:00', '08:00:00', '18:00:00', 2.00, 1.50),
+('martedì', '10:00:00', '20:00:00', '10:00:00', '20:00:00', 3.00, 2.50),
+('mercoledì', '07:00:00', '19:00:00', '07:00:00', '19:00:00', 2.50, 1.75);
 
 -- Inserisci dati nella tabella VARCO_ZTL
 INSERT INTO "varco_ztl" (nome, via, zona_ztl, orario_chiusura) VALUES
