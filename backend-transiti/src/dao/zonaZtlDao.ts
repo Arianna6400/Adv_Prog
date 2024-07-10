@@ -2,12 +2,14 @@ import ZonaZtl from '../models/zonaZtl';
 import { ErrorFactory, ErrorTypes, HttpError } from '../utils/errorFactory';
 import { DAO } from './daoInterface';
 import { ZonaZtlAttributes, ZonaZtlCreationAttributes } from '../models/zonaZtl';
+import { Transaction } from 'sequelize';
 
 interface ZonaZtlDAO extends DAO<ZonaZtlAttributes, number> {
     // Metodi specifici per ZonaZtl, se necessari
 }
 
 class ZonaZtlDao implements ZonaZtlDAO {
+
     public async getAll(): Promise<ZonaZtl[]> {
         try {
             return await ZonaZtl.findAll();
@@ -33,7 +35,7 @@ class ZonaZtlDao implements ZonaZtlDAO {
         }
     }
 
-    public async create(data: ZonaZtlCreationAttributes): Promise<ZonaZtl> {
+    public async create(data: ZonaZtlCreationAttributes, options?: { transaction?: Transaction }): Promise<ZonaZtl> {
         try {
             return await ZonaZtl.create(data);
         } catch (error) {
@@ -42,7 +44,7 @@ class ZonaZtlDao implements ZonaZtlDAO {
         }
     }
 
-    public async update(id: number, data: Partial<ZonaZtlAttributes>): Promise<[number, ZonaZtl[]]> {
+    public async update(id: number, data: Partial<ZonaZtlAttributes>, options?: { transaction?: Transaction }): Promise<[number, ZonaZtl[]]> {
         try {
             const zonaZtl = await ZonaZtl.findByPk(id);
             if (!zonaZtl) {
@@ -57,7 +59,7 @@ class ZonaZtlDao implements ZonaZtlDAO {
         }
     }
 
-    public async delete(id: number): Promise<number> {
+    public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
         try {
             const zonaZtl = await ZonaZtl.findByPk(id);
             if (!zonaZtl) {

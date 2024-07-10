@@ -4,8 +4,7 @@ import {
     getVeicoloById,
     createVeicolo,
     updateVeicolo,
-    deleteVeicolo,
-    getTransitiByVeicolo
+    deleteVeicolo
 } from '../controllers/veicoloController';
 import { authMiddleware, authorize} from '../middleware/authMiddleware';import {
     validateGetVeicoloById,
@@ -24,6 +23,6 @@ router.get('/veicoli/:targa', validateGetVeicoloById, getVeicoloById);
 router.post('/veicoli', validateCreateVeicolo, createVeicolo);
 router.put('/veicoli/:targa', validateUpdateVeicolo, updateVeicolo);
 router.delete('/veicoli/:targa', validateDeleteVeicolo, deleteVeicolo);
-router.get('/veicoli/:targa/transiti', validateGetVeicoloById, getTransitiByVeicolo);
+
 
 export default router;

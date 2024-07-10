@@ -8,6 +8,7 @@ interface VarcoZtlDAO extends DAO<VarcoZtlAttributes, number> {
 }
 
 class VarcoZtlDao implements VarcoZtlDAO {
+
     public async getAll(): Promise<VarcoZtl[]> {
         try {
             return await VarcoZtl.findAll();
@@ -42,7 +43,7 @@ class VarcoZtlDao implements VarcoZtlDAO {
         }
     }
 
-    public async update(id: number, data: Partial<VarcoZtlAttributes>): Promise<[number, VarcoZtl[]]> {
+    public async update(id: number, data: Partial<VarcoZtlAttributes>, options?: { transaction?: Transaction }): Promise<[number, VarcoZtl[]]> {
         try {
             const [affectedCount] = await VarcoZtl.update(data, { where: { id_varco: id }, returning: true });
             const updatedItems = await VarcoZtl.findAll({ where: { id_varco: id } });
@@ -53,7 +54,7 @@ class VarcoZtlDao implements VarcoZtlDAO {
         }
     }
 
-    public async delete(id: number): Promise<number> {
+    public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
         try {
             return await VarcoZtl.destroy({ where: { id_varco: id } });
         } catch (error) {

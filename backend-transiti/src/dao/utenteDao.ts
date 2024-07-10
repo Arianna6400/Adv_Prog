@@ -8,6 +8,7 @@ interface UtenteDAO extends DAO<UtenteAttributes, number> {
 }
 
 class UtenteDao implements UtenteDAO {
+
   public async getAll(): Promise<Utente[]> {
       try {
           return await Utente.findAll();
@@ -42,7 +43,7 @@ class UtenteDao implements UtenteDAO {
     }
 }
 
-  public async update(id: number, data: Partial<UtenteAttributes>): Promise<[number, Utente[]]> {
+  public async update(id: number, data: Partial<UtenteAttributes>, options?: { transaction?: Transaction }): Promise<[number, Utente[]]> {
       try {
           const utente = await Utente.findByPk(id);
           if (!utente) {
@@ -57,7 +58,7 @@ class UtenteDao implements UtenteDAO {
       }
   }
 
-  public async delete(id: number): Promise<number> {
+  public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
       try {
           const utente = await Utente.findByPk(id);
           if (!utente) {

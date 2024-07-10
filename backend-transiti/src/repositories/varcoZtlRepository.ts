@@ -8,6 +8,7 @@ import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import Database from '../utils/database';
 
 class VarcoZtlRepository {
+    
     public async getAllVarcoZtl(): Promise<VarcoZtl[]> {
         try {
             return await varcoZtlDao.getAll();

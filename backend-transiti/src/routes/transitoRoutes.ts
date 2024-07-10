@@ -4,14 +4,17 @@ import {
     getTransitoById,
     createTransito,
     updateTransito,
-    deleteTransito
+    deleteTransito,
+    getTransitiByVeicolo
 } from '../controllers/transitoController';
-import { authMiddleware, authorize} from '../middleware/authMiddleware';import {
+import { authMiddleware, authorize} from '../middleware/authMiddleware';
+import {
     validateGetTransitoById,
     validateCreateTransito,
     validateUpdateTransito,
     validateDeleteTransito
 } from '../middleware/validate/transitoValidate';
+import { validateGetVeicoloById } from '../middleware/validate/veicoloValidate';
 
 const router = Router();
 
@@ -21,6 +24,7 @@ router.use(authMiddleware);
 router.get('/transiti', getAllTransiti);
 router.get('/transiti/:id', validateGetTransitoById, getTransitoById);
 router.post('/transiti', validateCreateTransito, createTransito);
+router.get('/veicoli/:targa/transiti', validateGetVeicoloById, getTransitiByVeicolo);
 router.put('/transiti/:id', validateUpdateTransito, updateTransito);
 router.delete('/transiti/:id', validateDeleteTransito, deleteTransito);
 

@@ -2,12 +2,14 @@ import OrarioChiusura from '../models/orarioChiusura';
 import { ErrorFactory, ErrorTypes, HttpError } from '../utils/errorFactory';
 import { DAO } from './daoInterface';
 import { OrarioChiusuraAttributes, OrarioChiusuraCreationAttributes } from '../models/orarioChiusura';
+import { Transaction } from 'sequelize';
 
 interface OrarioChiusuraDAO extends DAO<OrarioChiusuraAttributes, number> {
     // Metodi specifici per OrarioChiusura, se necessari
 }
 
 class OrarioChiusuraDao implements OrarioChiusuraDAO {
+
     public async getAll(): Promise<OrarioChiusura[]> {
         try {
             return await OrarioChiusura.findAll();
@@ -33,7 +35,7 @@ class OrarioChiusuraDao implements OrarioChiusuraDAO {
         }
     }
 
-    public async create(data: OrarioChiusuraCreationAttributes): Promise<OrarioChiusura> {
+    public async create(data: OrarioChiusuraCreationAttributes, options?: { transaction?: Transaction }): Promise<OrarioChiusura> {
         try {
             return await OrarioChiusura.create(data);
         } catch (error) {
@@ -42,7 +44,7 @@ class OrarioChiusuraDao implements OrarioChiusuraDAO {
         }
     }
 
-    public async update(id: number, data: Partial<OrarioChiusuraAttributes>): Promise<[number, OrarioChiusura[]]> {
+    public async update(id: number, data: Partial<OrarioChiusuraAttributes>, options?: { transaction?: Transaction }): Promise<[number, OrarioChiusura[]]> {
         try {
             const orarioChiusura = await OrarioChiusura.findByPk(id);
             if (!orarioChiusura) {
@@ -57,7 +59,7 @@ class OrarioChiusuraDao implements OrarioChiusuraDAO {
         }
     }
 
-    public async delete(id: number): Promise<number> {
+    public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
         try {
             const orarioChiusura = await OrarioChiusura.findByPk(id);
             if (!orarioChiusura) {

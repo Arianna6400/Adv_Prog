@@ -4,6 +4,7 @@ import Transito from '../models/transito';
 import { MultaCreationAttributes, MultaAttributes } from '../models/multa';
 
 class MultaRepository {
+    
     public async getAllMulte(): Promise<Multa[]> {
         try {
             return await multaDao.getAll();

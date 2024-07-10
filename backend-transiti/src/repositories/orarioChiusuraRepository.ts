@@ -3,6 +3,7 @@ import OrarioChiusura from '../models/orarioChiusura';
 import { OrarioChiusuraCreationAttributes, OrarioChiusuraAttributes } from '../models/orarioChiusura';
 
 class OrarioChiusuraRepository {
+    
     public async getAllOrariChiusura(): Promise<OrarioChiusura[]> {
         try {
             return await orarioChiusuraDao.getAll();

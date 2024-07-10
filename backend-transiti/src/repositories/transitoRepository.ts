@@ -64,6 +64,16 @@ class TransitoRepository {
         }
     }
 
+    // Metodo per ottenere tutti i transiti di un veicolo
+    public async getTransitiByVeicolo(targa: string): Promise<TransitoAttributes[]> {
+        try {
+            return await transitoDao.getAllByVeicolo(targa);
+        } catch (error) {
+            console.error(`Errore nel recupero dei transiti per il veicolo con targa ${targa}:`, error);
+            throw new Error('Impossibile recuperare i transiti del veicolo');
+        }
+    }
+
     // Metodo per verificare se è necessario calcolare una multa
     private async shouldCalculateMulta(transito: Transito): Promise<boolean> {
         const veicolo = await veicoloDao.getById(transito.veicolo);

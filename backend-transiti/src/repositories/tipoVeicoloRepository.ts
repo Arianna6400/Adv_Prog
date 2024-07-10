@@ -3,6 +3,7 @@ import TipoVeicolo from '../models/tipoVeicolo';
 import { TipoVeicoloCreationAttributes, TipoVeicoloAttributes } from '../models/tipoVeicolo';
 
 class TipoVeicoloRepository {
+    
     public async getAllTipoVeicolo(): Promise<TipoVeicolo[]> {
         try {
             return await tipoVeicoloDao.getAll();

@@ -3,7 +3,7 @@ import veicoloRepository from '../repositories/veicoloRepository';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 
 // Funzione per validare la targa del veicolo
-const isValidTarga = (targa: string): boolean => {
+export const isValidTarga = (targa: string): boolean => {
     const targaRegex = /^[A-Z]{2}[0-9]{3}[A-Z]{2}$/;
     return targaRegex.test(targa);
 };
@@ -92,25 +92,5 @@ export const deleteVeicolo = async (req: Request, res: Response, next: NextFunct
         }
     } catch (error) {
         next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella cancellazione del veicolo'));
-    }
-};
-
-// Controller per ottenere tutti i transiti di un veicolo
-export const getTransitiByVeicolo = async (req: Request, res: Response, next: NextFunction) => {
-    const { targa } = req.params;
-
-    if (!isValidTarga(targa)) {
-        return next(ErrorFactory.createError(ErrorTypes.InvalidID, 'Formato targa non valido'));
-    }
-
-    try {
-        const transiti = await veicoloRepository.getTransitiByVeicolo(targa);
-        if (transiti.length > 0) {
-            res.status(200).json(transiti);
-        } else {
-            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Nessun transito trovato per questo veicolo'));
-        }
-    } catch (error) {
-        next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero dei transiti per il veicolo'));
     }
 };

@@ -5,6 +5,7 @@ import transitoDao from '../dao/transitoDao';
 import { VeicoloCreationAttributes, VeicoloAttributes } from '../models/veicolo';
 
 class VeicoloRepository {
+    
     public async getAllVeicoli(): Promise<Veicolo[]> {
         try {
             return await veicoloDao.getAll();
@@ -47,16 +48,6 @@ class VeicoloRepository {
         } catch (error) {
             console.error(`Errore nella cancellazione del veicolo con targa ${targa} nel repository:`, error);
             throw new Error('Impossibile cancellare il veicolo');
-        }
-    }
-
-    // Metodo per ottenere tutti i transiti di un veicolo
-    public async getTransitiByVeicolo(targa: string): Promise<TransitoAttributes[]> {
-        try {
-            return await transitoDao.getAllByVeicolo(targa);
-        } catch (error) {
-            console.error(`Errore nel recupero dei transiti per il veicolo con targa ${targa}:`, error);
-            throw new Error('Impossibile recuperare i transiti del veicolo');
         }
     }
 }

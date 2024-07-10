@@ -3,6 +3,7 @@ import ZonaZtl from '../models/zonaZtl';
 import { ZonaZtlCreationAttributes, ZonaZtlAttributes } from '../models/zonaZtl';
 
 class ZonaZtlRepository {
+    
     public async getAllZonaZtl(): Promise<ZonaZtl[]> {
         try {
             return await zonaZtlDao.getAll();

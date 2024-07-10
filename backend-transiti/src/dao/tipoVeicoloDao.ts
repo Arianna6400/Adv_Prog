@@ -2,12 +2,14 @@ import TipoVeicolo from '../models/tipoVeicolo';
 import { ErrorFactory, ErrorTypes, HttpError } from '../utils/errorFactory';
 import { DAO } from './daoInterface';
 import { TipoVeicoloAttributes, TipoVeicoloCreationAttributes } from '../models/tipoVeicolo';
+import { Transaction } from 'sequelize';
 
 interface TipoVeicoloDAO extends DAO<TipoVeicoloAttributes, number> {
     // Metodi specifici per TipoVeicolo, se necessari
 }
 
 class TipoVeicoloDao implements TipoVeicoloDAO {
+
     public async getAll(): Promise<TipoVeicolo[]> {
         try {
             return await TipoVeicolo.findAll();
@@ -33,7 +35,7 @@ class TipoVeicoloDao implements TipoVeicoloDAO {
         }
     }
 
-    public async create(data: TipoVeicoloCreationAttributes): Promise<TipoVeicolo> {
+    public async create(data: TipoVeicoloCreationAttributes, options?: { transaction?: Transaction }): Promise<TipoVeicolo> {
         try {
             return await TipoVeicolo.create(data);
         } catch (error) {
@@ -42,7 +44,7 @@ class TipoVeicoloDao implements TipoVeicoloDAO {
         }
     }
 
-    public async update(id: number, data: Partial<TipoVeicoloAttributes>): Promise<[number, TipoVeicolo[]]> {
+    public async update(id: number, data: Partial<TipoVeicoloAttributes>, options?: { transaction?: Transaction }): Promise<[number, TipoVeicolo[]]> {
         try {
             const tipoVeicolo = await TipoVeicolo.findByPk(id);
             if (!tipoVeicolo) {
@@ -57,7 +59,7 @@ class TipoVeicoloDao implements TipoVeicoloDAO {
         }
     }
 
-    public async delete(id: number): Promise<number> {
+    public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
         try {
             const tipoVeicolo = await TipoVeicolo.findByPk(id);
             if (!tipoVeicolo) {

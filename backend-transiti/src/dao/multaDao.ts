@@ -2,12 +2,14 @@ import Multa from '../models/multa';
 import { ErrorFactory, ErrorTypes, HttpError } from '../utils/errorFactory';
 import { DAO } from './daoInterface';
 import { MultaAttributes, MultaCreationAttributes } from '../models/multa';
+import { Transaction } from 'sequelize';
 
 interface MultaDAO extends DAO<MultaAttributes, number> {
     // Metodi specifici per Multa, se necessari
 }
 
 class MultaDao implements MultaDAO {
+    
     public async getAll(): Promise<Multa[]> {
         try {
             return await Multa.findAll();
@@ -31,7 +33,7 @@ class MultaDao implements MultaDAO {
         }
     }
 
-    public async create(data: MultaCreationAttributes): Promise<Multa> {
+    public async create(data: MultaCreationAttributes, options?: { transaction?: Transaction }): Promise<Multa> {
         try {
             return await Multa.create(data);
         } catch (error) {
@@ -39,7 +41,7 @@ class MultaDao implements MultaDAO {
         }
     }
 
-    public async update(id: number, data: Partial<MultaAttributes>): Promise<[number, Multa[]]> {
+    public async update(id: number, data: Partial<MultaAttributes>, options?: { transaction?: Transaction }): Promise<[number, Multa[]]> {
         try {
             const [affectedCount] = await Multa.update(data, { where: { id_multa: id }, returning: true });
             const updatedItems = await Multa.findAll({ where: { id_multa: id } });
@@ -49,7 +51,7 @@ class MultaDao implements MultaDAO {
         }
     }
 
-    public async delete(id: number): Promise<number> {
+    public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
         try {
             return await Multa.destroy({ where: { id_multa: id } });
         } catch (error) {

@@ -2,12 +2,14 @@ import Transito from '../models/transito';
 import { ErrorFactory, ErrorTypes, HttpError } from '../utils/errorFactory';
 import { DAO } from './daoInterface';
 import { TransitoAttributes, TransitoCreationAttributes } from '../models/transito';
+import { Transaction } from 'sequelize';
 
 interface TransitoDAO extends DAO<TransitoAttributes, number> {
     getAllByVeicolo(targa: string): Promise<Transito[]>;
 }
 
 class TransitoDao implements TransitoDAO {
+
     public async getAll(): Promise<Transito[]> {
         try {
             return await Transito.findAll();
@@ -33,7 +35,7 @@ class TransitoDao implements TransitoDAO {
         }
     }
 
-    public async create(data: TransitoCreationAttributes): Promise<Transito> {
+    public async create(data: TransitoCreationAttributes, options?: { transaction?: Transaction }): Promise<Transito> {
         try {
             return await Transito.create(data);
         } catch (error) {
@@ -42,7 +44,7 @@ class TransitoDao implements TransitoDAO {
         }
     }
 
-    public async update(id: number, data: Partial<TransitoAttributes>): Promise<[number, Transito[]]> {
+    public async update(id: number, data: Partial<TransitoAttributes>, options?: { transaction?: Transaction }): Promise<[number, Transito[]]> {
         try {
             const transito = await Transito.findByPk(id);
             if (!transito) {
@@ -57,7 +59,7 @@ class TransitoDao implements TransitoDAO {
         }
     }
 
-    public async delete(id: number): Promise<number> {
+    public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
         try {
             const transito = await Transito.findByPk(id);
             if (!transito) {
