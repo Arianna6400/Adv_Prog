@@ -132,6 +132,11 @@ erDiagram
         float tariffa_l
     }
 
+    IS_VARCO {
+        int id_utente PK, FK
+        int id_varco PK, FK
+    }
+
     UTENTE ||--o{ VEICOLO : "owns"
     TIPO_VEICOLO ||--o{ VEICOLO : "is"
     VEICOLO ||--o{ TRANSITO : "executes"
@@ -139,6 +144,8 @@ erDiagram
     ZONA_ZTL ||--o{ VARCO_ZTL : "include"
     ORARIO_CHIUSURA ||--o{ VARCO_ZTL : "has"
     VARCO_ZTL ||--o{ TRANSITO : "crosses"
+    UTENTE ||--o| IS_VARCO : "has"
+    VARCO_ZTL ||--o| IS_VARCO : "has"
 ```
 
 ## API
