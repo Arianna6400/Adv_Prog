@@ -1,6 +1,7 @@
 import Utente, { UtenteAttributes, UtenteCreationAttributes } from '../models/utente';
 import { DAO } from '../dao/daoInterface';
 import { ErrorFactory, ErrorTypes, HttpError } from '../utils/errorFactory';
+import { Transaction } from 'sequelize';
 
 interface UtenteDAO extends DAO<UtenteAttributes, number> {
   // metodi specifici per l'utentee, se necessari
@@ -32,14 +33,14 @@ class UtenteDao implements UtenteDAO {
       }
   }
 
-  public async create(data: UtenteCreationAttributes): Promise<Utente> {
-      try {
-          return await Utente.create(data);
-      } catch (error) {
-          console.error('Errore nella creazione dell\'utente:', error);
-          throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione dell\'utente');
-      }
-  }
+  public async create(data: UtenteCreationAttributes, options?: { transaction?: Transaction }): Promise<Utente> {
+    try {
+        return await Utente.create(data, options);
+    } catch (error) {
+        console.error('Errore nella creazione dell\'utente:', error);
+        throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione dell\'utente');
+    }
+}
 
   public async update(id: number, data: Partial<UtenteAttributes>): Promise<[number, Utente[]]> {
       try {

@@ -29,16 +29,15 @@ CREATE TABLE IF NOT EXISTS "veicolo" (
 CREATE TABLE IF NOT EXISTS "zona_ztl" (
     id_zona SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL
-);
-
+)
 -- Crea la tabella ORARIO_CHIUSURA
 CREATE TABLE IF NOT EXISTS "orario_chiusura" (
     id_orario SERIAL PRIMARY KEY,
     giorni_settimana_festivi VARCHAR(50),
-    orario_inizio_f TIME NOT NULL,
-    orario_fine_f TIME NOT NULL,
-    orario_inizio_l TIME NOT NULL,
-    orario_fine_l TIME NOT NULL,
+    orario_inizio_f TIME,
+    orario_fine_f TIME,
+    orario_inizio_l TIME,
+    orario_fine_l TIME,
     tariffa_f DECIMAL(10, 2) DEFAULT 0,
     tariffa_l DECIMAL(10, 2) DEFAULT 0
 );
@@ -70,6 +69,13 @@ CREATE TABLE IF NOT EXISTS "multa" (
     uuid_pagamento UUID
 );
 
+-- Crea la tabella IS_VARCO
+CREATE TABLE IF NOT EXISTS "is_varco" (
+    id_utente INTEGER REFERENCES utente(id_utente),
+    id_varco INTEGER REFERENCES varco_ztl(id_varco),
+    PRIMARY KEY (id_utente, id_varco)
+);
+
 -- SEEDING DEL DATABASE --
 
 -- Inserisci dati nella tabella UTENTE
@@ -77,7 +83,7 @@ INSERT INTO "utente" (nome, cognome, email, ruolo, token_rimanenti) VALUES
 ('Arianna', 'Agresta', 'arianna.agresta@gmail.com', 'automobilista', 20.00),
 ('Andrea', 'Iasenzaniro', 'andrea.iasenzaniro@gmail.com', 'operatore', 20.00),
 ('Luca', 'Bianchi', 'luca.bianchi@example.com', 'automobilista', 20.00),
-('Maria', 'Rossi', 'maria.rossi@example.com', 'varco', 20.00),
+('', '', 'varco.varco@example.com', 'varco', 20.00),
 ('Giulia', 'Verdi', 'giulia.verdi@example.com', 'admin', 20.00);
 
 -- Inserisci dati nella tabella TIPO_VEICOLO
@@ -102,7 +108,7 @@ INSERT INTO "zona_ztl" (nome) VALUES
 ('Zona Residenziale');
 
 -- Inserisci dati nella tabella ORARIO_CHIUSURA
-INSERT INTO "orario_chiusura" (giorni_settimana_festivi, orario_inizio_F, orario_fine_F, orario_inizio_L, orario_fine_L, tariffa_F, tariffa_L) VALUES
+INSERT INTO "orario_chiusura" (giorni_settimana_festivi, orario_inizio_f, orario_fine_f, orario_inizio_l, orario_fine_l, tariffa_f, tariffa_l) VALUES
 ('Lun-Ven', '08:00:00', '18:00:00', '08:00:00', '18:00:00', 2.00, 1.50),
 ('Sab-Dom', '10:00:00', '20:00:00', '10:00:00', '20:00:00', 3.00, 2.50),
 ('Lun-Sab', '07:00:00', '19:00:00', '07:00:00', '19:00:00', 2.50, 1.75);
@@ -127,3 +133,6 @@ INSERT INTO "multa" (transito, data_multa, pagata, importo_token, uuid_pagamento
 (2, '2024-07-07 11:00:00', FALSE, 3, '550e8400-e29b-41d4-a716-446655440001'),
 (3, '2024-07-07 12:30:00', FALSE, 6, '550e8400-e29b-41d4-a716-446655440002'),
 (4, '2024-07-07 13:45:00', FALSE, 2, '550e8400-e29b-41d4-a716-446655440003');
+
+INSERT INTO "is_varco" (id_utente, id_varco) VALUES
+(4, 1);

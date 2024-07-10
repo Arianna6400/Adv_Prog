@@ -7,6 +7,7 @@ import OrarioChiusura from './orarioChiusura';
 import VarcoZtl from './varcoZtl';
 import Transito from './transito';
 import Multa from './multa';
+import IsVarco from './isVarco';
 
 const sequelize = Database.getInstance();
 
@@ -42,6 +43,13 @@ Transito.belongsTo(VarcoZtl, { foreignKey: 'varco' });
 Transito.hasMany(Multa, { foreignKey: 'transito' });
 Multa.belongsTo(Transito, { foreignKey: 'transito' });
 
+// Un Utente può avere un solo VarcoZtl tramite IsVarco
+Utente.hasOne(IsVarco, { foreignKey: 'id_utente' });
+IsVarco.belongsTo(Utente, { foreignKey: 'id_utente' });
+
+VarcoZtl.hasOne(IsVarco, { foreignKey: 'id_varco' });
+IsVarco.belongsTo(VarcoZtl, { foreignKey: 'id_varco' });
+
 // Crea un oggetto che contiene le istanze del database e dei modelli
 const db = {
   sequelize,
@@ -53,6 +61,7 @@ const db = {
   VarcoZtl,
   Transito,
   Multa,
+  IsVarco,
 };
 
 // Funzione per sincronizzare i modelli con il database

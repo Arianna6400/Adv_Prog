@@ -43,19 +43,15 @@ OrarioChiusura.init(
     },
     orario_inizio_f: {
       type: DataTypes.TIME,
-      allowNull: false,
     },
     orario_fine_f: {
       type: DataTypes.TIME,
-      allowNull: false,
     },
     orario_inizio_l: {
       type: DataTypes.TIME,
-      allowNull: false,
     },
     orario_fine_l: {
       type: DataTypes.TIME,
-      allowNull: false,
     },
     tariffa_f: {
       type: DataTypes.DECIMAL(10, 2),

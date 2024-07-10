@@ -1,7 +1,7 @@
-import VarcoZtl from '../models/varcoZtl';
+import VarcoZtl, { VarcoZtlAttributes, VarcoZtlCreationAttributes } from '../models/varcoZtl';
 import { ErrorFactory, ErrorTypes, HttpError } from '../utils/errorFactory';
 import { DAO } from './daoInterface';
-import { VarcoZtlAttributes, VarcoZtlCreationAttributes } from '../models/varcoZtl';
+import { Transaction } from 'sequelize';
 
 interface VarcoZtlDAO extends DAO<VarcoZtlAttributes, number> {
     // Metodi specifici per VarcoZtl, se necessari
@@ -33,9 +33,9 @@ class VarcoZtlDao implements VarcoZtlDAO {
         }
     }
 
-    public async create(data: VarcoZtlCreationAttributes): Promise<VarcoZtl> {
+    public async create(data: VarcoZtlCreationAttributes, options?: { transaction?: Transaction }): Promise<VarcoZtl> {
         try {
-            return await VarcoZtl.create(data);
+            return await VarcoZtl.create(data, options);
         } catch (error) {
             console.error('Errore nella creazione del varco ZTL:', error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione del varco ZTL');
@@ -44,10 +44,6 @@ class VarcoZtlDao implements VarcoZtlDAO {
 
     public async update(id: number, data: Partial<VarcoZtlAttributes>): Promise<[number, VarcoZtl[]]> {
         try {
-            const varcoZtl = await VarcoZtl.findByPk(id);
-            if (!varcoZtl) {
-                throw ErrorFactory.createError(ErrorTypes.NotFound, `Varco ZTL con id ${id} non trovato`);
-            }
             const [affectedCount] = await VarcoZtl.update(data, { where: { id_varco: id }, returning: true });
             const updatedItems = await VarcoZtl.findAll({ where: { id_varco: id } });
             return [affectedCount, updatedItems];
@@ -59,10 +55,6 @@ class VarcoZtlDao implements VarcoZtlDAO {
 
     public async delete(id: number): Promise<number> {
         try {
-            const varcoZtl = await VarcoZtl.findByPk(id);
-            if (!varcoZtl) {
-                throw ErrorFactory.createError(ErrorTypes.NotFound, `Varco ZTL con id ${id} non trovato`);
-            }
             return await VarcoZtl.destroy({ where: { id_varco: id } });
         } catch (error) {
             console.error(`Errore nella cancellazione del varco ZTL con id ${id}:`, error);
