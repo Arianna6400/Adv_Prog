@@ -91,7 +91,7 @@ class TransitoRepository {
         const oraTransito = `${dataTransito.getHours()}:${dataTransito.getMinutes()}`; // Es. 14:30
 
         // Verifica se il transito avviene in un giorno festivo
-        const giorniFestivi = orarioChiusura.giorni_settimana_festivi.split(',');
+        const giorniFestivi = orarioChiusura.giorno_chiusura.split(',');
         const isFestivo = giorniFestivi.includes(giornoSettimana.toString());
 
         // Converti gli orari di inizio e fine in Date
@@ -131,7 +131,7 @@ class TransitoRepository {
 
         const dataTransito = new Date(transito.data_ora);
         const giornoSettimana = dataTransito.getDay(); // 0 (domenica) a 6 (sabato)
-        const isFestivo = orarioChiusura.giorni_settimana_festivi.split(',').includes(giornoSettimana.toString());
+        const isFestivo = orarioChiusura.giorno_chiusura.split(',').includes(giornoSettimana.toString());
 
         const tariffa = isFestivo ? orarioChiusura.tariffa_f : orarioChiusura.tariffa_l;
 

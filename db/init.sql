@@ -29,17 +29,18 @@ CREATE TABLE IF NOT EXISTS "veicolo" (
 CREATE TABLE IF NOT EXISTS "zona_ztl" (
     id_zona SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL
-)
+);
+
 -- Crea la tabella ORARIO_CHIUSURA
 CREATE TABLE IF NOT EXISTS "orario_chiusura" (
     id_orario SERIAL PRIMARY KEY,
-    giorni_settimana_festivi VARCHAR(50),
+    giorno_chiusura VARCHAR(50) NOT NULL,
     orario_inizio_f TIME,
     orario_fine_f TIME,
     orario_inizio_l TIME,
     orario_fine_l TIME,
-    tariffa_f DECIMAL(10, 2) DEFAULT 0,
-    tariffa_l DECIMAL(10, 2) DEFAULT 0
+    tariffa_f DECIMAL(10, 2) DEFAULT 0 NOT NULL,
+    tariffa_l DECIMAL(10, 2) DEFAULT 0 NOT NULL
 );
 
 -- Crea la tabella VARCO_ZTL
@@ -83,7 +84,7 @@ INSERT INTO "utente" (nome, cognome, email, ruolo, token_rimanenti) VALUES
 ('Arianna', 'Agresta', 'arianna.agresta@gmail.com', 'automobilista', 20.00),
 ('Andrea', 'Iasenzaniro', 'andrea.iasenzaniro@gmail.com', 'operatore', 20.00),
 ('Luca', 'Bianchi', 'luca.bianchi@example.com', 'automobilista', 20.00),
-('', '', 'varco.varco@example.com', 'varco', 20.00),
+('', '', 'varco.varco@example.com', 'varco', 0),
 ('Giulia', 'Verdi', 'giulia.verdi@example.com', 'admin', 20.00);
 
 -- Inserisci dati nella tabella TIPO_VEICOLO
@@ -108,10 +109,10 @@ INSERT INTO "zona_ztl" (nome) VALUES
 ('Zona Residenziale');
 
 -- Inserisci dati nella tabella ORARIO_CHIUSURA
-INSERT INTO "orario_chiusura" (giorni_settimana_festivi, orario_inizio_f, orario_fine_f, orario_inizio_l, orario_fine_l, tariffa_f, tariffa_l) VALUES
-('Lun-Ven', '08:00:00', '18:00:00', '08:00:00', '18:00:00', 2.00, 1.50),
-('Sab-Dom', '10:00:00', '20:00:00', '10:00:00', '20:00:00', 3.00, 2.50),
-('Lun-Sab', '07:00:00', '19:00:00', '07:00:00', '19:00:00', 2.50, 1.75);
+INSERT INTO "orario_chiusura" (giorno_chiusura, orario_inizio_f, orario_fine_f, orario_inizio_l, orario_fine_l, tariffa_f, tariffa_l) VALUES
+('Lunedì', '08:00:00', '18:00:00', '08:00:00', '18:00:00', 2.00, 1.50),
+('Martedì', '10:00:00', '20:00:00', '10:00:00', '20:00:00', 3.00, 2.50),
+('Mercoledì', '07:00:00', '19:00:00', '07:00:00', '19:00:00', 2.50, 1.75);
 
 -- Inserisci dati nella tabella VARCO_ZTL
 INSERT INTO "varco_ztl" (nome, via, zona_ztl, orario_chiusura) VALUES

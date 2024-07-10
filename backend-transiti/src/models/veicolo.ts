@@ -19,9 +19,36 @@ export interface VeicoloCreationAttributes extends Optional<VeicoloAttributes, '
 // Implementazione del modello
 class Veicolo extends Model<VeicoloAttributes, VeicoloCreationAttributes> implements VeicoloAttributes {
   public targa!: string;
-  public esente!: boolean;
-  public tipo_veicolo!: number;
-  public utente!: number;
+  private _esente!: boolean;
+  private _tipo_veicolo!: number;
+  private _utente!: number;
+
+  // Getter e setter per 'esente'
+  public get esente(): boolean {
+    return this._esente;
+  }
+
+  public set esente(value: boolean) {
+    this._esente = value;
+  }
+
+  // Getter e setter per 'tipo_veicolo'
+  public get tipo_veicolo(): number {
+    return this._tipo_veicolo;
+  }
+
+  public set tipo_veicolo(value: number) {
+    this._tipo_veicolo = value;
+  }
+
+  // Getter e setter per 'utente'
+  public get utente(): number {
+    return this._utente;
+  }
+
+  public set utente(value: number) {
+    this._utente = value;
+  }
 }
 
 // Inizializzazione del modello
@@ -35,6 +62,12 @@ Veicolo.init(
     esente: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
+      get() {
+        return this.getDataValue('esente');
+      },
+      set(value: boolean) {
+        this.setDataValue('esente', value);
+      },
     },
     tipo_veicolo: {
       type: DataTypes.INTEGER,
@@ -42,12 +75,24 @@ Veicolo.init(
         model: TipoVeicolo,
         key: 'id_tipo_veicolo',
       },
+      get() {
+        return this.getDataValue('tipo_veicolo');
+      },
+      set(value: number) {
+        this.setDataValue('tipo_veicolo', value);
+      },
     },
     utente: {
       type: DataTypes.INTEGER,
       references: {
         model: Utente,
         key: 'id_utente',
+      },
+      get() {
+        return this.getDataValue('utente');
+      },
+      set(value: number) {
+        this.setDataValue('utente', value);
       },
     },
   },

@@ -19,9 +19,34 @@ export interface TransitoCreationAttributes extends Optional<TransitoAttributes,
 // Implementazione del modello
 class Transito extends Model<TransitoAttributes, TransitoCreationAttributes> implements TransitoAttributes {
   public id_transito!: number;
-  public veicolo!: string;
-  public varco!: number;
-  public data_ora!: Date;
+  private _veicolo!: string;
+  private _varco!: number;
+  private _data_ora!: Date;
+
+  // Getter e setter
+  public get veicolo(): string {
+    return this._veicolo;
+  }
+
+  public set veicolo(value: string) {
+    this._veicolo = value;
+  }
+
+  public get varco(): number {
+    return this._varco;
+  }
+
+  public set varco(value: number) {
+    this._varco = value;
+  }
+
+  public get data_ora(): Date {
+    return this._data_ora;
+  }
+
+  public set data_ora(value: Date) {
+    this._data_ora = value;
+  }
 }
 
 // Inizializzazione del modello
@@ -38,6 +63,12 @@ Transito.init(
         model: Veicolo,
         key: 'targa',
       },
+      get() {
+        return this.getDataValue('veicolo');
+      },
+      set(value: string) {
+        this.setDataValue('veicolo', value);
+      }
     },
     varco: {
       type: DataTypes.INTEGER,
@@ -45,10 +76,22 @@ Transito.init(
         model: VarcoZtl,
         key: 'id_varco',
       },
+      get() {
+        return this.getDataValue('varco');
+      },
+      set(value: number) {
+        this.setDataValue('varco', value);
+      }
     },
     data_ora: {
       type: DataTypes.DATE,
       allowNull: false,
+      get() {
+        return this.getDataValue('data_ora');
+      },
+      set(value: Date) {
+        this.setDataValue('data_ora', value);
+      }
     },
   },
   {
