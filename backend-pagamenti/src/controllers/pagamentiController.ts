@@ -59,7 +59,7 @@ export const payMulta = async (req: Request, res: Response, next: NextFunction) 
 
 export const rechargeTokens = async (req: Request, res: Response, next: NextFunction) => {
     const id = parseInt(req.query.id as string, 10);
-    const tokens = Number(req.query.tokens as string)
+    const tokens = Number(req.query.tokens as string);
 
     try {
         const utente = await utenteDao.rechargeTokens(id, tokens);

@@ -3,12 +3,11 @@ import { payMulta, rechargeTokens, checkToken } from '../controllers/pagamentiCo
 import { authMiddleware, authorize } from '../middleware/authMiddleware';
 
 const router = Router();
-console.log('----------- entro 2 backend -----------');
 
 router.use(authMiddleware);
 
 router.post('/pagamulta', authorize(['automobilista']), payMulta);
-router.get('/tokenresidui', authorize(['automobilista']), checkToken);
 router.post('/ricaricatoken', authorize(['admin']), rechargeTokens);
+router.get('/tokenresidui', authorize(['automobilista']), checkToken);
 
 export default router;

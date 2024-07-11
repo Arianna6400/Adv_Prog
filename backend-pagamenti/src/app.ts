@@ -14,11 +14,11 @@ const app = express();
 app.use(bodyParser.json());
 
 // Registra le rotte dell'API
-app.use('/pagamenti', pagamentiRoutes);
+app.use('/', pagamentiRoutes);
 
 // Middleware per gestire le rotte non trovate
 app.use((req, res, next) => {
-  const error = ErrorFactory.createError(ErrorTypes.NotFound, 'Rotta non trovata');
+  const error = ErrorFactory.createError(ErrorTypes.NotFound, 'Rotta non trovata in backend-pagamenti');
   next(error);
 });
 

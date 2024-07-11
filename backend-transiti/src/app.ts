@@ -15,6 +15,7 @@ import orarioChiusuraRoutes from './routes/orarioChiusuraRoutes';
 import { errorHandler } from './middleware/errorHandlerMiddleware';
 import { ErrorFactory, ErrorTypes } from './utils/errorFactory'
 import authRoutes from './routes/authRoutes';
+import pagamentiRoutes from './routes/pagamentiRoutes'
 
 // Carica le variabili d'ambiente dal file .env
 dotenv.config();
@@ -25,6 +26,8 @@ const app = express();
 app.use(express.json());
 // Middleware di autenticazione
 app.use('/', authRoutes);
+// Registra le rotte dell'API
+app.use('/', pagamentiRoutes);
 // Registra le rotte dell'API
 app.use('/', utenteRoutes);
 app.use('/', varcoZtlRoutes);
@@ -37,7 +40,7 @@ app.use('/', orarioChiusuraRoutes);
 
 // Middleware per gestire le rotte non trovate
 app.use((req, res, next) => {
-  const error = ErrorFactory.createError(ErrorTypes.NotFound, 'Rotta non trovata');
+  const error = ErrorFactory.createError(ErrorTypes.NotFound, 'Rotta non trovata in backend-transiti');
   next(error);
 });
 

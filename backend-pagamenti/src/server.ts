@@ -4,8 +4,11 @@
 
   import app from './app'; // Importa l'applicazione Express
   import { initModels } from './models'; // Importa la funzione per sincronizzare i modelli con il database
+  import dotenv from 'dotenv'
+
+  dotenv.config();
   
-  const PORT = process.env.PAGAMENTIT_PORT || 3001; // Definisce la porta su cui ascolterà il server
+  const PORT = process.env.PAGAMENTI_PORT || 3001; // Definisce la porta su cui ascolterà il server
   
   // Funzione per avviare il server
   const startServer = async () => {
