@@ -1,7 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
-import { isValidTarga } from '../utils/utils';
 import veicoloDao from '../dao/veicoloDao';
+
+// Funzione per validare la targa del veicolo
+export const isValidTarga = (targa: string): boolean => {
+    const targaRegex = /^[A-Z]{2}[0-9]{3}[A-Z]{2}$/;
+    return targaRegex.test(targa);
+};
 
 // Controller per ottenere tutti i veicoli
 export const getAllVeicoli = async (req: Request, res: Response, next: NextFunction) => {
