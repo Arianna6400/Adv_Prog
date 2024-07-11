@@ -1,3 +1,6 @@
+/**
+ * POTREBBE ESSERE ELIMINATO
+ */
 import { Router } from 'express';
 import {
     getAllTipoVeicolo,
@@ -18,10 +21,10 @@ const router = Router();
 // Applica il middleware di autenticazione per tutte le rotte
 router.use(authMiddleware);
 
-router.get('/tipiVeicolo', getAllTipoVeicolo);
-router.get('/tipiVeicolo/:id', validateGetTipoVeicoloById, getTipoVeicoloById);
-router.post('/tipiVeicolo', validateCreateTipoVeicolo, createTipoVeicolo);
-router.put('/tipiVeicolo/:id', validateUpdateTipoVeicolo, updateTipoVeicolo);
-router.delete('/tipiVeicolo/:id', validateDeleteTipoVeicolo, deleteTipoVeicolo);
+router.get('/tipiVeicolo', authorize(['operatore']), getAllTipoVeicolo);
+router.get('/tipiVeicolo/:id', authorize(['operatore']), validateGetTipoVeicoloById, getTipoVeicoloById);
+router.post('/tipiVeicolo', authorize(['operatore']), validateCreateTipoVeicolo, createTipoVeicolo);
+router.put('/tipiVeicolo/:id', authorize(['operatore']), validateUpdateTipoVeicolo, updateTipoVeicolo);
+router.delete('/tipiVeicolo/:id', authorize(['operatore']), validateDeleteTipoVeicolo, deleteTipoVeicolo);
 
 export default router;

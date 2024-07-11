@@ -1,13 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-import zonaZtlRepository from '../repositories/zonaZtlRepository';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
-
-// Funzione per validare l'ID
-const isValidId = (id: number): boolean => !isNaN(id) && id >= 0;
+import { isValidId } from '../utils/utils';
+import varcoZtlDao from '../dao/varcoZtlDao';
+import zonaZtlDao from '../dao/zonaZtlDao';
 
 export const getAllZonaZtl = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const zoneZtl = await zonaZtlRepository.getAllZonaZtl();
+        const zoneZtl = await zonaZtlDao.getAll();
         res.status(200).json(zoneZtl);
     } catch (error) {
         next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero delle zone ZTL'));
@@ -18,11 +17,11 @@ export const getZonaZtlById = async (req: Request, res: Response, next: NextFunc
     const id = parseInt(req.params.id);
 
     if (!isValidId(id)) {
-        return next(ErrorFactory.createError(ErrorTypes.InvalidID, 'ID zona ZTL non valido'));
+        next(ErrorFactory.createError(ErrorTypes.InvalidID, 'ID zona ZTL non valido'));
     }
 
     try {
-        const zonaZtl = await zonaZtlRepository.getZonaZtlById(id);
+        const zonaZtl = await zonaZtlDao.getById(id);
         if (zonaZtl) {
             res.status(200).json(zonaZtl);
         } else {
@@ -35,8 +34,13 @@ export const getZonaZtlById = async (req: Request, res: Response, next: NextFunc
 
 export const createZonaZtl = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const nuovaZonaZtl = await zonaZtlRepository.createZonaZtl(req.body);
-        res.status(201).json(nuovaZonaZtl);
+        const existingZona = (await zonaZtlDao.getAll()).find(zona => zona.nome === req.body.nome);
+        if (existingZona) {
+            next(ErrorFactory.createError(ErrorTypes.BadRequest, 'Una zona con questo nome esiste già'));
+        }else{
+            const nuovaZonaZtl = await zonaZtlDao.create(req.body);
+            res.status(201).json(nuovaZonaZtl);
+        }
     } catch (error) {
         next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione della zona ZTL'));
     }
@@ -46,13 +50,13 @@ export const updateZonaZtl = async (req: Request, res: Response, next: NextFunct
     const id = parseInt(req.params.id);
 
     if (!isValidId(id)) {
-        return next(ErrorFactory.createError(ErrorTypes.InvalidID, 'ID zona ZTL non valido'));
+        next(ErrorFactory.createError(ErrorTypes.InvalidID, 'ID zona ZTL non valido'));
     }
 
     try {
-        const [updated] = await zonaZtlRepository.updateZonaZtl(id, req.body);
+        const [updated] = await zonaZtlDao.update(id, req.body);
         if (updated) {
-            const updatedZonaZtl = await zonaZtlRepository.getZonaZtlById(id);
+            const updatedZonaZtl = await zonaZtlDao.getById(id);
             res.status(200).json(updatedZonaZtl);
         } else {
             next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
@@ -70,11 +74,19 @@ export const deleteZonaZtl = async (req: Request, res: Response, next: NextFunct
     }
 
     try {
-        const deleted = await zonaZtlRepository.deleteZonaZtl(id);
-        if (deleted) {
-            res.status(204).send();
-        } else {
-            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
+        const isNotFree = await (await varcoZtlDao.getAll()).filter((varco => varco.zona_ztl === id)).length;
+        if (isNotFree){
+            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Non è possibile eliminare una zona con varchi associati'));
+        }else{
+            const deleted = await zonaZtlDao.delete(id);
+            console.log
+            if (deleted) {
+                //res.status(204).send(); // non utilizzo il codice che non restituisce niente
+                // stampo messaggio di eliminazione
+                res.status(200).json({ message: `Zona ${id} eliminata con successo` });
+            } else {
+                next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
+            }
         }
     } catch (error) {
         next(ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione della zona ZTL con id ${id}`));

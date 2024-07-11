@@ -4,8 +4,7 @@ import {
     getTransitoById,
     createTransito,
     updateTransito,
-    deleteTransito,
-    getTransitiByVeicolo
+    deleteTransito
 } from '../controllers/transitoController';
 import { authMiddleware, authorize} from '../middleware/authMiddleware';
 import {
@@ -14,18 +13,16 @@ import {
     validateUpdateTransito,
     validateDeleteTransito
 } from '../middleware/validate/transitoValidate';
-import { validateGetVeicoloById } from '../middleware/validate/veicoloValidate';
 
 const router = Router();
 
 // Applica il middleware di autenticazione per tutte le rotte
 router.use(authMiddleware);
 
-router.get('/transiti', getAllTransiti);
-router.get('/transiti/:id', validateGetTransitoById, getTransitoById);
-router.post('/transiti', validateCreateTransito, createTransito);
-router.get('/veicoli/:targa/transiti', validateGetVeicoloById, getTransitiByVeicolo);
-router.put('/transiti/:id', validateUpdateTransito, updateTransito);
-router.delete('/transiti/:id', validateDeleteTransito, deleteTransito);
+router.get('/transiti', authorize(['operatore']), getAllTransiti);
+router.get('/transiti/:id', authorize(['operatore']), validateGetTransitoById, getTransitoById);
+router.post('/transiti', authorize(['operatore','varco']), validateCreateTransito, createTransito);
+router.put('/transiti/:id', authorize(['operatore']), validateUpdateTransito, updateTransito);
+router.delete('/transiti/:id', authorize(['operatore']), validateDeleteTransito, deleteTransito);
 
 export default router;

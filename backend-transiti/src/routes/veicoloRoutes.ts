@@ -1,3 +1,6 @@
+/**
+ * POTREBBE ESSERE ELIMINATO
+ */
 import { Router } from 'express';
 import {
     getAllVeicoli,

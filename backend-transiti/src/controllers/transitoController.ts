@@ -78,23 +78,3 @@ export const deleteTransito = async (req: Request, res: Response, next: NextFunc
         next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella cancellazione del transito'));
     }
 };
-
-// Controller per ottenere tutti i transiti di un veicolo
-export const getTransitiByVeicolo = async (req: Request, res: Response, next: NextFunction) => {
-    const { targa } = req.params;
-
-    if (!isValidTarga(targa)) {
-        return next(ErrorFactory.createError(ErrorTypes.InvalidID, 'Formato targa non valido'));
-    }
-
-    try {
-        const transiti = await transitoRepository.getTransitiByVeicolo(targa);
-        if (transiti.length > 0) {
-            res.status(200).json(transiti);
-        } else {
-            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Nessun transito trovato per questo veicolo'));
-        }
-    } catch (error) {
-        next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero dei transiti per il veicolo'));
-    }
-};

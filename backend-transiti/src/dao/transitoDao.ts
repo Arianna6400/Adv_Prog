@@ -5,7 +5,7 @@ import { TransitoAttributes, TransitoCreationAttributes } from '../models/transi
 import { Transaction } from 'sequelize';
 
 interface TransitoDAO extends DAO<TransitoAttributes, number> {
-    getAllByVeicolo(targa: string): Promise<Transito[]>;
+    // Metodi specifici per TransitoDAO, se necessari
 }
 
 class TransitoDao implements TransitoDAO {
@@ -69,15 +69,6 @@ class TransitoDao implements TransitoDAO {
         } catch (error) {
             console.error(`Errore nella cancellazione del transito con id ${id}:`, error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione del transito con id ${id}`);
-        }
-    }
-
-    public async getAllByVeicolo(targa: string): Promise<Transito[]> {
-        try {
-            return await Transito.findAll({ where: { veicolo: targa } });
-        } catch (error) {
-            console.error(`Errore nel recupero dei transiti per il veicolo con targa ${targa}:`, error);
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero dei transiti per il veicolo con targa ${targa}`);
         }
     }
 }

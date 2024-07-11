@@ -1,17 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-import veicoloRepository from '../repositories/veicoloRepository';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
-
-// Funzione per validare la targa del veicolo
-export const isValidTarga = (targa: string): boolean => {
-    const targaRegex = /^[A-Z]{2}[0-9]{3}[A-Z]{2}$/;
-    return targaRegex.test(targa);
-};
+import { isValidTarga } from '../utils/utils';
+import veicoloDao from '../dao/veicoloDao';
 
 // Controller per ottenere tutti i veicoli
 export const getAllVeicoli = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const veicoli = await veicoloRepository.getAllVeicoli();
+        const veicoli = await veicoloDao.getAll();
         res.status(200).json(veicoli);
     } catch (error) {
         next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero dei veicoli'));
@@ -27,7 +22,7 @@ export const getVeicoloById = async (req: Request, res: Response, next: NextFunc
     }
 
     try {
-        const veicolo = await veicoloRepository.getVeicoloById(targa);
+        const veicolo = await veicoloDao.getById(targa);
         if (veicolo) {
             res.status(200).json(veicolo);
         } else {
@@ -41,7 +36,7 @@ export const getVeicoloById = async (req: Request, res: Response, next: NextFunc
 // Controller per ottenere una lista dei veicolli esenti
 export const getVeicoliEsenti = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const veicoliEsenti = await veicoloRepository.getVeicoliEsenti();
+        const veicoliEsenti = await veicoloDao.getEsenti();
         res.status(200).json(veicoliEsenti);
     } catch (error) {
         next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero dei veicoli esenti'));
@@ -57,7 +52,7 @@ export const createVeicolo = async (req: Request, res: Response, next: NextFunct
     }
 
     try {
-        const nuovoVeicolo = await veicoloRepository.createVeicolo(req.body);
+        const nuovoVeicolo = await veicoloDao.create(req.body);
         res.status(201).json(nuovoVeicolo);
     } catch (error) {
         next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione del veicolo'));
@@ -73,9 +68,9 @@ export const updateVeicolo = async (req: Request, res: Response, next: NextFunct
     }
 
     try {
-        const [updated] = await veicoloRepository.updateVeicolo(targa, req.body);
+        const [updated] = await veicoloDao.update(targa, req.body);
         if (updated) {
-            const updatedVeicolo = await veicoloRepository.getVeicoloById(targa);
+            const updatedVeicolo = await veicoloDao.getById(targa);
             res.status(200).json(updatedVeicolo);
         } else {
             next(ErrorFactory.createError(ErrorTypes.NotFound, 'Veicolo non trovato'));
@@ -94,7 +89,7 @@ export const deleteVeicolo = async (req: Request, res: Response, next: NextFunct
     }
 
     try {
-        const deleted = await veicoloRepository.deleteVeicolo(targa);
+        const deleted = await veicoloDao.delete(targa);
         if (deleted) {
             res.status(204).send();
         } else {

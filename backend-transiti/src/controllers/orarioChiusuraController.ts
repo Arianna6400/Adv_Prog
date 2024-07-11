@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import orarioChiusuraRepository from '../repositories/orarioChiusuraRepository';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
+import orarioChiusuraDao from '../dao/orarioChiusuraDao';
 
 // Controller per ottenere tutti gli orari di chiusura
 export const getAllOrariChiusura = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const orariChiusura = await orarioChiusuraRepository.getAllOrariChiusura();
+        const orariChiusura = await orarioChiusuraDao.getAll();
         res.status(200).json(orariChiusura);
     } catch (error) {
         next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero degli orari di chiusura'));
@@ -21,7 +21,7 @@ export const getOrarioChiusuraById = async (req: Request, res: Response, next: N
     }
 
     try {
-        const orarioChiusura = await orarioChiusuraRepository.getOrarioChiusuraById(id);
+        const orarioChiusura = await orarioChiusuraDao.getById(id);
         if (orarioChiusura) {
             res.status(200).json(orarioChiusura);
         } else {
@@ -35,7 +35,7 @@ export const getOrarioChiusuraById = async (req: Request, res: Response, next: N
 // Controller per creare un nuovo orario di chiusura
 export const createOrarioChiusura = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const nuovoOrarioChiusura = await orarioChiusuraRepository.createOrarioChiusura(req.body);
+        const nuovoOrarioChiusura = await orarioChiusuraDao.create(req.body);
         res.status(201).json(nuovoOrarioChiusura);
     } catch (error) {
         next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione dell\'orario di chiusura'));
@@ -51,9 +51,9 @@ export const updateOrarioChiusura = async (req: Request, res: Response, next: Ne
     }
 
     try {
-        const [updated] = await orarioChiusuraRepository.updateOrarioChiusura(id, req.body);
+        const [updated] = await orarioChiusuraDao.update(id, req.body);
         if (updated) {
-            const updatedOrarioChiusura = await orarioChiusuraRepository.getOrarioChiusuraById(id);
+            const updatedOrarioChiusura = await orarioChiusuraDao.getById(id);
             res.status(200).json(updatedOrarioChiusura);
         } else {
             next(ErrorFactory.createError(ErrorTypes.NotFound, 'Orario di chiusura non trovato'));
@@ -72,7 +72,7 @@ export const deleteOrarioChiusura = async (req: Request, res: Response, next: Ne
     }
 
     try {
-        const deleted = await orarioChiusuraRepository.deleteOrarioChiusura(id);
+        const deleted = await orarioChiusuraDao.delete(id);
         if (deleted) {
             res.status(204).send();
         } else {

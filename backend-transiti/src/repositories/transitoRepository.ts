@@ -9,6 +9,7 @@ import tipoVeicoloDao from '../dao/tipoVeicoloDao'; // Importa il DAO per i tipi
 import { v4 as uuidv4 } from 'uuid'; // Importa il pacchetto per generare UUID
 import { Transaction } from 'sequelize';
 import Database from '../utils/database';
+import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 
 class TransitoRepository {
     public async getAllTransiti(): Promise<Transito[]> {
@@ -16,7 +17,7 @@ class TransitoRepository {
             return await transitoDao.getAll();
         } catch (error) {
             console.error('Errore nel recupero dei transiti dal repository:', error);
-            throw new Error('Impossibile recuperare i transiti');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile recuperare i transiti');
         }
     }
 
@@ -25,7 +26,7 @@ class TransitoRepository {
             return await transitoDao.getById(id);
         } catch (error) {
             console.error(`Errore nel recupero del transito con id ${id} dal repository:`, error);
-            throw new Error('Impossibile recuperare il transito');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile recuperare il transito');
         }
     }
 
@@ -53,7 +54,7 @@ class TransitoRepository {
             // Annulla la transazione in caso di errore
             await transaction.rollback();
             console.error('Errore nella creazione del transito nel repository:', error);
-            throw new Error('Impossibile creare il transito');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile creare il transito');
         }
     }
 
@@ -62,7 +63,7 @@ class TransitoRepository {
             return await transitoDao.update(id, data);
         } catch (error) {
             console.error(`Errore nell'aggiornamento del transito con id ${id} nel repository:`, error);
-            throw new Error('Impossibile aggiornare il transito');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile aggiornare il transito');
         }
     }
 
@@ -71,17 +72,7 @@ class TransitoRepository {
             return await transitoDao.delete(id);
         } catch (error) {
             console.error(`Errore nella cancellazione del transito con id ${id} nel repository:`, error);
-            throw new Error('Impossibile cancellare il transito');
-        }
-    }
-
-    // Metodo per ottenere tutti i transiti di un veicolo
-    public async getTransitiByVeicolo(targa: string): Promise<TransitoAttributes[]> {
-        try {
-            return await transitoDao.getAllByVeicolo(targa);
-        } catch (error) {
-            console.error(`Errore nel recupero dei transiti per il veicolo con targa ${targa}:`, error);
-            throw new Error('Impossibile recuperare i transiti del veicolo');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile cancellare il transito');
         }
     }
 
@@ -89,7 +80,7 @@ class TransitoRepository {
     private async shouldCalculateMulta(transito: Transito): Promise<boolean> {
         const veicolo = await veicoloDao.getById(transito.veicolo);
         if (!veicolo) {
-            throw new Error('Veicolo non trovato');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Veicolo non trovato');
         }
 
         // Se il veicolo è esente, non calcolare la multa
@@ -99,12 +90,12 @@ class TransitoRepository {
 
         const varcoZtl = await varcoZtlDao.getById(transito.varco);
         if (!varcoZtl) {
-            throw new Error('Varco ZTL non trovato');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Varco ZTL non trovato');
         }
 
         const orarioChiusura = await orarioChiusuraDao.getById(varcoZtl.orario_chiusura);
         if (!orarioChiusura) {
-            throw new Error('Orario di chiusura non trovato');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Orario di chiusura non trovato');
         }
 
         const dataTransito = new Date(transito.data_ora);
@@ -148,22 +139,22 @@ class TransitoRepository {
     private async calcolaMulta(transito: Transito): Promise<MultaCreationAttributes> {
         const veicolo = await veicoloDao.getById(transito.veicolo);
         if (!veicolo) {
-            throw new Error('Veicolo non trovato');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Veicolo non trovato');
         }
 
         const tipoVeicolo = await tipoVeicoloDao.getById(veicolo.tipo_veicolo);
         if (!tipoVeicolo) {
-            throw new Error('Tipo veicolo non trovato');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Tipo veicolo non trovato');
         }
 
         const varcoZtl = await varcoZtlDao.getById(transito.varco);
         if (!varcoZtl) {
-            throw new Error('Varco ZTL non trovato');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Varco ZTL non trovato');
         }
 
         const orarioChiusura = await orarioChiusuraDao.getById(varcoZtl.orario_chiusura);
         if (!orarioChiusura) {
-            throw new Error('Orario di chiusura non trovato');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Orario di chiusura non trovato');
         }
 
         const dataTransito = new Date(transito.data_ora);

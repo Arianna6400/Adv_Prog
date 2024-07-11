@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import utenteRepository from '../repositories/utenteRepository';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
+import utenteDao from '../dao/utenteDao';
 
 // Controller per ottenere tutti gli utenti
 export const getUtenti = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const utenti = await utenteRepository.getAllUtenti();
+    const utenti = await utenteDao.getAll();
     res.status(200).json(utenti); // O res.status(200).send(utenti);
   } catch (error) {
     next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero degli utenti'));
@@ -21,7 +21,7 @@ export const getUtenteById = async (req: Request, res: Response, next: NextFunct
   }
 
   try {
-    const utente = await utenteRepository.getUtenteById(id);
+    const utente = await utenteDao.getById(id);
     if (utente) {
       res.status(200).json(utente);
     } else {
@@ -35,7 +35,7 @@ export const getUtenteById = async (req: Request, res: Response, next: NextFunct
 // Controller per creare un nuovo utente
 export const createUtente = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const nuovoUtente = await utenteRepository.createUtente(req.body);
+    const nuovoUtente = await utenteDao.create(req.body);
     res.status(201).json(nuovoUtente);
   } catch (error) {
     next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione dell\'utente'));
@@ -51,9 +51,9 @@ export const updateUtente = async (req: Request, res: Response, next: NextFuncti
   }
 
   try {
-    const [updated] = await utenteRepository.updateUtente(id, req.body);
+    const [updated] = await utenteDao.update(id, req.body);
     if (updated) {
-      const updatedUtente = await utenteRepository.getUtenteById(id);
+      const updatedUtente = await utenteDao.getById(id);
       res.status(200).json(updatedUtente);
     } else {
       next(ErrorFactory.createError(ErrorTypes.NotFound, 'Utente non trovato'));
@@ -72,7 +72,7 @@ export const deleteUtente = async (req: Request, res: Response, next: NextFuncti
   }
 
   try {
-    const deleted = await utenteRepository.deleteUtente(id);
+    const deleted = await utenteDao.delete(id);
     if (deleted) {
       res.status(204).send();
     } else {
@@ -80,25 +80,5 @@ export const deleteUtente = async (req: Request, res: Response, next: NextFuncti
     }
   } catch (error) {
     next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella cancellazione dell\'utente'));
-  }
-};
-
-// Controller per ottenere tutti i veicoli di un utente
-export const getVeicoliByUtenteId = async (req: Request, res: Response, next: NextFunction) => {
-  const id = parseInt(req.params.id, 10);
-
-  if (isNaN(id) || id < 0) {
-    return next(ErrorFactory.createError(ErrorTypes.InvalidID, 'ID non valido'));
-  }
-
-  try {
-    const veicoli = await utenteRepository.getVeicoliByUtenteId(id);
-    if (veicoli.length > 0) {
-      res.status(200).json(veicoli);
-    } else {
-      next(ErrorFactory.createError(ErrorTypes.NotFound, 'Nessun veicolo trovato per questo utente'));
-    }
-  } catch (error) {
-    next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero dei veicoli dell\'utente'));
   }
 };

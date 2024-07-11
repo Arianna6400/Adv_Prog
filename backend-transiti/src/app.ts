@@ -34,8 +34,12 @@ app.use('/', varcoZtlRoutes);
 app.use('/', zonaZtlRoutes);
 app.use('/', transitoRoutes);
 app.use('/', multaRoutes);
-app.use('/', tipoVeicoloRoutes);
 app.use('/', veicoloRoutes);
+
+/**
+ * POTREBBERO NON SERVIRE
+ */
+app.use('/', tipoVeicoloRoutes);
 app.use('/', orarioChiusuraRoutes);
 
 // Middleware per gestire le rotte non trovate

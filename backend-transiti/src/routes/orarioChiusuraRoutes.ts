@@ -1,3 +1,6 @@
+/**
+ * POTREBBE ESSERE ELIMINATO
+ */
 import { Router } from 'express';
 import {
     getAllOrariChiusura,
@@ -19,10 +22,10 @@ const router = Router();
 // Applica il middleware di autenticazione per tutte le rotte
 router.use(authMiddleware);
 
-router.get('/orariChiusura', getAllOrariChiusura);
-router.get('/orariChiusura/:id', validateGetOrarioChiusuraById, getOrarioChiusuraById);
-router.post('/orariChiusura', validateCreateOrarioChiusura, createOrarioChiusura);
-router.put('/orariChiusura/:id', validateUpdateOrarioChiusura, updateOrarioChiusura);
-router.delete('/orariChiusura/:id', validateDeleteOrarioChiusura, deleteOrarioChiusura);
+router.get('/orariChiusura', authorize(['operatore']), getAllOrariChiusura);
+router.get('/orariChiusura/:id', authorize(['operatore']), validateGetOrarioChiusuraById, getOrarioChiusuraById);
+router.post('/orariChiusura', authorize(['operatore']), validateCreateOrarioChiusura, createOrarioChiusura);
+router.put('/orariChiusura/:id', authorize(['operatore']), validateUpdateOrarioChiusura, updateOrarioChiusura);
+router.delete('/orariChiusura/:id', authorize(['operatore']), validateDeleteOrarioChiusura, deleteOrarioChiusura);
 
 export default router;
