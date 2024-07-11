@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import multaRepository from '../repositories/multaRepository';
 import transitoRepository from '../repositories/transitoRepository';
+import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import PDFDocument from 'pdfkit';
 import QRCode from 'qrcode';
 
@@ -10,7 +11,7 @@ export const getAllMulte = async (req: Request, res: Response, next: NextFunctio
         const multe = await multaRepository.getAllMulte();
         res.status(200).json(multe);
     } catch (error) {
-        next(error);
+        next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero delle multe'));
     }
 };
 
@@ -22,10 +23,10 @@ export const getMultaById = async (req: Request, res: Response, next: NextFuncti
         if (multa) {
             res.status(200).json(multa);
         } else {
-            res.status(404).json({ message: 'Multa non trovata' });
+            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Multa non trovata'));
         }
     } catch (error) {
-        next(error);
+        next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero della multa'));
     }
 };
 
@@ -35,7 +36,7 @@ export const createMulta = async (req: Request, res: Response, next: NextFunctio
         const nuovaMulta = await multaRepository.createMulta(req.body);
         res.status(201).json(nuovaMulta);
     } catch (error) {
-        next(error);
+        next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione della multa'));
     }
 };
 
@@ -48,10 +49,10 @@ export const updateMulta = async (req: Request, res: Response, next: NextFunctio
             const updatedMulta = await multaRepository.getMultaById(id);
             res.status(200).json(updatedMulta);
         } else {
-            res.status(404).json({ message: 'Multa non trovata' });
+            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Multa non trovata'));
         }
     } catch (error) {
-        next(error);
+        next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nell\'aggiornamento della multa'));
     }
 };
 
@@ -63,10 +64,10 @@ export const deleteMulta = async (req: Request, res: Response, next: NextFunctio
         if (deleted) {
             res.status(204).send();
         } else {
-            res.status(404).json({ message: 'Multa non trovata' });
+            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Multa non trovata'));
         }
     } catch (error) {
-        next(error);
+        next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella cancellazione della multa'));
     }
 };
 
@@ -141,9 +142,9 @@ export const downloadBollettino = async (req: Request, res: Response, next: Next
             doc.pipe(res);
             doc.end();
         } else {
-            res.status(404).json({ message: 'Multa non trovata' });
+            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Multa non trovata'));
         }
     } catch (error) {
-        next(error);
+        next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione del bollettino'));
     }
 };

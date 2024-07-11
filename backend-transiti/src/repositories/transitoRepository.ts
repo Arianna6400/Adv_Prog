@@ -1,6 +1,6 @@
 import transitoDao from '../dao/transitoDao';
 import Transito, { TransitoAttributes, TransitoCreationAttributes } from '../models/transito';
-import { MultaAttributes, MultaCreationAttributes } from '../models/multa';
+import { MultaCreationAttributes } from '../models/multa';
 import multaDao from '../dao/multaDao';
 import veicoloDao from '../dao/veicoloDao'; // Importa il DAO per i veicoli
 import varcoZtlDao from '../dao/varcoZtlDao'; // Importa il DAO per i varchi ZTL
