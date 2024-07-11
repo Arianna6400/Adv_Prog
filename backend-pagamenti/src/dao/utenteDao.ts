@@ -49,7 +49,7 @@ class UtenteDao implements UtenteDAO<UtenteAttributes, number> {
         try {
             const utente = await this.getById(id);
             if (!utente) {
-                throw ErrorFactory.createError(ErrorTypes.NotFound, `Utente con email ${id} non trovato`);
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Utente con id ${id} non trovato`);
             }
             const newToken = Number(utente.token_rimanenti) + tokens;
 

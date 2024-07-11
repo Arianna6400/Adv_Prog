@@ -6,7 +6,7 @@ import { JwtPayload } from 'jsonwebtoken';
 import Database from '../utils/database';
 
 export const payMulta = async (req: Request, res: Response, next: NextFunction) => {
-    const uuid = req.query.uuid as string; // UUID multa passato come parametro
+    const { uuid } = req.body; // UUID multa passato come parametro
     const { id } = (req as any).user; // id preso nel payload
 
     const sequelize = Database.getInstance();
@@ -30,14 +30,13 @@ export const payMulta = async (req: Request, res: Response, next: NextFunction) 
             return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Utente non trovato'));
         }
 
-        if (parseFloat(utente.token_rimanenti.toString()) < multa.importo_token) {
+        if (Number(utente.token_rimanenti) < multa.importo_token) {
             await transaction.rollback();
             return next(ErrorFactory.createError(ErrorTypes.BadRequest, 'Token insufficienti'));
         }
 
-
-        const newTokens = parseFloat(utente.token_rimanenti.toString()) - multa.importo_token;
-        utente.token_rimanenti = newTokens;
+        const newTokens = Number(utente.token_rimanenti) - multa.importo_token;
+        utente.token_rimanenti = parseFloat(newTokens.toFixed(2)); // per gestire le cifre decimali se passato come float
         multa.pagata = true;
         
         await utente.save({ transaction });
@@ -52,15 +51,14 @@ export const payMulta = async (req: Request, res: Response, next: NextFunction) 
         });
     } catch (error) {
         await transaction.rollback();
-        next(error);
+        next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel pagamento'));
     }
 };
 
 
 export const rechargeTokens = async (req: Request, res: Response, next: NextFunction) => {
-    const id = parseInt(req.query.id as string, 10);
-    const tokens = Number(req.query.tokens as string);
-
+    const { id } = req.body;
+    const tokens  = parseFloat(req.body.tokens.toFixed(2));
     try {
         const utente = await utenteDao.rechargeTokens(id, tokens);
         res.status(200).json({ 

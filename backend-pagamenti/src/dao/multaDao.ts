@@ -9,22 +9,6 @@ interface MultaDAO<T, K> {
 
 class MultaDao implements MultaDAO<MultaAttributes, number> {
 
-    public async getById(id: number, options?: FindOptions): Promise<Multa | null> {
-        try {
-            const multa = await Multa.findByPk(id, options);
-            if (!multa) {
-                throw ErrorFactory.createError(ErrorTypes.NotFound, `Multa con id ${id} non trovata`);
-            }
-            return multa;
-        } catch (error) {
-            console.error(`Errore nel recupero della multa con id ${id}:`, error);
-            if (error instanceof HttpError) {
-                throw error;
-            }
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero della multa con id ${id}`);
-        }
-    }
-
     public async getMultaByUUID(uuid: string, options?: FindOptions): Promise<Multa | null> {
         try {
             const multa = await Multa.findOne({ where: { uuid_pagamento: uuid }, ...options });

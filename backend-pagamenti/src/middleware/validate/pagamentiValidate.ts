@@ -1,19 +1,18 @@
-import { body, param } from 'express-validator';
+import { body,CustomSanitizer } from 'express-validator';
 import validateRequest from './validateRequestMiddleware';
 
-export const ricaricaTokenValidation = [
-  body('id').isInt().withMessage('ID deve essere un intero'),
-  body('importo').isFloat({ gt: 0 }).withMessage('Importo deve essere un float positivo'),
-  validateRequest
-];
+// Middleware personalizzato per arrotondare i numeri a due decimali
+const roundToTwoDecimals: CustomSanitizer = (value: number) => {
+  return parseFloat(value.toFixed(2));
+};
 
-export const verificaTokenValidation = [
-  param('id').isInt().withMessage('ID deve essere uun intero'),
+export const ricaricaTokenValidation = [
+  body('id').isInt({ min: 1 }).withMessage('ID deve essere un intero positivo'),
+  body('tokens').isFloat({ gt: 0 }).withMessage('Importo deve essere un float positivo').toFloat().customSanitizer(roundToTwoDecimals),
   validateRequest
 ];
 
 export const pagaMultaValidation = [
-  body('uuid_pagamento').isUUID().withMessage('UUID deve essere un UUID valido'),
-  body('importo').isFloat({ gt: 0 }).withMessage('Importo deve essere positivo'),
+  body('uuid').isUUID().withMessage('UUID deve essere un UUID valido'),
   validateRequest
 ];
