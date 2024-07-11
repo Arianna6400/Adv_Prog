@@ -51,9 +51,8 @@ class UtenteDao implements UtenteDAO<UtenteAttributes, number> {
             if (!utente) {
                 throw ErrorFactory.createError(ErrorTypes.NotFound, `Utente con email ${id} non trovato`);
             }
-            console.log('token precedenti ---------------------->', utente.token_rimanenti);
-            const newToken = parseFloat(utente.token_rimanenti.toString()) as number + tokens;
-            console.log('token aggiunti ---------------------->', tokens);
+            const newToken = Number(utente.token_rimanenti) + tokens;
+
             utente.token_rimanenti = newToken
             await utente.save();
             return utente;
