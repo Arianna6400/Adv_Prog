@@ -1,20 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
-import transitoRepository from '../repositories/transitoRepository';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import PDFDocument from 'pdfkit';
 import QRCode from 'qrcode';
-import multaDao from '../dao/multaDao';
+import { JwtPayload } from 'jsonwebtoken';
+import multaRepository from '../repositories/multaRepository';
 
 // Controller per ottenere una multa per ID
-export const getMultaById = async (req: Request, res: Response, next: NextFunction) => {
+export const getMulteByUtente = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const id = parseInt(req.params.id);
-        const multa = await multaDao.getById(id);
-        if (multa) {
-            res.status(200).json(multa);
-        } else {
-            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Multa non trovata'));
-        }
+        const { id } = (req as any).user as JwtPayload;
+        const multe = await multaRepository.getMulteByUtente(id);
+        res.status(200).json(multe);
     } catch (error) {
         next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero della multa'));
     }
@@ -24,15 +20,15 @@ export const getMultaById = async (req: Request, res: Response, next: NextFuncti
 export const downloadBollettino = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = parseInt(req.params.id);
-        const multa = await multaDao.getById(id);
-        if (multa) {
-            const transito = await transitoRepository.getTransitoById(multa.transito);
-            if (!transito) {
-                return res.status(404).json({ message: 'Transito non trovato' });
-            }
+        const userId = (req as any).user.id;
+
+        const result = await multaRepository.getMultaWithDetailsById(id, userId);
+        
+        if (result) {
+            const { multa, transito, veicolo} = result;
 
             const dataTransito = transito.data_ora.toLocaleString();
-            const targa = transito.veicolo; // Associa la targa del veicolo al transito
+            const targa = veicolo.targa; // Associa la targa del veicolo al transito
             const statoPagamento = multa.pagata ? 'Pagata' : 'Non pagata';
 
             // Determina il colore dell'intestazione in base allo stato del pagamento

@@ -5,7 +5,7 @@ import { MultaAttributes, MultaCreationAttributes } from '../models/multa';
 import { Transaction } from 'sequelize';
 
 interface MultaDAO extends DAO<MultaAttributes, number> {
-    // Metodi specifici per Multa, se necessari
+    // getMulteByUtente(utenteId: number): Promise<Multa[]>;
 }
 
 class MultaDao implements MultaDAO {
