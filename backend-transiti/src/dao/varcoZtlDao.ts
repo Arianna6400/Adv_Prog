@@ -5,6 +5,7 @@ import { Transaction } from 'sequelize';
 
 interface VarcoZtlDAO extends DAO<VarcoZtlAttributes, number> {
     // Metodi specifici per VarcoZtl, se necessari
+    countByZonaZtl(zonaZtlId: number, options?: { transaction?: Transaction }): Promise<number>;
 }
 
 class VarcoZtlDao implements VarcoZtlDAO {
@@ -60,6 +61,15 @@ class VarcoZtlDao implements VarcoZtlDAO {
         } catch (error) {
             console.error(`Errore nella cancellazione del varco ZTL con id ${id}:`, error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione del varco ZTL con id ${id}`);
+        }
+    }
+
+    public async countByZonaZtl(zonaZtlId: number, options?: { transaction?: Transaction }): Promise<number> {
+        try {
+            return await VarcoZtl.count({ where: { zona_ztl: zonaZtlId }, transaction: options?.transaction });
+        } catch (error) {
+            console.error('Errore nel conteggio dei riferimenti alla zona ZTL:', error);
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel conteggio dei riferimenti alla zona ZTL');
         }
     }
 }

@@ -1,6 +1,8 @@
 import zonaZtlDao from '../dao/zonaZtlDao';
 import ZonaZtl from '../models/zonaZtl';
+import varcoZtlDao from '../dao/varcoZtlDao';
 import { ZonaZtlCreationAttributes, ZonaZtlAttributes } from '../models/zonaZtl';
+import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 
 class ZonaZtlRepository {
     
@@ -9,7 +11,7 @@ class ZonaZtlRepository {
             return await zonaZtlDao.getAll();
         } catch (error) {
             console.error('Errore nel recupero delle zone ZTL dal repository:', error);
-            throw new Error('Impossibile recuperare le zone ZTL');
+            throw ErrorFactory.createError(ErrorTypes.BadRequest, 'Impossibile recuperare le zone ZTL');
         }
     }
 
@@ -18,7 +20,7 @@ class ZonaZtlRepository {
             return await zonaZtlDao.getById(id);
         } catch (error) {
             console.error(`Errore nel recupero della zona ZTL con id ${id} dal repository:`, error);
-            throw new Error('Impossibile recuperare la zona ZTL');
+            throw ErrorFactory.createError(ErrorTypes.BadRequest, 'Impossibile recuperare la zona ZTL con id');
         }
     }
 
@@ -27,7 +29,7 @@ class ZonaZtlRepository {
             return await zonaZtlDao.create(data);
         } catch (error) {
             console.error('Errore nella creazione della zona ZTL nel repository:', error);
-            throw new Error('Impossibile creare la zona ZTL');
+            throw ErrorFactory.createError(ErrorTypes.BadRequest, 'Impossibile creare la zona ZTL');
         }
     }
 
@@ -36,12 +38,18 @@ class ZonaZtlRepository {
             return await zonaZtlDao.update(id, data);
         } catch (error) {
             console.error(`Errore nell'aggiornamento della zona ZTL con id ${id} nel repository:`, error);
-            throw new Error('Impossibile aggiornare la zona ZTL');
+            throw ErrorFactory.createError(ErrorTypes.BadRequest, 'Impossibile aggiornare la zona ZTL');
         }
     }
 
     public async deleteZonaZtl(id: number): Promise<number> {
         try {
+            // Verifica se ci sono riferimenti a questa zona ZTL nei varchi ZTL
+            const zoneReferenced = await varcoZtlDao.countByZonaZtl(id);
+            if (zoneReferenced > 0) {
+                throw ErrorFactory.createError(ErrorTypes.BadRequest, 'Non è possibile eliminare una zona ZTL che ha varchi associati');
+            }
+            // Esegui l'operazione di eliminazione
             return await zonaZtlDao.delete(id);
         } catch (error) {
             console.error(`Errore nella cancellazione della zona ZTL con id ${id} nel repository:`, error);

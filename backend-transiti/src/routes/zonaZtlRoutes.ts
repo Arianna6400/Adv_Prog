@@ -19,10 +19,10 @@ const router = Router();
 // Applica il middleware di autenticazione per tutte le rotte
 router.use(authMiddleware);
 
-router.get('/zoneZtl', authorize(['operatore']), getAllZonaZtl);
-router.get('/zoneZtl/:id',authorize(['operatore']), validateGetZonaZtlById, getZonaZtlById);
-router.post('/zoneZtl',authorize(['operatore']), validateCreateZonaZtl, createZonaZtl);
-router.put('/zoneZtl/:id',authorize(['operatore']), validateUpdateZonaZtl, updateZonaZtl);
-router.delete('/zoneZtl/:id',authorize(['operatore']), validateDeleteZonaZtl, deleteZonaZtl);
+router.get('/zonaZtl', authorize(['operatore']), getAllZonaZtl);
+router.get('/zonaZtl/:id',authorize(['operatore']), validateGetZonaZtlById, getZonaZtlById);
+router.post('/zonaZtl',authorize(['operatore']), validateCreateZonaZtl, createZonaZtl);
+router.put('/zonaZtl/:id',authorize(['operatore']), validateUpdateZonaZtl, updateZonaZtl);
+router.delete('/zonaZtl/:id',authorize(['operatore']), validateDeleteZonaZtl, deleteZonaZtl);
 
 export default router;

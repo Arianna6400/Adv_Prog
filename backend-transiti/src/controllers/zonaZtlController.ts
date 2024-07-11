@@ -18,7 +18,7 @@ export const getZonaZtlById = async (req: Request, res: Response, next: NextFunc
     const id = parseInt(req.params.id);
 
     if (!isValidId(id)) {
-        return next(ErrorFactory.createError(ErrorTypes.InvalidID, 'ID non valido'));
+        return next(ErrorFactory.createError(ErrorTypes.InvalidID, 'ID zona ZTL non valido'));
     }
 
     try {
@@ -46,7 +46,7 @@ export const updateZonaZtl = async (req: Request, res: Response, next: NextFunct
     const id = parseInt(req.params.id);
 
     if (!isValidId(id)) {
-        return next(ErrorFactory.createError(ErrorTypes.InvalidID, 'ID non valido'));
+        return next(ErrorFactory.createError(ErrorTypes.InvalidID, 'ID zona ZTL non valido'));
     }
 
     try {
