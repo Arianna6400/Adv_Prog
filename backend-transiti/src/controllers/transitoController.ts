@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import transitoRepository from '../repositories/transitoRepository';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
-import { isValidTarga } from './veicoloController';
 
 export const getAllTransiti = async (req: Request, res: Response, next: NextFunction) => {
     try {
