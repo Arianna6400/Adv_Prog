@@ -1,7 +1,5 @@
 import veicoloDao from '../dao/veicoloDao';
 import Veicolo from '../models/veicolo';
-import { TransitoAttributes } from '../models/transito';
-import transitoDao from '../dao/transitoDao';
 import { VeicoloCreationAttributes, VeicoloAttributes } from '../models/veicolo';
 
 class VeicoloRepository {
@@ -21,6 +19,15 @@ class VeicoloRepository {
         } catch (error) {
             console.error(`Errore nel recupero del veicolo con targa ${targa} dal repository:`, error);
             throw new Error('Impossibile recuperare il veicolo');
+        }
+    }
+
+    public async getVeicoliEsenti(): Promise<Veicolo[]> {
+        try {
+            return await veicoloDao.getEsenti();
+        } catch (error) {
+            console.error('Errore nel recupero dei veicoli esenti dal repository:', error);
+            throw new Error('Impossibile recuperare i veicoli esenti');
         }
     }
 

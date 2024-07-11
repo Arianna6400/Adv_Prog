@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
     getAllVeicoli,
     getVeicoloById,
+    getVeicoliEsenti,
     createVeicolo,
     updateVeicolo,
     deleteVeicolo
@@ -19,6 +20,7 @@ const router = Router();
 router.use(authMiddleware);
 
 router.get('/veicoli', getAllVeicoli);
+router.get('/veicoli/esenti', getVeicoliEsenti);
 router.get('/veicoli/:targa', validateGetVeicoloById, getVeicoloById);
 router.post('/veicoli', validateCreateVeicolo, createVeicolo);
 router.put('/veicoli/:targa', validateUpdateVeicolo, updateVeicolo);

@@ -38,6 +38,16 @@ export const getVeicoloById = async (req: Request, res: Response, next: NextFunc
     }
 };
 
+// Controller per ottenere una lista dei veicolli esenti
+export const getVeicoliEsenti = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const veicoliEsenti = await veicoloRepository.getVeicoliEsenti();
+        res.status(200).json(veicoliEsenti);
+    } catch (error) {
+        next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero dei veicoli esenti'));
+    }
+};
+
 // Controller per creare un nuovo veicolo
 export const createVeicolo = async (req: Request, res: Response, next: NextFunction) => {
     const { targa } = req.body;

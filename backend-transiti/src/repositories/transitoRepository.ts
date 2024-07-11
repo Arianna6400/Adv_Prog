@@ -132,8 +132,9 @@ class TransitoRepository {
         }
 
         // Determina gli orari di chiusura per il giorno del transito
-        const oraInizio = isChiusura ? orarioChiusura.orario_inizio_f : orarioChiusura.orario_inizio_l;
-        const oraFine = isChiusura ? orarioChiusura.orario_fine_f : orarioChiusura.orario_fine_l;
+        const isFestivo = (giornoSettimana === 0 || giornoSettimana === 6);
+        const oraInizio = isFestivo ? orarioChiusura.orario_inizio_f : orarioChiusura.orario_inizio_l;
+        const oraFine = isFestivo ? orarioChiusura.orario_fine_f : orarioChiusura.orario_fine_l;
 
         // Verifica se l'ora del transito è all'interno degli orari di chiusura
         if (oraTransito >= oraInizio && oraTransito <= oraFine) {
@@ -166,10 +167,12 @@ class TransitoRepository {
         }
 
         const dataTransito = new Date(transito.data_ora);
-        const giornoSettimana = dataTransito.getDay().toString(); // 0 (domenica) a 6 (sabato)
-        const isChiusura = orarioChiusura.giorno_chiusura.split(',').includes(giornoSettimana);
+        const giornoSettimana = dataTransito.getDay(); // 0 (domenica) a 6 (sabato)
+    
+        // Determina se è sabato o domenica
+        const isFestivo = (giornoSettimana === 0 || giornoSettimana === 6);
 
-        const tariffa = isChiusura ? Number(orarioChiusura.tariffa_f) : Number(orarioChiusura.tariffa_l);
+        const tariffa = isFestivo ? Number(orarioChiusura.tariffa_f) : Number(orarioChiusura.tariffa_l);
         const tariffaBase = Number(tipoVeicolo.tariffa_base);
 
         // Calcola l'importo totale della multa

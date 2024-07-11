@@ -35,6 +35,15 @@ class VeicoloDao implements VeicoloDAO {
         }
     }
 
+    public async getEsenti(): Promise<Veicolo[]> {
+        try {
+            return await Veicolo.findAll({ where: { esente: true } });
+        } catch (error) {
+            console.error('Errore nel recupero dei veicoli esenti dal DAO:', error);
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero dei veicoli esenti');
+        }
+    }
+
     public async create(data: VeicoloCreationAttributes, options?: { transaction?: Transaction }): Promise<Veicolo> {
         try {
             return await Veicolo.create(data);
