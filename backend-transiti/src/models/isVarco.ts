@@ -11,22 +11,6 @@ export interface IsVarcoAttributes {
 class IsVarco extends Model<IsVarcoAttributes> implements IsVarcoAttributes {
     public id_utente!: number;
     public id_varco!: number;
-
-    getIdUtente(): number {
-        return this.id_utente;
-    }
-
-    setIdUtente(value: number): void {
-        this.id_utente = value;
-    }
-
-    getIdVarco(): number {
-        return this.id_varco;
-    }
-
-    setIdVarco(value: number): void {
-        this.id_varco = value;
-    }
 }
 
 IsVarco.init(

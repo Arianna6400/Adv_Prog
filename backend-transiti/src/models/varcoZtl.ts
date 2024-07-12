@@ -20,46 +20,10 @@ export interface VarcoZtlCreationAttributes extends Optional<VarcoZtlAttributes,
 // Implementazione del modello
 class VarcoZtl extends Model<VarcoZtlAttributes, VarcoZtlCreationAttributes> implements VarcoZtlAttributes {
   public id_varco!: number;
-  private _nome!: string;
-  private _via!: string;
-  private _zona_ztl!: number;
-  private _orario_chiusura!: number;
-
-  // Getter e setter per 'nome'
-  public get nome(): string {
-    return this._nome;
-  }
-
-  public set nome(value: string) {
-    this._nome = value;
-  }
-
-  // Getter e setter per 'via'
-  public get via(): string {
-    return this._via;
-  }
-
-  public set via(value: string) {
-    this._via = value;
-  }
-
-  // Getter e setter per 'zona_ztl'
-  public get zona_ztl(): number {
-    return this._zona_ztl;
-  }
-
-  public set zona_ztl(value: number) {
-    this._zona_ztl = value;
-  }
-
-  // Getter e setter per 'orario_chiusura'
-  public get orario_chiusura(): number {
-    return this._orario_chiusura;
-  }
-
-  public set orario_chiusura(value: number) {
-    this._orario_chiusura = value;
-  }
+  public nome!: string;
+  public via!: string;
+  public zona_ztl!: number;
+  public orario_chiusura!: number;
 }
 
 // Inizializzazione del modello
@@ -73,22 +37,10 @@ VarcoZtl.init(
     nome: {
       type: DataTypes.STRING,
       allowNull: false,
-      get() {
-        return this.getDataValue('nome');
-      },
-      set(value: string) {
-        this.setDataValue('nome', value);
-      },
     },
     via: {
       type: DataTypes.STRING,
       allowNull: false,
-      get() {
-        return this.getDataValue('via');
-      },
-      set(value: string) {
-        this.setDataValue('via', value);
-      },
     },
     zona_ztl: {
       type: DataTypes.INTEGER,
@@ -97,12 +49,6 @@ VarcoZtl.init(
         model: ZonaZtl,
         key: 'id_zona',
       },
-      get() {
-        return this.getDataValue('zona_ztl');
-      },
-      set(value: number) {
-        this.setDataValue('zona_ztl', value);
-      },
     },
     orario_chiusura: {
       type: DataTypes.INTEGER,
@@ -110,12 +56,6 @@ VarcoZtl.init(
       references: {
         model: OrarioChiusura,
         key: 'id_orario',
-      },
-      get() {
-        return this.getDataValue('orario_chiusura');
-      },
-      set(value: number) {
-        this.setDataValue('orario_chiusura', value);
       },
     },
   },

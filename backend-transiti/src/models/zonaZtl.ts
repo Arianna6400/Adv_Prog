@@ -15,27 +15,7 @@ export interface ZonaZtlCreationAttributes extends Optional<ZonaZtlAttributes, '
 // Implementazione del modello
 class ZonaZtl extends Model<ZonaZtlAttributes, ZonaZtlCreationAttributes> implements ZonaZtlAttributes {
   public id_zona!: number;
-  private _nome!: string;
-
-  // Getter per 'id_zona'
-  public getIdZona(): number {
-    return this.id_zona;
-  }
-
-  // Setter per 'id_zona'
-  public setIdZona(value: number): void {
-    this.id_zona = value;
-  }
-
-  // Getter per 'nome'
-  public get nome(): string {
-    return this._nome;
-  }
-
-  // Setter per 'nome'
-  public set nome(value: string) {
-    this._nome = value;
-  }
+  public nome!: string;
 }
 
 // Inizializzazione del modello
@@ -49,12 +29,6 @@ ZonaZtl.init(
     nome: {
       type: DataTypes.STRING,
       allowNull: false,
-      get() {
-        return this.getDataValue('nome');
-      },
-      set(value: string) {
-        this.setDataValue('nome', value);
-      },
     },
   },
   {

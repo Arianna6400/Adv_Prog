@@ -15,36 +15,9 @@ export interface TipoVeicoloCreationAttributes extends Optional<TipoVeicoloAttri
 
 // Implementazione del modello
 class TipoVeicolo extends Model<TipoVeicoloAttributes, TipoVeicoloCreationAttributes> implements TipoVeicoloAttributes {
-  private _id_tipo_veicolo!: number;
-  private _descrizione!: string;
-  private _tariffa_base!: number;
-
-  // Getter e setter per id_tipo_veicolo
-  public get id_tipo_veicolo(): number {
-    return this._id_tipo_veicolo;
-  }
-
-  public set id_tipo_veicolo(value: number) {
-    this._id_tipo_veicolo = value;
-  }
-
-  // Getter e setter per descrizione
-  public get descrizione(): string {
-    return this._descrizione;
-  }
-
-  public set descrizione(value: string) {
-    this._descrizione = value;
-  }
-
-  // Getter e setter per tariffa_base
-  public get tariffa_base(): number {
-    return this._tariffa_base;
-  }
-
-  public set tariffa_base(value: number) {
-    this._tariffa_base = value;
-  }
+  public id_tipo_veicolo!: number;
+  public descrizione!: string;
+  public tariffa_base!: number;
 }
 
 // Inizializzazione del modello
@@ -54,32 +27,14 @@ TipoVeicolo.init(
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-      get() {
-        return this.getDataValue('id_tipo_veicolo');
-      },
-      set(value: number) {
-        this.setDataValue('id_tipo_veicolo', value);
-      }
     },
     descrizione: {
       type: DataTypes.STRING,
       allowNull: false,
-      get() {
-        return this.getDataValue('descrizione');
-      },
-      set(value: string) {
-        this.setDataValue('descrizione', value);
-      }
     },
     tariffa_base: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
-      get() {
-        return this.getDataValue('tariffa_base');
-      },
-      set(value: number) {
-        this.setDataValue('tariffa_base', value);
-      }
     },
   },
   {
