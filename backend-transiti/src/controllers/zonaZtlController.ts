@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
-import { isValidId } from '../utils/utils';
 import varcoZtlDao from '../dao/varcoZtlDao';
 import zonaZtlDao from '../dao/zonaZtlDao';
 /**
