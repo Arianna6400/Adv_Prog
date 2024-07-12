@@ -16,8 +16,8 @@ export const validateCreateVeicolo = [
         .matches(targaRegex)
         .withMessage('Targa deve essere un numero di registrazione valido per il veicolo'),
     body('esente').isBoolean().withMessage('Esente deve essere un booleano'),
-    body('tipo_veicolo').isInt().withMessage('Tipo Veicolo ID deve essere un intero'),
-    body('utente').isInt().withMessage('Utente ID deve essere un intero'),
+    body('tipo_veicolo').isInt({ min: 1 }).withMessage('Tipo Veicolo ID deve essere un intero positivo'),
+    body('utente').isInt({ min: 1 }).withMessage('Utente ID deve essere un intero positivo'),
     validateRequest
 ];
 
@@ -26,8 +26,8 @@ export const validateUpdateVeicolo = [
         .matches(targaRegex)
         .withMessage('Targa deve essere un numero di registrazione valido per il veicolo'),
     body('esente').optional().isBoolean().withMessage('Esente deve essere un booleano'),
-    body('tipo_veicolo').optional().isInt().withMessage('Tipo Veicolo ID deve essere un intero'),
-    body('utente').optional().isInt().withMessage('Utente ID deve essere un intero'),
+    body('tipo_veicolo').optional().isInt({ min: 1 }).withMessage('Tipo Veicolo ID deve essere un intero positivo'),
+    body('utente').optional().isInt({ min: 1 }).withMessage('Utente ID deve essere un intero positivo'),
     validateRequest
 ];
 

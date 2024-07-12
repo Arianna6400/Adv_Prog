@@ -2,7 +2,7 @@ import { param, body } from 'express-validator';
 import validateRequest from './validateRequestMiddleware';
 
 export const validateGetZonaZtlById = [
-    param('id').isInt().withMessage('ID deve essere un intero'),
+    param('id').isInt({ min: 1 }).withMessage('ID deve essere un intero positivo'),
     validateRequest
 ];
 
@@ -12,12 +12,12 @@ export const validateCreateZonaZtl = [
 ];
 
 export const validateUpdateZonaZtl = [
-    param('id').isInt().withMessage('ID deve essere un intero'),
+    param('id').isInt({ min: 1 }).withMessage('ID deve essere un intero positivo'),
     body('nome').optional().isString().withMessage('Nome deve essere una stringa'),
     validateRequest
 ];
 
 export const validateDeleteZonaZtl = [
-    param('id').isInt().withMessage('ID deve essere un intero'),
+    param('id').isInt({ min: 1 }).withMessage('ID deve essere un intero positivo'),
     validateRequest
 ];
