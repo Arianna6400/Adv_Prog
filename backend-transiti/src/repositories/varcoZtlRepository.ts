@@ -13,7 +13,6 @@ class VarcoZtlRepository {
         try {
             return await varcoZtlDao.getAll();
         } catch (error) {
-            console.error('Errore nel recupero dei varchi ZTL dal repository:', error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile recuperare i varchi ZTL');
         }
     }
@@ -22,7 +21,6 @@ class VarcoZtlRepository {
         try {
             return await varcoZtlDao.getById(id);
         } catch (error) {
-            console.error(`Errore nel recupero del varco ZTL con id ${id} dal repository:`, error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile recuperare il varco ZTL');
         }
     }
@@ -58,7 +56,6 @@ class VarcoZtlRepository {
             return varcoZtl;
         } catch (error) {
             await transaction.rollback();
-            console.error('Errore nella creazione del varco ZTL nel repository:', error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione del varco ZTL');
         }
     }
@@ -67,7 +64,6 @@ class VarcoZtlRepository {
         try {
             return await varcoZtlDao.update(id, data);
         } catch (error) {
-            console.error(`Errore nell'aggiornamento del varco ZTL con id ${id} nel repository:`, error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile aggiornare il varco ZTL');
         }
     }
@@ -76,7 +72,6 @@ class VarcoZtlRepository {
         try {
             return await varcoZtlDao.delete(id);
         } catch (error) {
-            console.error(`Errore nella cancellazione del varco ZTL con id ${id} nel repository:`, error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile cancellare il varco ZTL');
         }
     }

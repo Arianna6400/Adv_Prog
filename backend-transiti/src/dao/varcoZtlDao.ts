@@ -13,7 +13,6 @@ class VarcoZtlDao implements VarcoZtlDAO {
         try {
             return await VarcoZtl.findAll();
         } catch (error) {
-            console.error('Errore nel recupero dei varchi ZTL:', error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero dei varchi ZTL');
         }
     }
@@ -26,10 +25,6 @@ class VarcoZtlDao implements VarcoZtlDAO {
             }
             return varcoZtl;
         } catch (error) {
-            console.error(`Errore nel recupero del varco ZTL con id ${id}:`, error);
-            if (error instanceof HttpError) {
-                throw error; // Rilancia l'errore personalizzato
-            }
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero del varco ZTL con id ${id}`);
         }
     }
@@ -38,7 +33,6 @@ class VarcoZtlDao implements VarcoZtlDAO {
         try {
             return await VarcoZtl.create(data, options);
         } catch (error) {
-            console.error('Errore nella creazione del varco ZTL:', error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione del varco ZTL');
         }
     }
@@ -49,7 +43,6 @@ class VarcoZtlDao implements VarcoZtlDAO {
             const updatedItems = await VarcoZtl.findAll({ where: { id_varco: id } });
             return [affectedCount, updatedItems];
         } catch (error) {
-            console.error(`Errore nell'aggiornamento del varco ZTL con id ${id}:`, error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nell'aggiornamento del varco ZTL con id ${id}`);
         }
     }
@@ -58,7 +51,6 @@ class VarcoZtlDao implements VarcoZtlDAO {
         try {
             return await VarcoZtl.destroy({ where: { id_varco: id } });
         } catch (error) {
-            console.error(`Errore nella cancellazione del varco ZTL con id ${id}:`, error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione del varco ZTL con id ${id}`);
         }
     }
