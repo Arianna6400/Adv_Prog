@@ -6,9 +6,15 @@ import { UtenteCreationAttributes } from '../models/utente';
 import { VarcoZtlCreationAttributes, VarcoZtlAttributes } from '../models/varcoZtl';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import Database from '../utils/database';
-
+/**
+ * Classe VarcoZtlRepository per gestire le operazioni CRUD sui varchi ZTL.
+ */
 class VarcoZtlRepository {
-    
+    /**
+     * Recupera tutti i varchi ZTL.
+     * 
+     * @returns {Promise<VarcoZtl[]>} Una Promise che risolve un array di varchi ZTL.
+     */
     public async getAllVarcoZtl(): Promise<VarcoZtl[]> {
         try {
             return await varcoZtlDao.getAll();
@@ -17,6 +23,12 @@ class VarcoZtlRepository {
         }
     }
 
+    /**
+     * Recupera un varco ZTL per ID.
+     * 
+     * @param {number} id L'ID del varco ZTL. 
+     * @returns {Promise<VarcoZtl | null>} Una Promise che risolve un varco ZTL o null se non trovato.
+     */
     public async getVarcoZtlById(id: number): Promise<VarcoZtl | null> {
         try {
             return await varcoZtlDao.getById(id);
@@ -25,6 +37,12 @@ class VarcoZtlRepository {
         }
     }
 
+    /**
+     * Crea un nuovo varco ZTL.
+     * 
+     * @param {VarcoZtlCreationAttributes} data I dati per creare il varco ZTL. 
+     * @returns {Promise<VarcoZtl>} Una Promise che risolve il varco ZTL creato.
+     */
     public async createVarcoZtl(data: VarcoZtlCreationAttributes): Promise<VarcoZtl> {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
@@ -50,16 +68,26 @@ class VarcoZtlRepository {
                 id_varco: varcoZtl.id_varco,
             };
 
+            // Aggiunge l'associazione al database
             await IsVarcoDao.create(isVarcoData, { transaction });
 
+            // Conferma la transazione
             await transaction.commit();
             return varcoZtl;
         } catch (error) {
+            // Annulla la transazione in caso di errore
             await transaction.rollback();
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione del varco ZTL');
         }
     }
 
+    /**
+     * Aggiorna un varco ZTL esistente.
+     * 
+     * @param {number} id L'ID del varco ZTL.
+     * @param {Partial<VarcoZtlAttributes>} data I dati per aggiornare il varco ZTL.
+     * @returns {Promise<[number, VarcoZtl[]]>} Una Promise che risolve il numero di righe aggiornate e l'array dei varchi ZTL aggiornati.
+     */
     public async updateVarcoZtl(id: number, data: Partial<VarcoZtlAttributes>): Promise<[number, VarcoZtl[]]> {
         try {
             return await varcoZtlDao.update(id, data);
@@ -68,6 +96,12 @@ class VarcoZtlRepository {
         }
     }
 
+    /**
+     * Cancella un varco ZTL per ID.
+     * 
+     * @param {number} id L'ID del varco ZTL.
+     * @returns {Promise<number>} Una Promise che risolve il numero di righe cancellate.
+     */
     public async deleteVarcoZtl(id: number): Promise<number> {
         try {
             return await varcoZtlDao.delete(id);

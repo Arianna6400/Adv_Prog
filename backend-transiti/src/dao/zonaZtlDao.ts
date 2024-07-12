@@ -4,12 +4,18 @@ import { DAO } from './daoInterface';
 import { ZonaZtlAttributes, ZonaZtlCreationAttributes } from '../models/zonaZtl';
 import { Transaction } from 'sequelize';
 
+// Interfaccia ZonaZtlDAO che estende la DAO per includere metodi specifici per ZonaZtl
 interface ZonaZtlDAO extends DAO<ZonaZtlAttributes, number> {
     // Metodi specifici per ZonaZtl, se necessari
 }
 
+// Classe ZonaZtlDao che implementa l'interfaccia ZonaZtlDAO
 class ZonaZtlDao implements ZonaZtlDAO {
-
+    /**
+     * Recupera tutte le zone ZTL.
+     * 
+     * @returns {Promise<ZonaZtl[]>} Una Promise che risolve un array di zone ZTL.
+     */
     public async getAll(): Promise<ZonaZtl[]> {
         try {
             return await ZonaZtl.findAll();
@@ -19,6 +25,12 @@ class ZonaZtlDao implements ZonaZtlDAO {
         }
     }
 
+    /**
+     * Recupera una zona ZTL per ID.
+     * 
+     * @param {number} id L'ID della zona ZTL.
+     * @returns {Promise<ZonaZtl | null>} Una Promise che risolve una zona ZTL o null se non trovata.
+     */
     public async getById(id: number): Promise<ZonaZtl | null> {
         try {
             const zonaZtl = await ZonaZtl.findByPk(id);
@@ -35,6 +47,14 @@ class ZonaZtlDao implements ZonaZtlDAO {
         }
     }
 
+    /**
+     * Crea una nuova zona ZTL.
+     * 
+     * @param {ZonaZtlCreationAttributes} data I dati per creare la zona ZTL.
+     * @param {Object} [options] Opzioni aggiuntive per la transazione.
+     * @param {Transaction} [options.transaction] La transazione Sequelize.
+     * @returns {Promise<ZonaZtl>} Una Promise che risolve la zona ZTL creata.
+     */
     public async create(data: ZonaZtlCreationAttributes, options?: { transaction?: Transaction }): Promise<ZonaZtl> {
         try {
             return await ZonaZtl.create(data);
@@ -44,6 +64,15 @@ class ZonaZtlDao implements ZonaZtlDAO {
         }
     }
 
+    /**
+     * Aggiorna una zona ZTL esistente.
+     * 
+     * @param {number} id L'ID della zona ZTL.
+     * @param {Partial<ZonaZtlAttributes>} data I dati per aggiornare la zona ZTL.
+     * @param {Object} [options] Opzioni aggiuntive per la transazione.
+     * @param {Transaction} [options.transaction] La transazione Sequelize.
+     * @returns {Promise<[number, ZonaZtl[]]>} Una Promise che risolve il numero di righe aggiornate e l'array delle zone ZTL aggiornate.
+     */
     public async update(id: number, data: Partial<ZonaZtlAttributes>, options?: { transaction?: Transaction }): Promise<[number, ZonaZtl[]]> {
         try {
             const zonaZtl = await ZonaZtl.findByPk(id);
@@ -59,6 +88,14 @@ class ZonaZtlDao implements ZonaZtlDAO {
         }
     }
 
+    /**
+     * Cancella una zona ZTL per ID.
+     * 
+     * @param {number} id L'ID della zona ZTL.
+     * @param {Object} [options] Opzioni aggiuntive per la transazione.
+     * @param {Transaction} [options.transaction] La transazione Sequelize.
+     * @returns {Promise<number>} Una promessa che risolve il numero di righe cancellate.
+     */
     public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
         try {
             const zonaZtl = await ZonaZtl.findByPk(id);

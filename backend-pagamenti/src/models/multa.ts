@@ -71,6 +71,7 @@ class Multa extends Model<MultaAttributes, MultaCreationAttributes> implements M
   }
 }
 
+// Inizializzazione del modello
 Multa.init(
   {
     id_multa: {
