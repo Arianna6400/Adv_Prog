@@ -62,7 +62,6 @@ class MultaRepository {
         try {
             return await multaDao.update(id, data);
         } catch (error) {
-            console.error(`Errore nell'aggiornamento della multa con id ${id} nel repository:`, error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile aggiornare la multa con id ${id}`);
         }
     }
@@ -105,7 +104,7 @@ class MultaRepository {
 
             return multeFiltrate;
         } catch (error) {
-            throw new Error('Impossibile recuperare le multe per l\'utente');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare le multe per l'utente ${utenteId}`);
         }
     }
 
@@ -113,11 +112,11 @@ class MultaRepository {
      * Recupera una multa con i dettagli per ID e utente.
      * 
      * @param {number} id L'ID della multa.
-     * @param {number} userId L'ID dell'utente.
+     * @param {number} utenteId L'ID dell'utente.
      * @returns {Promise<{ multa: Multa, transito: Transito, veicolo: Veicolo } | null>} - Una Promise che risolve un oggetto con i dettagli della multa, transito e veicolo, 
      * o null se non trovato o non autorizzato.
      */
-    public async getMultaWithDetailsById(id: number, userId: number): Promise<{ multa: Multa, transito: Transito, veicolo: Veicolo } | null> {
+    public async getMultaWithDetailsById(id: number, utenteId: number): Promise<{ multa: Multa, transito: Transito, veicolo: Veicolo } | null> {
         try {
             // Recupera la multa dal DAO
             const multa = await multaDao.getById(id);
@@ -138,14 +137,13 @@ class MultaRepository {
             }
 
             // Verifica se l'utente è autorizzato a vedere questa multa
-            if (veicolo.utente !== userId) {
+            if (veicolo.utente !== utenteId) {
                 return null; // L'utente non è autorizzato a vedere questa multa
             }
 
             return { multa, transito, veicolo };
         } catch (error) {
-            console.error(`Errore nel recupero della multa con id ${id} dal repository:`, error);
-            throw new Error('Impossibile recuperare la multa');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare la multa con id ${id} per l'utente ${utenteId}`);
         }
     }
 }

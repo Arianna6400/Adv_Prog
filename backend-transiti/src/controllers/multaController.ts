@@ -28,10 +28,10 @@ export const downloadBollettino = async (req: Request, res: Response, next: Next
     try {
         // Estrae l'ID della multa dai parametri della richiesta e l'ID utente dal payload JWT
         const id = parseInt(req.params.id);
-        const userId = (req as any).user.id;
+        const utenteId = (req as any).user.id;
 
         // Recupera i dettagli della multa, del transito e del veicolo dal repository
-        const result = await multaRepository.getMultaWithDetailsById(id, userId);
+        const result = await multaRepository.getMultaWithDetailsById(id, utenteId);
         
         if (result) {
             const { multa, transito, veicolo} = result;
