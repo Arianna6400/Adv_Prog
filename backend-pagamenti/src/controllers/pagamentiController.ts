@@ -16,7 +16,7 @@ export const payMulta = async (req: Request, res: Response, next: NextFunction) 
     const transaction = await sequelize.transaction(); // Inizia una nuova transazione
 
     try {
-        // cerca la multa
+        // Cerca la multa
         const multa = await multaDao.getMultaByUUID(uuid, { transaction });
         if (!multa) {
             await transaction.rollback();
@@ -27,7 +27,7 @@ export const payMulta = async (req: Request, res: Response, next: NextFunction) 
             await transaction.rollback();
             return next(ErrorFactory.createError(ErrorTypes.BadRequest, 'Multa già pagata'));
         }
-        // cerca l'utente
+        // Cerca l'utente
         const utente = await utenteDao.getById(id, { transaction });
         if (!utente) {
             await transaction.rollback();
@@ -38,15 +38,15 @@ export const payMulta = async (req: Request, res: Response, next: NextFunction) 
             await transaction.rollback();
             return next(ErrorFactory.createError(ErrorTypes.BadRequest, 'Token insufficienti'));
         }
-        // calcola il nuovo saldo dopo il pagamento
+        // Calcola il nuovo saldo dopo il pagamento
         const newTokens = Number(utente.token_rimanenti) - multa.importo_token;
-        utente.token_rimanenti = Number(newTokens); // per gestire le cifre decimali se passato come float
+        utente.token_rimanenti = Number(newTokens); // Per gestire le cifre decimali se passato come float
         multa.pagata = true;
         
         await utente.save({ transaction });
         await multa.save({ transaction });
 
-        await transaction.commit(); // termina la transazione con successo
+        await transaction.commit(); // Termina la transazione con successo
 
         res.status(200).json({ 
             multa_numero: multa.id_multa,

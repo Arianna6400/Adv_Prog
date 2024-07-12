@@ -1,4 +1,3 @@
-
 /**
  * Estensione della classe Error per aggiungere le proprietà statusCode e code
  */

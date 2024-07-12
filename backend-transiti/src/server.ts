@@ -1,4 +1,3 @@
-
 /*
   Gestisce l’avvio del server e la connessione al database
  */

@@ -11,16 +11,16 @@ services:
       context: ./backend-transiti
       dockerfile: Dockerfile
     volumes:
-      - ./backend-transiti:/usr/src/app # monta directory nel container
+      - ./backend-transiti:/usr/src/app # Monta directory nel container
       - /usr/src/app/node_modules
     ports:
-      - "3000:3000" # porta 3000 container su porta 3000 host
+      - "3000:3000" # Porta 3000 container su porta 3000 host
     env_file:
       - .env
     depends_on:
       - db
       - pagamenti
-    networks: # rete in cui il servizio sarà collegato
+    networks: # Rete in cui il servizio sarà collegato
       - backend
 
   pagamenti:
@@ -29,7 +29,7 @@ services:
        context: ./backend-pagamenti
        dockerfile: Dockerfile
      volumes:
-       - ./backend-pagamenti:/usr/src/app # monta directory nel container
+       - ./backend-pagamenti:/usr/src/app # Monta directory nel container
        - /usr/src/app/node_modules
      ports:
        - "3001:3001"
@@ -37,13 +37,13 @@ services:
        - .env
      depends_on:
        - db
-     networks: # rete in cui il servizio sarà collegato
+     networks: # Rete in cui il servizio sarà collegato
        - backend
 
   db:
     container_name: postgres
     image: postgres:13
-    environment: # variabili d'ambiente per configurare Postgres
+    environment: # Variabili d'ambiente per configurare Postgres
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
@@ -52,7 +52,7 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks: # rete in cui il servizio sarà collegato
+    networks: # Rete in cui il servizio sarà collegato
       - backend
 
 volumes:
@@ -60,4 +60,4 @@ volumes:
 
 networks:
   backend:
-    driver: bridge # driver bridge permette ai container di comunicare tra loro
+    driver: bridge # Driver bridge permette ai container di comunicare tra loro

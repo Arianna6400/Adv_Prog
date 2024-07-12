@@ -18,10 +18,13 @@ import {
 } from '../middleware/validate/orarioChiusuraValidate';
 
 const router = Router();
-
-// Applica il middleware di autenticazione per tutte le rotte
+/**
+ * Middleware di autenticazione per tutte le rotte
+ */
 router.use(authMiddleware);
-
+/**
+ * Definizione delle rotte con relative validazioni ed autorizzazioni
+ */
 router.get('/orariChiusura', authorize(['operatore']), getAllOrariChiusura);
 router.get('/orariChiusura/:id', authorize(['operatore']), validateGetOrarioChiusuraById, getOrarioChiusuraById);
 router.post('/orariChiusura', authorize(['operatore']), validateCreateOrarioChiusura, createOrarioChiusura);

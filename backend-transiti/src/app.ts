@@ -1,7 +1,6 @@
 /**
  * Contiene la configurazione e la logica dell’applicazione Express (middleware, rotte e gestione errori)
  */
-
 import express from 'express';
 import dotenv from 'dotenv';
 import utenteRoutes from './routes/utenteRoutes';
@@ -29,18 +28,18 @@ app.use('/', authRoutes);
 // Registra le rotte dell'API
 app.use('/', pagamentiRoutes);
 // Registra le rotte dell'API
-app.use('/', utenteRoutes);
 app.use('/', varcoZtlRoutes);
 app.use('/', zonaZtlRoutes);
 app.use('/', transitoRoutes);
 app.use('/', multaRoutes);
-app.use('/', veicoloRoutes);
 
 /**
  * POTREBBERO NON SERVIRE
  */
+app.use('/', veicoloRoutes);
 app.use('/', tipoVeicoloRoutes);
 app.use('/', orarioChiusuraRoutes);
+app.use('/', utenteRoutes);
 
 // Middleware per gestire le rotte non trovate
 app.use((req, res, next) => {

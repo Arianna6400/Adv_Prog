@@ -3,6 +3,7 @@ import Database from '../utils/database';
 
 const sequelize = Database.getInstance();
 
+// Interfaccia che definisce tutte le proprietà del modello
 export interface MultaAttributes {
   id_multa: number;
   transito: number;
@@ -12,8 +13,10 @@ export interface MultaAttributes {
   uuid_pagamento: string;
 }
 
+// Interfaccia per la creazione del modello, rende 'id_multa' opzionale
 export interface MultaCreationAttributes extends Optional<MultaAttributes, 'id_multa'> {}
 
+// Implementazione del modello
 class Multa extends Model<MultaAttributes, MultaCreationAttributes> implements MultaAttributes {
   public id_multa!: number;
   private _transito!: number;

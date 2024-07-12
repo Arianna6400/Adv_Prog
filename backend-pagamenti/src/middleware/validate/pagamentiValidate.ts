@@ -1,4 +1,4 @@
-import { body,CustomSanitizer } from 'express-validator';
+import { body } from 'express-validator';
 import validateRequest from './validateRequestMiddleware';
 
 /**
@@ -10,7 +10,7 @@ export const ricaricaTokenValidation = [
   validateRequest
 ];
 /**
- * array di middleware di validazione per la rotta di pagamento delle multe
+ * Array di middleware di validazione per la rotta di pagamento delle multe
  */
 export const pagaMultaValidation = [
   body('uuid').isUUID().withMessage('UUID deve essere un UUID valido'),

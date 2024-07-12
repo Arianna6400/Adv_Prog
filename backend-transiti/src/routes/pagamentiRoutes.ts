@@ -1,13 +1,17 @@
 import { Router } from 'express';
 import { payMulta, rechargeTokens, checkToken } from '../controllers/pagamentiController';
-import { authMiddleware, authorize } from '../middleware/authMiddleware';
+import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();
-
+/**
+ * Middleware di autenticazione per tutte le rotte
+ */
 router.use(authMiddleware);
-
-router.post('/pagamulta', authorize(['automobilista']), payMulta);
-router.post('/ricaricatoken', authorize(['admin']), rechargeTokens);
-router.get('/tokenresidui', authorize(['automobilista']), checkToken);
+/**
+ * Definizione delle rotte
+ */
+router.post('/pagamulta', payMulta);
+router.post('/ricaricatoken', rechargeTokens);
+router.get('/tokenresidui', checkToken);
 
 export default router;

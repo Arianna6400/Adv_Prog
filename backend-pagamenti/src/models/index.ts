@@ -1,4 +1,3 @@
-
 // Inizializza i modelli di Sequelize e definisce le relazioni tra i modelli
 
 import Database from '../utils/database';
