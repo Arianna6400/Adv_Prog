@@ -15,10 +15,13 @@ import {
 } from '../middleware/validate/transitoValidate';
 
 const router = Router();
-
-// Applica il middleware di autenticazione per tutte le rotte
+/**
+ * Middleware di autenticazione per tutte le rotte
+ */
 router.use(authMiddleware);
-
+/**
+ * Definizione delle rotte con relative validazioni ed autorizzazioni
+ */
 router.get('/transiti', authorize(['operatore']), getAllTransiti);
 router.get('/transiti/:id', authorize(['operatore']), validateGetTransitoById, getTransitoById);
 router.post('/transiti', authorize(['operatore','varco']), validateCreateTransito, createTransito);

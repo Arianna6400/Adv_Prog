@@ -18,10 +18,13 @@ import { authMiddleware, authorize} from '../middleware/authMiddleware';import {
 } from '../middleware/validate/veicoloValidate';
 
 const router = Router();
-
-// Applica il middleware di autenticazione per tutte le rotte
+/**
+ * Middleware di autenticazione per tutte le rotte
+ */
 router.use(authMiddleware);
-
+/**
+ * Definizione delle rotte con relative validazioni ed autorizzazioni
+ */
 router.get('/veicoli', getAllVeicoli);
 router.get('/veicoli/esenti', getVeicoliEsenti);
 router.get('/veicoli/:targa', validateGetVeicoloById, getVeicoloById);

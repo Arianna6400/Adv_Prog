@@ -1,7 +1,7 @@
 import Utente from '../models/utente';
-import { ErrorFactory, ErrorTypes, HttpError } from '../utils/errorFactory';
-import { UtenteAttributes, UtenteCreationAttributes } from '../models/utente';
-import { Transaction, FindOptions } from 'sequelize';
+import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
+import { UtenteAttributes } from '../models/utente';
+import { FindOptions } from 'sequelize';
 
 interface UtenteDAO<T, K> {
     getById(id: K): Promise<T | null>;
@@ -13,7 +13,7 @@ class UtenteDao implements UtenteDAO<UtenteAttributes, number> {
 
     /**
      * Metodo per ottenere un utente tramite ID
-     * @param options permette di specificare parametri per le query, fornita da sequelize, esempio transazione
+     * @param options Permette di specificare parametri per le query, fornita da sequelize, esempio transazione
      */
     public async getById(id: number, options?: FindOptions): Promise<Utente | null> {
         try {
@@ -44,8 +44,8 @@ class UtenteDao implements UtenteDAO<UtenteAttributes, number> {
 
     /**
      * Metodo per ricaricare i token di un utente dato l'ID
-     * @param id identificativ dell'utente al quale effettuare la ricarica
-     * @param tokens valore dei token da ricaricare per un utente
+     * @param id Identificativo dell'utente al quale effettuare la ricarica
+     * @param tokens Valore dei token da ricaricare per un utente
      */
     public async rechargeTokens(id: number, tokens: number): Promise<Utente> {
         try {

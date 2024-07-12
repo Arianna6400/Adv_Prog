@@ -6,14 +6,14 @@ dotenv.config();
 const secret = process.env.JWT_SECRET as string; // Estrae la variabile d’ambiente JWT_SECRET
 
 /**
- * genera il token con durata 1 ora
+ * Genera il token con durata 1 ora
  */
 export const generateToken = (payload: object): string => {
   return jwt.sign(payload, secret, { expiresIn: '1h' });
 };
 
 /**
- * verifica il token
+ * Verifica il token
  */
 export const verifyToken = (token: string): JwtPayload | null => {
   try {
@@ -21,7 +21,7 @@ export const verifyToken = (token: string): JwtPayload | null => {
     if (typeof decoded === 'string') {
       return null; 
     }
-    return decoded as JwtPayload; // se la verifica ha successo ritorna il payload decodificato
+    return decoded as JwtPayload; // Se la verifica ha successo ritorna il payload decodificato
   } catch (e) {
     return null;
   }
