@@ -4,6 +4,7 @@ import utenteDao from '../dao/utenteDao';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import { JwtPayload } from 'jsonwebtoken';
 import Database from '../utils/database';
+import { parse } from 'path';
 
 /**
  * Funzione per pagare una multa.
@@ -63,7 +64,7 @@ export const payMulta = async (req: Request, res: Response, next: NextFunction) 
  * Funzione per ricaricare i token di un utente.
  */
 export const rechargeTokens = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.body; // ID dell'utente passato nel body della richiesta
+    const id = parseInt(req.params.id); // ID dell'utente passato nel body della richiesta
     const tokens  = Number(req.body.tokens);
     try {
         const utente = await utenteDao.rechargeTokens(id, tokens);

@@ -57,7 +57,7 @@ export const rechargeTokens = async (req: Request, res: Response, next: NextFunc
         setAuthToken(token);
 
         // Richiesta POST all'endpoint tramite istanza axios per la connessione con backend-pagamenti
-        const response = await axiosInstance.post('/ricaricatoken', { id, tokens });
+        const response = await axiosInstance.post(`/ricaricatoken/${id}`, { tokens });
         res.status(200).json(response.data);
     } catch (error) {
         // Gestisce gli errori di axios, ritornando un errore appropriato

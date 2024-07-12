@@ -11,7 +11,7 @@ router.use(authMiddleware);
  * Definizione delle rotte
  */
 router.post('/pagamulta', payMulta);
-router.post('/ricaricatoken', rechargeTokens);
+router.post('/ricaricatoken/:id', rechargeTokens);
 router.get('/tokenresidui', checkToken);
 
 export default router;
