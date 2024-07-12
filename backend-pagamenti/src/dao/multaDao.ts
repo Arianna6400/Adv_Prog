@@ -9,18 +9,18 @@ interface MultaDAO<T, K> {
 
 class MultaDao implements MultaDAO<MultaAttributes, number> {
 
+    /**
+     * Metodo per ottenere la multa dato il suo UUID
+     */
     public async getMultaByUUID(uuid: string, options?: FindOptions): Promise<Multa | null> {
         try {
+            // ricerca la multa nel db tramite UUID
             const multa = await Multa.findOne({ where: { uuid_pagamento: uuid }, ...options });
             if (!multa) {
                 throw ErrorFactory.createError(ErrorTypes.NotFound, `Multa con uuid ${uuid} non trovata`);
             }
             return multa;
         } catch (error) {
-            console.error(`Errore nel recupero della multa con uuid ${uuid}:`, error);
-            if (error instanceof HttpError) {
-                throw error;
-            }
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero della multa con uuid ${uuid}`);
         }
     }

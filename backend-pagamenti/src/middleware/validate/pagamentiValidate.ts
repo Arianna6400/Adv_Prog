@@ -1,17 +1,17 @@
 import { body,CustomSanitizer } from 'express-validator';
 import validateRequest from './validateRequestMiddleware';
 
-// Middleware personalizzato per arrotondare i numeri a due decimali
-const roundToTwoDecimals: CustomSanitizer = (value: number) => {
-  return parseFloat(value.toFixed(2));
-};
-
+/**
+ * Array di middleware di validazione per la rotta di ricarica dei token
+ */
 export const ricaricaTokenValidation = [
   body('id').isInt({ min: 1 }).withMessage('ID deve essere un intero positivo'),
-  body('tokens').isFloat({ gt: 0 }).withMessage('Importo deve essere un float positivo').toFloat().customSanitizer(roundToTwoDecimals),
+  body('tokens').isFloat({ gt: 0 }).withMessage('Importo deve essere un float positivo').toFloat(),
   validateRequest
 ];
-
+/**
+ * array di middleware di validazione per la rotta di pagamento delle multe
+ */
 export const pagaMultaValidation = [
   body('uuid').isUUID().withMessage('UUID deve essere un UUID valido'),
   validateRequest

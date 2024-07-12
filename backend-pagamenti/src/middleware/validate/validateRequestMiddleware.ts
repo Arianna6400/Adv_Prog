@@ -1,3 +1,6 @@
+/**
+ * Middleware di validazione dei dati inseriti nelle rotte
+ */
 import { validationResult } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
 import { ErrorFactory, ErrorTypes } from '../../utils/errorFactory';

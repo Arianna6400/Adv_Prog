@@ -15,7 +15,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     if (!user) {
       return next(ErrorFactory.createError(ErrorTypes.Unauthorized, 'Email non valida'));
     }
-
+    // genera il token, email potrebbe essere opzionale
     const token = generateToken({ id: user.id_utente, email: user.email, ruolo: user.ruolo});
     res.status(200).json({ token });
   } catch (error) {

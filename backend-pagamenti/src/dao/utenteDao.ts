@@ -11,23 +11,25 @@ interface UtenteDAO<T, K> {
 
 class UtenteDao implements UtenteDAO<UtenteAttributes, number> {
 
+    /**
+     * Metodo per ottenere un utente tramite ID
+     * @param options permette di specificare parametri per le query, fornita da sequelize, esempio transazione
+     */
     public async getById(id: number, options?: FindOptions): Promise<Utente | null> {
         try {
-            const utente = await Utente.findByPk(id, options);
+            const utente = await Utente.findByPk(id);
             if (!utente) {
                 throw ErrorFactory.createError(ErrorTypes.NotFound, `Utente con id ${id} non trovato`);
             }
             return utente;
         } catch (error) {
-            console.error(`Errore nel recupero dell'utente con id ${id}:`, error);
-            if (error instanceof HttpError) {
-                throw error;
-            }
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero dell'utente con id ${id}`);
         }
     }
 
-    // metodo per controllare i token rimanenti
+    /**
+     * Metodo per controllare i token rimanenti di un utente
+     */
     public async checkToken(id: number): Promise<number> {
         try {
             const utente = await this.getById(id);
@@ -36,15 +38,15 @@ class UtenteDao implements UtenteDAO<UtenteAttributes, number> {
             }
             return Number(utente.token_rimanenti);
         } catch (error) {
-            console.error(`Errore nel controllo dei token per l'utente con email ${id}:`, error);
-            if (error instanceof HttpError) {
-                throw error;
-            }
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel controllo dei token per l'utente con email ${id}`);
         }
     }
 
-    // metodo per ricaricare i token di un utente dato l'email
+    /**
+     * Metodo per ricaricare i token di un utente dato l'ID
+     * @param id identificativ dell'utente al quale effettuare la ricarica
+     * @param tokens valore dei token da ricaricare per un utente
+     */
     public async rechargeTokens(id: number, tokens: number): Promise<Utente> {
         try {
             const utente = await this.getById(id);
@@ -57,7 +59,6 @@ class UtenteDao implements UtenteDAO<UtenteAttributes, number> {
             await utente.save();
             return utente;
         } catch (error) {
-            console.error(`Errore nell'aggiornamento dei token per l'utente con email ${id}:`, error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nell'aggiornamento dei token per l'utente con email ${id}`);
         }
     }
