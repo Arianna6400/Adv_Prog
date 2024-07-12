@@ -5,31 +5,40 @@ import QRCode from 'qrcode';
 import { JwtPayload } from 'jsonwebtoken';
 import multaRepository from '../repositories/multaRepository';
 
-// Controller per ottenere una multa per ID
+/**
+ * Funzione per ottenere tutte le multe associate all'utente autenticato.
+ */
 export const getMulteByUtente = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        // Estrae l'ID utente dal payload JWT
         const { id } = (req as any).user as JwtPayload;
+        // Recupera tutte le multe dell'utente dal repository
         const multe = await multaRepository.getMulteByUtente(id);
         res.status(200).json(multe);
     } catch (error) {
-        next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero della multa'));
+        next(error);
     }
 };
 
-// Controller per scaricare un bollettino di pagamento in formato PDF con un QR-code
+/**
+ * Funzione per scaricare un bollettino di pagamento in formato PDF con un QR-code al suo interno, 
+ * creato attraverso il recupero delle informazioni relative alla multa.
+ */
 export const downloadBollettino = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        // Estrae l'ID della multa dai parametri della richiesta e l'ID utente dal payload JWT
         const id = parseInt(req.params.id);
         const userId = (req as any).user.id;
 
+        // Recupera i dettagli della multa, del transito e del veicolo dal repository
         const result = await multaRepository.getMultaWithDetailsById(id, userId);
         
         if (result) {
             const { multa, transito, veicolo} = result;
 
-            const dataTransito = transito.data_ora.toLocaleString();
+            const dataTransito = transito.data_ora.toLocaleString(); // Formatta la data del transito
             const targa = veicolo.targa; // Associa la targa del veicolo al transito
-            const statoPagamento = multa.pagata ? 'Pagata' : 'Non pagata';
+            const statoPagamento = multa.pagata ? 'Pagata' : 'Non pagata'; // Determina lo stato del pagamento
 
             // Determina il colore dell'intestazione in base allo stato del pagamento
             const headerColor = multa.pagata ? '#4CAF50' : '#FF0000'; // Verde se pagata, rosso se non pagata

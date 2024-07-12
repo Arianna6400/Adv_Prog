@@ -53,7 +53,7 @@ class VarcoZtlRepository {
             if(! varcoZtl){
                 throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione del varco ZTL');
             }
-            console.log(varcoZtl);
+            console.log(varcoZtl);  
 
             // Crea un nuovo utente con nome e cognome vuoti
             const utenteData: UtenteCreationAttributes = {

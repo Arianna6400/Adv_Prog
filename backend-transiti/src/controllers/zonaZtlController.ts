@@ -21,7 +21,7 @@ export const getZonaZtlById = async (req: Request, res: Response, next: NextFunc
     const id = parseInt(req.params.id);
 
     try {
-        // Recupera la zona ZTL dal database usando l'ID
+        // Recupera la zona ZTL dal DAO usando l'ID
         const zonaZtl = await zonaZtlDao.getById(id);
         if (zonaZtl) {
             res.status(200).json(zonaZtl);
@@ -38,7 +38,7 @@ export const getZonaZtlById = async (req: Request, res: Response, next: NextFunc
  */
 export const createZonaZtl = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        // Controlla se esiste già una zona con lo  stesso nome
+        // Controlla se esiste già una zona con lo stesso nome
         const existingZona = (await zonaZtlDao.getAll()).find(zona => zona.nome === req.body.nome);
         if (existingZona) {
             next(ErrorFactory.createError(ErrorTypes.BadRequest, 'Una zona con questo nome esiste già'));

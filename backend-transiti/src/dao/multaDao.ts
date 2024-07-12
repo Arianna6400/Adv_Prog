@@ -4,12 +4,18 @@ import { DAO } from './daoInterface';
 import { MultaAttributes, MultaCreationAttributes } from '../models/multa';
 import { Transaction } from 'sequelize';
 
+// Interfaccia MultaDAO che estende la DAO per includere metodi specifici per Multa
 interface MultaDAO extends DAO<MultaAttributes, number> {
     // getMulteByUtente(utenteId: number): Promise<Multa[]>;
 }
 
+// Classe MultaDao che implementa l'interfaccia MultaDAO
 class MultaDao implements MultaDAO {
-    
+    /**
+     * Recupera tutte le multe.
+     * 
+     * @returns {Promise<Multa[]>} Una Promise che risolve un array di multe.
+     */
     public async getAll(): Promise<Multa[]> {
         try {
             return await Multa.findAll();
@@ -18,6 +24,12 @@ class MultaDao implements MultaDAO {
         }
     }
 
+    /**
+     * Recupera una multa per ID.
+     * 
+     * @param {number} id L'ID della multa.
+     * @returns {Promise<Multa | null>} Una Promise che risolve una multa o null se non trovata.
+     */
     public async getById(id: number): Promise<Multa | null> {
         try {
           const multa = await Multa.findByPk(id);
@@ -33,6 +45,14 @@ class MultaDao implements MultaDAO {
         }
     }
 
+    /**
+     * Crea una nuova multa.
+     * 
+     * @param {MultaCreationAttributes} data I dati per creare la multa.
+     * @param {Object} [options] Opzioni aggiuntive per la transazione.
+     * @param {Transaction} [options.transaction] La transazione Sequelize.
+     * @returns {Promise<Multa>} Una Promise che risolve la multa creata.
+     */
     public async create(data: MultaCreationAttributes, options?: { transaction?: Transaction }): Promise<Multa> {
         try {
             return await Multa.create(data);
@@ -41,6 +61,15 @@ class MultaDao implements MultaDAO {
         }
     }
 
+    /**
+     * Aggiorna una multa esistente.
+     * 
+     * @param {number} id  L'ID della multa.
+     * @param {Partial<MultaAttributes>} data  I dati per aggiornare la multa.
+     * @param {Object} [options] Opzioni aggiuntive per la transazione.
+     * @param {Transaction} [options.transaction] La transazione Sequelize.
+     * @returns {Promise<[number, Multa[]]>} Una promessa che risolve il numero di righe aggiornate e l'array delle multe aggiornate.
+     */
     public async update(id: number, data: Partial<MultaAttributes>, options?: { transaction?: Transaction }): Promise<[number, Multa[]]> {
         try {
             const [affectedCount] = await Multa.update(data, { where: { id_multa: id }, returning: true });
@@ -51,6 +80,14 @@ class MultaDao implements MultaDAO {
         }
     }
 
+    /**
+     * Cancella una multa per ID.
+     * 
+     * @param {number} id L'ID della multa.
+     * @param {Object} [options] Opzioni aggiuntive per la transazione.
+     * @param {Transaction} [options.transaction] La transazione Sequelize.
+     * @returns {Promise<number>} Una promessa che risolve il numero di righe cancellate.
+     */
     public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
         try {
             return await Multa.destroy({ where: { id_multa: id } });
