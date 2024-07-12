@@ -16,6 +16,6 @@ router.use(authMiddleware);
  * Definizione delle rotte con relative validazioni ed autorizzazioni
  */
 router.get('/multe', authorize(['automobilista']), getMulteByUtente);
-router.get('/multe/:id/bollettino', authorize(['automobilista']), validateDownloadBollettino, downloadBollettino);
+router.get('/multe/bollettino/:id', authorize(['automobilista']), validateDownloadBollettino, downloadBollettino);
 
 export default router;

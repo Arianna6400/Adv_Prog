@@ -40,8 +40,7 @@ app.use('/', utenteRoutes);
 
 // Middleware per gestire le rotte non trovate
 app.use((req, res, next) => {
-  const error = ErrorFactory.createError(ErrorTypes.NotFound, 'Rotta non trovata in backend-transiti');
-  next(error);
+  next(ErrorFactory.createError(ErrorTypes.NotFound, 'Rotta non trovata in backend-transiti'));
 });
 
 // Middleware per la gestione degli errori

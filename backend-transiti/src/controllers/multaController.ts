@@ -4,6 +4,7 @@ import PDFDocument from 'pdfkit';
 import QRCode from 'qrcode';
 import { JwtPayload } from 'jsonwebtoken';
 import multaRepository from '../repositories/multaRepository';
+import { StatusCodes } from "http-status-codes";
 
 /**
  * Funzione per ottenere tutte le multe associate all'utente autenticato.
@@ -14,7 +15,7 @@ export const getMulteByUtente = async (req: Request, res: Response, next: NextFu
         const { id } = (req as any).user as JwtPayload;
         // Recupera tutte le multe dell'utente dal repository
         const multe = await multaRepository.getMulteByUtente(id);
-        res.status(200).json(multe);
+        res.status(StatusCodes.OK).json(multe);
     } catch (error) {
         next(error);
     }

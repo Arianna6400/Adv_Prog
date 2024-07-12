@@ -1,3 +1,5 @@
+import { STATUS_CODES } from 'http';
+import { StatusCodes } from 'http-status-codes';
 
 /**
  * Estensione della classe Error per aggiungere le proprietà statusCode e code
@@ -34,20 +36,20 @@ export enum ErrorTypes {
     static createError(type: ErrorTypes, message: string): HttpError {
       switch (type) {
         case ErrorTypes.NotFound:
-          return new HttpError(404, message, 'NOT_FOUND');
+          return new HttpError(StatusCodes.NOT_FOUND, message, 'NOT_FOUND');
         case ErrorTypes.BadRequest:
-          return new HttpError(400, message, 'BAD_REQUEST');
+          return new HttpError(StatusCodes.BAD_REQUEST, message, 'BAD_REQUEST');
         case ErrorTypes.InvalidID:
-          return new HttpError(400, message, 'INVALID_ID');
+          return new HttpError(StatusCodes.BAD_GATEWAY, message, 'INVALID_ID');
         case ErrorTypes.Unauthorized:
-          return new HttpError(401, message, 'UNAUTHORIZED');
+          return new HttpError(StatusCodes.UNAUTHORIZED, message, 'UNAUTHORIZED');
           case ErrorTypes.InvalidToken:
-        return new HttpError(400, message, 'INVALID_TOKEN');
+        return new HttpError(StatusCodes.BAD_REQUEST, message, 'INVALID_TOKEN');
         case ErrorTypes.Forbidden:
-          return new HttpError(403, message, 'FORBIDDEN');
+          return new HttpError(StatusCodes.FORBIDDEN, message, 'FORBIDDEN');
         case ErrorTypes.InternalServerError:
         default:
-          return new HttpError(500, message, 'INTERNAL_SERVER_ERROR');
+          return new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, message, 'INTERNAL_SERVER_ERROR');
       }
     }
   }
