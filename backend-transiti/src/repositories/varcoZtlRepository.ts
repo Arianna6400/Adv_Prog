@@ -33,7 +33,7 @@ class VarcoZtlRepository {
         try {
             return await varcoZtlDao.getById(id);
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile recuperare il varco ZTL');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il varco ZTL con id ${id}`);
         }
     }
 
@@ -50,6 +50,10 @@ class VarcoZtlRepository {
         try {
             // Crea il varco ZTL
             const varcoZtl = await varcoZtlDao.create(data, { transaction });
+            if(! varcoZtl){
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione del varco ZTL');
+            }
+            console.log(varcoZtl);
 
             // Crea un nuovo utente con nome e cognome vuoti
             const utenteData: UtenteCreationAttributes = {
@@ -59,18 +63,24 @@ class VarcoZtlRepository {
                 ruolo: 'varco',
                 token_rimanenti: 0,
             };
-
             const utente = await UtenteDao.create(utenteData, { transaction });
-
+            if (!utente){
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione del varco ZTL');
+            }
+            console.log(utente);
             // Crea l'associazione nella tabella is_varco
             const isVarcoData = {
                 id_utente: utente.id_utente,
                 id_varco: varcoZtl.id_varco,
             };
-
+            console.log('--------id utente',utente.id_utente);
+            console.log('-------- id varco',varcoZtl.id_varco)
             // Aggiunge l'associazione al database
-            await IsVarcoDao.create(isVarcoData, { transaction });
-
+            const isVarco = await IsVarcoDao.create(isVarcoData, { transaction });
+            if(!isVarco){
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione dell\'associazione');
+            }
+            
             // Conferma la transazione
             await transaction.commit();
             return varcoZtl;
@@ -92,7 +102,7 @@ class VarcoZtlRepository {
         try {
             return await varcoZtlDao.update(id, data);
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile aggiornare il varco ZTL');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile aggiornare il varco ZTL con id ${id}`);
         }
     }
 
@@ -106,7 +116,7 @@ class VarcoZtlRepository {
         try {
             return await varcoZtlDao.delete(id);
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile cancellare il varco ZTL');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile cancellare il varco ZTL con id ${id}`);
         }
     }
 }

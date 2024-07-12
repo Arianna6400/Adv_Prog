@@ -21,10 +21,10 @@ router.use(authMiddleware);
 /**
  * Definizione delle rotte con relative validazioni ed autorizzazioni
  */
-router.get('/varchiZtl', authorize(['operatore']), getAllVarcoZtl);
-router.get('/varchiZtl/:id', authorize(['operatore']), validateGetVarcoZtlById, getVarcoZtlById);
-router.post('/varchiZtl', authorize(['operatore']), validateCreateVarcoZtl, createVarcoZtl);
-router.put('/varchiZtl/:id', authorize(['operatore']), validateUpdateVarcoZtl, updateVarcoZtl);
-router.delete('/varchiZtl/:id', authorize(['operatore']), validateDeleteVarcoZtl, deleteVarcoZtl);
+router.get('/varcoZtl', authorize(['operatore']), getAllVarcoZtl);
+router.get('/varcoZtl/:id', authorize(['operatore']), validateGetVarcoZtlById, getVarcoZtlById);
+router.post('/varcoZtl', authorize(['operatore']), validateCreateVarcoZtl, createVarcoZtl);
+router.put('/varcoZtl/:id', authorize(['operatore']), validateUpdateVarcoZtl, updateVarcoZtl);
+router.delete('/varcoZtl/:id', authorize(['operatore']), validateDeleteVarcoZtl, deleteVarcoZtl);
 
 export default router;

@@ -38,6 +38,10 @@ export const getVarcoZtlById = async (req: Request, res: Response, next: NextFun
  */
 export const createVarcoZtl = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        const existingVarco = (await varcoZtlRepository.getAllVarcoZtl()).find(varco => varco.nome === req.body.nome);
+        if(existingVarco){
+            next(ErrorFactory.createError(ErrorTypes.BadRequest, 'Un varco con questo nome esiste già'));
+        }
         // Crea un nuovo varco ZTL usando i dati forniti nel corpo della richiesta
         const nuovoVarcoZtl = await varcoZtlRepository.createVarcoZtl(req.body);
         res.status(201).json(nuovoVarcoZtl);
