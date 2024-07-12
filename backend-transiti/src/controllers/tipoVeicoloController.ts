@@ -2,7 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import tipoVeicoloDao from '../dao/tipoVeicoloDao';
 
-// Controller per ottenere tutti i tipi di veicolo
+/**
+ * Funzione per ottenere tutti i tipi di veicolo.
+ */
 export const getAllTipoVeicolo = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const tipiVeicolo = await tipoVeicoloDao.getAll();
@@ -12,13 +14,11 @@ export const getAllTipoVeicolo = async (req: Request, res: Response, next: NextF
     }
 };
 
-// Controller per ottenere un tipo di veicolo per ID
+/**
+ * Funzione per ottenere un tipo di veicolo per ID.
+ */
 export const getTipoVeicoloById = async (req: Request, res: Response, next: NextFunction) => {
     const id = parseInt(req.params.id);
-
-    if (isNaN(id)) {
-        return next(ErrorFactory.createError(ErrorTypes.BadRequest, 'ID non valido'));
-    }
 
     try {
         const tipoVeicolo = await tipoVeicoloDao.getById(id);
@@ -32,7 +32,9 @@ export const getTipoVeicoloById = async (req: Request, res: Response, next: Next
     }
 };
 
-// Controller per creare un nuovo tipo di veicolo
+/**
+ * Funzione per creare un nuovo tipo di veicolo.
+ */
 export const createTipoVeicolo = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const nuovoTipoVeicolo = await tipoVeicoloDao.create(req.body);
@@ -42,13 +44,11 @@ export const createTipoVeicolo = async (req: Request, res: Response, next: NextF
     }
 };
 
-// Controller per aggiornare un tipo di veicolo esistente
+/**
+ * Funzione per aggiornare un tipo di veicolo esistente.
+ */
 export const updateTipoVeicolo = async (req: Request, res: Response, next: NextFunction) => {
     const id = parseInt(req.params.id);
-
-    if (isNaN(id)) {
-        return next(ErrorFactory.createError(ErrorTypes.BadRequest, 'ID non valido'));
-    }
 
     try {
         const [updated] = await tipoVeicoloDao.update(id, req.body);
@@ -63,13 +63,11 @@ export const updateTipoVeicolo = async (req: Request, res: Response, next: NextF
     }
 };
 
-// Controller per cancellare un tipo di veicolo per ID
+/**
+ * Funzione per cancellare un tipo di veicolo per ID.
+ */
 export const deleteTipoVeicolo = async (req: Request, res: Response, next: NextFunction) => {
     const id = parseInt(req.params.id);
-
-    if (isNaN(id)) {
-        return next(ErrorFactory.createError(ErrorTypes.BadRequest, 'ID non valido'));
-    }
 
     try {
         const deleted = await tipoVeicoloDao.delete(id);

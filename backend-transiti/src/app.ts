@@ -32,10 +32,7 @@ app.use('/', varcoZtlRoutes);
 app.use('/', zonaZtlRoutes);
 app.use('/', transitoRoutes);
 app.use('/', multaRoutes);
-
-/**
- * POTREBBERO NON SERVIRE
- */
+// Rotte aggiuntive 
 app.use('/', veicoloRoutes);
 app.use('/', tipoVeicoloRoutes);
 app.use('/', orarioChiusuraRoutes);

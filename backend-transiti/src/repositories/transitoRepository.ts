@@ -157,10 +157,6 @@ class TransitoRepository {
             return false;
         }
 
-        /**
-         * DA VEDERE SE TENERLA O CAMBIARE LOGICA CONN ATTRIBUTO FESTIVO SI/NO
-         * OPPURE CON VARIABILE D'AMBIENTE (?)
-         */
         // Determina gli orari di chiusura per il giorno del transito
         const isFestivo = (giornoSettimana === 0 || giornoSettimana === 6);
         const oraInizio = isFestivo ? orarioChiusura.orario_inizio_f : orarioChiusura.orario_inizio_l;
@@ -174,7 +170,6 @@ class TransitoRepository {
         return false;
     }
 
-    // Metodo per calcolare la multa
     /**
      * Metodo privato per calcolare la multa.
      * 

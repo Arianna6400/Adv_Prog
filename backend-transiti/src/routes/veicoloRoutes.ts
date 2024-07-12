@@ -1,16 +1,12 @@
-/**
- * POTREBBE ESSERE ELIMINATO
- */
 import { Router } from 'express';
 import {
     getAllVeicoli,
     getVeicoloById,
-    getVeicoliEsenti,
     createVeicolo,
     updateVeicolo,
     deleteVeicolo
 } from '../controllers/veicoloController';
-import { authMiddleware, authorize} from '../middleware/authMiddleware';import {
+import { authMiddleware } from '../middleware/authMiddleware';import {
     validateGetVeicoloById,
     validateCreateVeicolo,
     validateUpdateVeicolo,
@@ -26,11 +22,9 @@ router.use(authMiddleware);
  * Definizione delle rotte con relative validazioni ed autorizzazioni
  */
 router.get('/veicoli', getAllVeicoli);
-router.get('/veicoli/esenti', getVeicoliEsenti);
 router.get('/veicoli/:targa', validateGetVeicoloById, getVeicoloById);
 router.post('/veicoli', validateCreateVeicolo, createVeicolo);
 router.put('/veicoli/:targa', validateUpdateVeicolo, updateVeicolo);
 router.delete('/veicoli/:targa', validateDeleteVeicolo, deleteVeicolo);
-
 
 export default router;
