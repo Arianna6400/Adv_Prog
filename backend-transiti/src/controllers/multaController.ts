@@ -29,7 +29,7 @@ export const downloadBollettino = async (req: Request, res: Response, next: Next
         const uuid = req.params.uuid;
         const utenteId = (req as any).user.id;
 
-        const result = await multaRepository.getMultaWithDetailsById(uuid, utenteId);
+        const result = await multaRepository.getMultaWithDetailsByUUID(uuid, utenteId);
 
         if (result) {
             const { multa, transito, veicolo } = result;

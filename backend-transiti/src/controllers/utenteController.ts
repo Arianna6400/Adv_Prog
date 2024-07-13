@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import utenteDao from '../dao/utenteDao';
+import { StatusCodes } from 'http-status-codes';
 
 /**
  * Funzione per ottenere tutti gli utenti.
@@ -8,7 +9,7 @@ import utenteDao from '../dao/utenteDao';
 export const getUtenti = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const utenti = await utenteDao.getAll();
-    res.status(200).json(utenti);
+    res.status(StatusCodes.OK).json(utenti);
   } catch (error) {
     next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero degli utenti'));
   }
@@ -23,7 +24,7 @@ export const getUtenteById = async (req: Request, res: Response, next: NextFunct
   try {
     const utente = await utenteDao.getById(id);
     if (utente) {
-      res.status(200).json(utente);
+      res.status(StatusCodes.OK).json(utente);
     } else {
       next(ErrorFactory.createError(ErrorTypes.NotFound, 'Utente non trovato'));
     }
@@ -38,7 +39,7 @@ export const getUtenteById = async (req: Request, res: Response, next: NextFunct
 export const createUtente = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const nuovoUtente = await utenteDao.create(req.body);
-    res.status(201).json(nuovoUtente);
+    res.status(StatusCodes.CREATED).json(nuovoUtente);
   } catch (error) {
     next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione dell\'utente'));
   }
@@ -54,7 +55,7 @@ export const updateUtente = async (req: Request, res: Response, next: NextFuncti
     const [updated] = await utenteDao.update(id, req.body);
     if (updated) {
       const updatedUtente = await utenteDao.getById(id);
-      res.status(200).json(updatedUtente);
+      res.status(StatusCodes.OK).json(updatedUtente);
     } else {
       next(ErrorFactory.createError(ErrorTypes.NotFound, 'Utente non trovato'));
     }
@@ -72,7 +73,7 @@ export const deleteUtente = async (req: Request, res: Response, next: NextFuncti
   try {
     const deleted = await utenteDao.delete(id);
     if (deleted) {
-      res.status(204).send();
+      res.status(StatusCodes.NO_CONTENT).send();
     } else {
       next(ErrorFactory.createError(ErrorTypes.NotFound, 'Utente non trovato'));
     }

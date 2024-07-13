@@ -19,11 +19,21 @@ class TransitoRepository {
     /**
      * Recupera tutti i transiti.
      * 
-     * @returns {Promise<Transito[]>} Una Promise che risolve un array di transiti.
+     * @returns {Promise<any[]>} Una Promise che risolve un array di più Promise combinate.
      */
-    public async getAllTransiti(): Promise<Transito[]> {
+    public async getAllTransiti(): Promise<any[]> {
         try {
-            return await transitoDao.getAll();
+            const transiti = await transitoDao.getAll();
+            const results = await Promise.all(transiti.map(async (transito) => {
+                const veicolo = await veicoloDao.getById(transito.veicolo);
+                const varcoZtl = await varcoZtlDao.getById(transito.varco);
+                return {
+                    ...transito.dataValues,
+                    veicolo: veicolo ? veicolo.dataValues : null,
+                    varco: varcoZtl ? varcoZtl.dataValues : null
+                };
+            }));
+            return results;
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile recuperare i transiti');
         }
@@ -33,11 +43,21 @@ class TransitoRepository {
      * Recupera un trandito per ID.
      * 
      * @param {number} id L'ID del transito. 
-     * @returns {Promise<Transito | null>} Una Promise che risolve un array di transiti o null se non trovato.
+     * @returns {Promise<any | null>} Una Promise che risolve più Promise combinate o null se non trovato.
      */
-    public async getTransitoById(id: number): Promise<Transito | null> {
+    public async getTransitoById(id: number): Promise<any | null> {
         try {
-            return await transitoDao.getById(id);
+            const transito = await transitoDao.getById(id);
+            if (!transito) {
+                return null;
+            }
+            const veicolo = await veicoloDao.getById(transito.veicolo);
+            const varcoZtl = await varcoZtlDao.getById(transito.varco);
+            return {
+                ...transito.dataValues,
+                veicolo: veicolo ? veicolo.dataValues : null,
+                varco: varcoZtl ? varcoZtl.dataValues : null
+            };
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile recuperare il transito');
         }

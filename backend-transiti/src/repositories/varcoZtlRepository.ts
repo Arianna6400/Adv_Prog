@@ -1,6 +1,8 @@
 import varcoZtlDao from '../dao/varcoZtlDao';
 import UtenteDao from '../dao/utenteDao';
 import IsVarcoDao from '../dao/isVarcoDao';
+import zonaZtlDao from '../dao/zonaZtlDao';
+import orarioChiusuraDao from '../dao/orarioChiusuraDao';
 import VarcoZtl from '../models/varcoZtl';
 import { UtenteCreationAttributes } from '../models/utente';
 import { VarcoZtlCreationAttributes, VarcoZtlAttributes } from '../models/varcoZtl';
@@ -13,11 +15,23 @@ class VarcoZtlRepository {
     /**
      * Recupera tutti i varchi ZTL.
      * 
-     * @returns {Promise<VarcoZtl[]>} Una Promise che risolve un array di varchi ZTL.
+     * @returns {Promise<any[]>} Una Promise che risolve un array di più Promise combinate.
      */
-    public async getAllVarcoZtl(): Promise<VarcoZtl[]> {
+    public async getAllVarcoZtl(): Promise<any[]> {
         try {
-            return await varcoZtlDao.getAll();
+            const varchiZtl = await varcoZtlDao.getAll();
+            
+            const results = await Promise.all(varchiZtl.map(async (varcoZtl) => {
+                const zonaZtl = await zonaZtlDao.getById(varcoZtl.zona_ztl);
+                const orarioChiusura = await orarioChiusuraDao.getById(varcoZtl.orario_chiusura);
+                
+                return {
+                    ...varcoZtl.dataValues,
+                    zona_ztl: zonaZtl ? zonaZtl.dataValues : null,
+                    orario_chiusura: orarioChiusura ? orarioChiusura.dataValues : null
+                };
+            }));
+            return results;
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile recuperare i varchi ZTL');
         }
@@ -27,11 +41,21 @@ class VarcoZtlRepository {
      * Recupera un varco ZTL per ID.
      * 
      * @param {number} id L'ID del varco ZTL. 
-     * @returns {Promise<VarcoZtl | null>} Una Promise che risolve un varco ZTL o null se non trovato.
+     * @returns {Promise<VarcoZtl | null>} Una Promise che risolve più Promise combinate o null se non trovato.
      */
-    public async getVarcoZtlById(id: number): Promise<VarcoZtl | null> {
+    public async getVarcoZtlById(id: number): Promise<any | null> {
         try {
-            return await varcoZtlDao.getById(id);
+            const varcoZtl = await varcoZtlDao.getById(id);
+            if (!varcoZtl) {
+                return null;
+            }
+            const zonaZtl = await zonaZtlDao.getById(varcoZtl.zona_ztl);
+            const orarioChiusura = await orarioChiusuraDao.getById(varcoZtl.orario_chiusura);
+            return {
+                ...varcoZtl.dataValues,
+                zona_ztl: zonaZtl ? zonaZtl.dataValues : null,
+                orario_chiusura: orarioChiusura ? orarioChiusura.dataValues : null
+            };
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il varco ZTL con id ${id}`);
         }

@@ -4,99 +4,34 @@ import veicoloDao from '../dao/veicoloDao';
 import Multa from '../models/multa';
 import Transito from '../models/transito';
 import Veicolo from '../models/veicolo';
-import { MultaCreationAttributes, MultaAttributes } from '../models/multa';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 /**
  * Classe MultaRepository per gestire le operazioni CRUD sulle multe e altre operazioni specifiche.
  */
 class MultaRepository {
     /**
-     * Recupera tutte le multe.
-     * 
-     * @returns {Promise<Multa[]>} Una Promise che risolve un array di multe.
-     */
-    public async getAllMulte(): Promise<Multa[]> {
-        try {
-            return await multaDao.getAll();
-        } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile recuperare le multe');
-        }
-    }
-
-    /**
-     * Recupera una multa per ID.
-     * 
-     * @param {number} id L'ID della multa.
-     * @returns {Promise<Multa | null>} Una Promise che risolve una multa o null se non trovata.
-     */
-    public async getMultaById(id: number): Promise<Multa | null> {
-        try {
-            return await multaDao.getById(id);
-        } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare la multa con id ${id}`);
-        }
-    }
-
-    /**
-    * Crea una nuova multa.
-    * 
-    * @param {MultaCreationAttributes} data I dati per creare la multa.
-    * @returns {Promise<Multa>} Una Promise che risolve la multa creata.
-    */
-    public async createMulta(data: MultaCreationAttributes): Promise<Multa> {
-        try {
-            return await multaDao.create(data);
-        } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile creare una nuova multa');
-        }
-    }
-
-    /**
-     * Aggiorna una multa esistente.
-     * 
-     * @param {number} id L'ID della multa.
-     * @param {Partial<MultaAttributes>} data I dati per aggiornare la multa.
-     * @returns {Promise<[number, Multa[]]>} Una Promise che risolve il numero di righe aggiornate e l'array delle multe aggiornate.
-     */
-    public async updateMulta(id: number, data: Partial<MultaAttributes>): Promise<[number, Multa[]]> {
-        try {
-            return await multaDao.update(id, data);
-        } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile aggiornare la multa con id ${id}`);
-        }
-    }
-
-    /**
-     * Cancella una multa per ID.
-     * 
-     * @param {number} id L'ID della multa.
-     * @returns {Promise<number>} Una Promise che risolve il numero di righe cancellate.
-     */
-    public async deleteMulta(id: number): Promise<number> {
-        try {
-            return await multaDao.delete(id);
-        } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile cancellare la multa con id ${id}`);
-        }
-    }
-
-    /**
      * Recupera tutte le multe di un utente.
      * 
      * @param {number} utenteId L'ID dell'utente.
-     * @returns {Promise<Multa[]>} Una Promise che risolve un array di multe dell'utente.
+     * @returns {Promise<any[]>} Una Promise che risolve un array di più Promise combinate dell'utente.
      */
-    public async getMulteByUtente(utenteId: number): Promise<Multa[]> {
+    public async getMulteByUtente(utenteId: number): Promise<any[]> {
         try {
             // Recupera e filtra i veicoli dell'utente
             const veicoliUtente = (await veicoloDao.getAll()).filter(veicolo => veicolo.utente === utenteId);
-
             // Recupera e filtra  i transiti per i veicoli dell'utente
             const transitiUtente = (await transitoDao.getAll()).filter(transito => veicoliUtente.some(veicolo => veicolo.targa === transito.veicolo));
-
             // Ottieni le multe per i transiti dell'utente
             const multeUtente = (await multaDao.getAll()).filter(multa => transitiUtente.some(transito => transito.id_transito === multa.transito))
-            return multeUtente;
+
+            const results = await Promise.all(multeUtente.map(async (multa) => {
+                const transito = await transitoDao.getById(multa.transito);
+                return {
+                    ...multa.dataValues,
+                    transito: transito ? transito.dataValues : null
+                };
+            }));
+            return results;
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare le multe per l'utente ${utenteId}`);
         }
@@ -110,7 +45,7 @@ class MultaRepository {
      * @returns {Promise<{ multa: Multa, transito: Transito, veicolo: Veicolo } | null>} Una Promise che risolve un oggetto con i dettagli della multa, transito e veicolo, 
      * o null se non trovato o non autorizzato.
      */
-    public async getMultaWithDetailsById(uuid: string, utenteId: number): Promise<{ multa: Multa, transito: Transito, veicolo: Veicolo } | null> {
+    public async getMultaWithDetailsByUUID(uuid: string, utenteId: number): Promise<{ multa: Multa, transito: Transito, veicolo: Veicolo } | null> {
         try {
 
             // Recupera la multa dal DAO tramite il suo UUID

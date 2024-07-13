@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import veicoloDao from '../dao/veicoloDao';
+import { StatusCodes } from 'http-status-codes';
 
 // Funzione di utilità per validare il formato della targa
 export const isValidTarga = (targa: string): boolean => {
@@ -15,7 +16,7 @@ export const getAllVeicoli = async (req: Request, res: Response, next: NextFunct
     try {
         // Recupera tutti i veicoli dal DAO
         const veicoli = await veicoloDao.getAll();
-        res.status(200).json(veicoli);
+        res.status(StatusCodes.OK).json(veicoli);
     } catch (error) {
         next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero dei veicoli'));
     }
@@ -36,7 +37,7 @@ export const getVeicoloById = async (req: Request, res: Response, next: NextFunc
         // Recupera il veicolo dal DAO utilizzando la targa
         const veicolo = await veicoloDao.getById(targa);
         if (veicolo) {
-            res.status(200).json(veicolo);
+            res.status(StatusCodes.OK).json(veicolo);
         } else {
             next(ErrorFactory.createError(ErrorTypes.NotFound, 'Veicolo non trovato'));
         }
@@ -59,7 +60,7 @@ export const createVeicolo = async (req: Request, res: Response, next: NextFunct
     try {
         // Crea un nuovo veicolo utilizzando i dati dal corpo della richiesta
         const nuovoVeicolo = await veicoloDao.create(req.body);
-        res.status(201).json(nuovoVeicolo);
+        res.status(StatusCodes.CREATED).json(nuovoVeicolo);
     } catch (error) {
         next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione del veicolo'));
     }
@@ -82,7 +83,7 @@ export const updateVeicolo = async (req: Request, res: Response, next: NextFunct
         if (updated) {
             // Recupera il veicolo aggiornato dal DAO
             const updatedVeicolo = await veicoloDao.getById(targa);
-            res.status(200).json(updatedVeicolo);
+            res.status(StatusCodes.OK).json(updatedVeicolo);
         } else {
             next(ErrorFactory.createError(ErrorTypes.NotFound, 'Veicolo non trovato'));
         }
@@ -106,7 +107,7 @@ export const deleteVeicolo = async (req: Request, res: Response, next: NextFunct
         // Cancella il veicolo utilizzando la targa
         const deleted = await veicoloDao.delete(targa);
         if (deleted) {
-            res.status(204).send();
+            res.status(StatusCodes.NO_CONTENT).send();
         } else {
             next(ErrorFactory.createError(ErrorTypes.NotFound, 'Veicolo non trovato'));
         }
