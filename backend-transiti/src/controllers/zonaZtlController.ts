@@ -39,9 +39,11 @@ export const getZonaZtlById = async (req: Request, res: Response, next: NextFunc
  */
 export const createZonaZtl = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        // normalizzo in minuscolo togliendo spazi per confrontare i nomei
         const normalizedName = (req.body.nome).replace(/\s+/g, '').toLowerCase();
         // Controlla se esiste già una zona con lo stesso nome
         const existingZona = (await zonaZtlDao.getAll()).find(zona => (zona.nome).replace(/\s+/g, '').toLowerCase() === normalizedName);
+        
         if (existingZona) {
             return next(ErrorFactory.createError(ErrorTypes.BadRequest, 'Una zona con questo nome esiste già'));
         }else{

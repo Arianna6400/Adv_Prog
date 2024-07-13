@@ -39,10 +39,11 @@ export const getVarcoZtlById = async (req: Request, res: Response, next: NextFun
  */
 export const createVarcoZtl = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        // normalizzo in minuscolo togliendo spazi per confrontare i nomei
         const normalizedName = (req.body.nome).replace(/\s+/g, '').toLowerCase();
-
+        // Controlla se esiste già un varco con lo stesso nome
         const existingVarco = (await varcoZtlRepository.getAllVarcoZtl()).find(varco => (varco.nome).replace(/\s+/g, '').toLowerCase() === normalizedName);
-        console.log(existingVarco);
+        
         if(existingVarco){
             return next(ErrorFactory.createError(ErrorTypes.BadRequest, 'Un varco con questo nome esiste già'));
         } else {
