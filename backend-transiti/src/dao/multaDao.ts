@@ -2,7 +2,7 @@ import Multa from '../models/multa';
 import { ErrorFactory, ErrorTypes, HttpError } from '../utils/errorFactory';
 import { DAO } from './daoInterface';
 import { MultaAttributes, MultaCreationAttributes } from '../models/multa';
-import { Transaction } from 'sequelize';
+import { Transaction, FindOptions } from 'sequelize';
 
 // Interfaccia MultaDAO che estende la DAO per includere metodi specifici per Multa
 interface MultaDAO extends DAO<MultaAttributes, number> {
@@ -27,7 +27,7 @@ class MultaDao implements MultaDAO {
     /**
      * Recupera una multa per ID.
      * 
-     * @param {number} id L'ID della multa.
+     * @param {number} uuid uuid della multa da cercare
      * @returns {Promise<Multa | null>} Una Promise che risolve una multa o null se non trovata.
      */
     public async getById(id: number): Promise<Multa | null> {
@@ -42,6 +42,22 @@ class MultaDao implements MultaDAO {
             throw error; // Rilancia l'errore personalizzato
           }
           throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero della multa con id ${id}`);
+        }
+    }
+
+    /**
+     * Metodo per ottenere la multa dato il suo UUID
+     */
+    public async getMultaByUUID(uuid: string, options?: FindOptions): Promise<Multa | null> {
+        try {
+            // Ricerca la multa nel db tramite UUID
+            const multa = await Multa.findOne({ where: { uuid_pagamento: uuid }, ...options });
+            if (!multa) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Multa con uuid ${uuid} non trovata`);
+            }
+            return multa;
+        } catch (error) {
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero della multa con uuid ${uuid}`);
         }
     }
 

@@ -88,21 +88,15 @@ class MultaRepository {
      */
     public async getMulteByUtente(utenteId: number): Promise<Multa[]> {
         try {
-            // Recupera tutti i transiti e i veicoli dal DAO corrispondente
-            const transiti = await transitoDao.getAll();
-            const veicoli = await veicoloDao.getAll();
+            // Recupera e filtra i veicoli dell'utente
+            const veicoliUtente = (await veicoloDao.getAll()).filter(veicolo => veicolo.utente === utenteId);
 
-            // Filtra i veicoli per utente
-            const veicoliUtente = veicoli.filter(veicolo => veicolo.utente === utenteId);
-
-            // Filtra i transiti per i veicoli dell'utente
-            const transitiUtente = transiti.filter(transito => veicoliUtente.some(veicolo => veicolo.targa === transito.veicolo));
+            // Recupera e filtra  i transiti per i veicoli dell'utente
+            const transitiUtente = (await transitoDao.getAll()).filter(transito => veicoliUtente.some(veicolo => veicolo.targa === transito.veicolo));
 
             // Ottieni le multe per i transiti dell'utente
-            const multeUtente = await multaDao.getAll();
-            const multeFiltrate = multeUtente.filter(multa => transitiUtente.some(transito => transito.id_transito === multa.transito));
-
-            return multeFiltrate;
+            const multeUtente = (await multaDao.getAll()).filter(multa => transitiUtente.some(transito => transito.id_transito === multa.transito))
+            return multeUtente;
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare le multe per l'utente ${utenteId}`);
         }
@@ -111,29 +105,30 @@ class MultaRepository {
     /**
      * Recupera una multa con i dettagli per ID e utente.
      * 
-     * @param {number} id L'ID della multa.
+     * @param {number} uuid UUID della multa.
      * @param {number} utenteId L'ID dell'utente.
      * @returns {Promise<{ multa: Multa, transito: Transito, veicolo: Veicolo } | null>} - Una Promise che risolve un oggetto con i dettagli della multa, transito e veicolo, 
      * o null se non trovato o non autorizzato.
      */
-    public async getMultaWithDetailsById(id: number, utenteId: number): Promise<{ multa: Multa, transito: Transito, veicolo: Veicolo } | null> {
+    public async getMultaWithDetailsById(uuid: string, utenteId: number): Promise<{ multa: Multa, transito: Transito, veicolo: Veicolo } | null> {
         try {
-            // Recupera la multa dal DAO
-            const multa = await multaDao.getById(id);
+
+            // Recupera la multa dal DAO tramite il suo UUID
+            const multa = await multaDao.getMultaByUUID(uuid);
             if (!multa) {
-                return null;
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare la multa con uuid ${uuid}`);
             }
             
             // Recupera il transito associato alla multa
             const transito = await transitoDao.getById(multa.transito);
             if (!transito) {
-                throw new Error('Transito non trovato');
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Transito non trovato`);
             }
 
             // Recupera il veicolo associato alla multa
             const veicolo = await veicoloDao.getById(transito.veicolo);
             if (!veicolo) {
-                throw new Error('Veicolo non trovato');
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Veicolo non trovato`);
             }
 
             // Verifica se l'utente è autorizzato a vedere questa multa
@@ -143,7 +138,7 @@ class MultaRepository {
 
             return { multa, transito, veicolo };
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare la multa con id ${id} per l'utente ${utenteId}`);
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare la multa con id ${uuid} per l'utente ${utenteId}`);
         }
     }
 }

@@ -53,7 +53,6 @@ class VarcoZtlRepository {
             if(! varcoZtl){
                 throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione del varco ZTL');
             }
-            console.log(varcoZtl);  
 
             // Crea un nuovo utente con nome e cognome vuoti
             const utenteData: UtenteCreationAttributes = {
@@ -67,14 +66,13 @@ class VarcoZtlRepository {
             if (!utente){
                 throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione del varco ZTL');
             }
-            console.log(utente);
+            
             // Crea l'associazione nella tabella is_varco
             const isVarcoData = {
                 id_utente: utente.id_utente,
                 id_varco: varcoZtl.id_varco,
             };
-            console.log('--------id utente',utente.id_utente);
-            console.log('-------- id varco',varcoZtl.id_varco)
+
             // Aggiunge l'associazione al database
             const isVarco = await IsVarcoDao.create(isVarcoData, { transaction });
             if(!isVarco){

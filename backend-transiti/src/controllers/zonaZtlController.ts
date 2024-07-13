@@ -2,13 +2,14 @@ import { Request, Response, NextFunction } from 'express';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import varcoZtlDao from '../dao/varcoZtlDao';
 import zonaZtlDao from '../dao/zonaZtlDao';
+import { StatusCodes } from 'http-status-codes';
 /**
  * Funzione per ottenere tutte le zone ZTL.
  */
 export const getAllZonaZtl = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const zoneZtl = await zonaZtlDao.getAll();
-        res.status(200).json(zoneZtl);
+        res.status(StatusCodes.OK).json(zoneZtl);
     } catch (error) {
         next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero delle zone ZTL'));
     }
@@ -24,7 +25,7 @@ export const getZonaZtlById = async (req: Request, res: Response, next: NextFunc
         // Recupera la zona ZTL dal DAO usando l'ID
         const zonaZtl = await zonaZtlDao.getById(id);
         if (zonaZtl) {
-            res.status(200).json(zonaZtl);
+            res.status(StatusCodes.OK).json(zonaZtl);
         } else {
             next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
         }
@@ -38,14 +39,15 @@ export const getZonaZtlById = async (req: Request, res: Response, next: NextFunc
  */
 export const createZonaZtl = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        const normalizedName = (req.body.nome).replace(/\s+/g, '').toLowerCase();
         // Controlla se esiste già una zona con lo stesso nome
-        const existingZona = (await zonaZtlDao.getAll()).find(zona => zona.nome === req.body.nome);
+        const existingZona = (await zonaZtlDao.getAll()).find(zona => (zona.nome).replace(/\s+/g, '').toLowerCase() === normalizedName);
         if (existingZona) {
-            next(ErrorFactory.createError(ErrorTypes.BadRequest, 'Una zona con questo nome esiste già'));
+            return next(ErrorFactory.createError(ErrorTypes.BadRequest, 'Una zona con questo nome esiste già'));
         }else{
             // Crea una nuova zona ZTL
             const nuovaZonaZtl = await zonaZtlDao.create(req.body);
-            res.status(201).json(nuovaZonaZtl);
+            res.status(StatusCodes.CREATED).json(nuovaZonaZtl);
         }
     } catch (error) {
         next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione della zona ZTL'));
@@ -63,7 +65,7 @@ export const updateZonaZtl = async (req: Request, res: Response, next: NextFunct
         const [updated] = await zonaZtlDao.update(id, req.body);
         if (updated) {
             const updatedZonaZtl = await zonaZtlDao.getById(id);
-            res.status(200).json(updatedZonaZtl);
+            res.status(StatusCodes.OK).json(updatedZonaZtl);
         } else {
             next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
         }
@@ -88,7 +90,7 @@ export const deleteZonaZtl = async (req: Request, res: Response, next: NextFunct
             const deleted = await zonaZtlDao.delete(id);
             console.log
             if (deleted) {
-                res.status(200).json({ message: `Zona ${id} eliminata con successo` });
+                res.status(StatusCodes.NO_CONTENT).json({ message: `Zona ${id} eliminata con successo` });
             } else {
                 next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
             }

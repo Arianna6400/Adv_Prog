@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import transitoRepository from '../repositories/transitoRepository';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
+import { StatusCodes } from 'http-status-codes';
 /**
  * Funzione per ottenere tutti i transiti.
  */
@@ -8,7 +9,7 @@ export const getAllTransiti = async (req: Request, res: Response, next: NextFunc
     try {
         // Recupera tutti i transiti dal repository
         const transiti = await transitoRepository.getAllTransiti();
-        res.status(200).json(transiti);
+        res.status(StatusCodes.OK).json(transiti);
     } catch (error) {
         next(error);
     }
@@ -24,7 +25,7 @@ export const getTransitoById = async (req: Request, res: Response, next: NextFun
         // Recupera il transito dal repository usando l'ID
         const transito = await transitoRepository.getTransitoById(id);
         if (transito) {
-            res.status(200).json(transito);
+            res.status(StatusCodes.OK).json(transito);
         } else {
             next(ErrorFactory.createError(ErrorTypes.NotFound, 'Transito non trovato'));
         }
@@ -40,7 +41,7 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
     try {
         // Crea un nuovo transito con i dati forniti nel corpo della richiesta
         const nuovoTransito = await transitoRepository.createTransito(req.body);
-        res.status(201).json(nuovoTransito);
+        res.status(StatusCodes.CREATED).json(nuovoTransito);
     } catch (error) {
         next(error);
     }
@@ -57,7 +58,7 @@ export const updateTransito = async (req: Request, res: Response, next: NextFunc
         const [updated] = await transitoRepository.updateTransito(id, req.body);
         if (updated) {
             const updatedTransito = await transitoRepository.getTransitoById(id);
-            res.status(200).json(updatedTransito);
+            res.status(StatusCodes.OK).json(updatedTransito);
         } else {
             next(ErrorFactory.createError(ErrorTypes.NotFound, 'Transito non trovato'));
         }
@@ -76,7 +77,7 @@ export const deleteTransito = async (req: Request, res: Response, next: NextFunc
         // Cancella il transito esistente usando l'ID fornito
         const deleted = await transitoRepository.deleteTransito(id);
         if (deleted) {
-            res.status(204).send();
+            res.status(StatusCodes.NO_CONTENT).send();
         } else {
             next(ErrorFactory.createError(ErrorTypes.NotFound, 'Transito non trovato'));
         }

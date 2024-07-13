@@ -22,69 +22,148 @@ export const getMulteByUtente = async (req: Request, res: Response, next: NextFu
 };
 
 /**
- * Funzione per scaricare un bollettino di pagamento in formato PDF con un QR-code al suo interno, 
- * creato attraverso il recupero delle informazioni relative alla multa.
+ * Funzione per scaricare il bollettino di una multa in formato PDF.
  */
 export const downloadBollettino = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        // Estrae l'ID della multa dai parametri della richiesta e l'ID utente dal payload JWT
-        const id = parseInt(req.params.id);
+        const uuid = req.params.uuid;
         const utenteId = (req as any).user.id;
 
-        // Recupera i dettagli della multa, del transito e del veicolo dal repository
-        const result = await multaRepository.getMultaWithDetailsById(id, utenteId);
-        
+        const result = await multaRepository.getMultaWithDetailsById(uuid, utenteId);
+
         if (result) {
-            const { multa, transito, veicolo} = result;
+            const { multa, transito, veicolo } = result;
+            const qrString = `${multa.uuid_pagamento}|${multa.id_multa}|${veicolo.targa}|${multa.importo_token}`;
+            const qrCodeUrl = await generateQRCode(qrString);
 
-            const dataTransito = transito.data_ora.toLocaleString(); // Formatta la data del transito
-            const targa = veicolo.targa; // Associa la targa del veicolo al transito
-            const statoPagamento = multa.pagata ? 'Pagata' : 'Non pagata'; // Determina lo stato del pagamento
-
-            // Determina il colore dell'intestazione in base allo stato del pagamento
-            const headerColor = multa.pagata ? '#4CAF50' : '#FF0000'; // Verde se pagata, rosso se non pagata
-
-            // Genera il QR-code stringa
-            const qrString = `${multa.uuid_pagamento}|${multa.id_multa}|${targa}|${multa.importo_token}`;
-            const qrCodeUrl = await QRCode.toDataURL(qrString);
-
-            // Crea un nuovo documento PDF
-            const doc = new PDFDocument({ margin: 50 });
-
-            // Imposta il tipo di risposta come PDF
-            res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', `attachment; filename=bollettino_${multa.id_multa}.pdf`);
-
-            // Aggiunge un'intestazione
-            const headerHeight = 50;
-            doc.rect(0, 0, doc.page.width, headerHeight).fill(headerColor).stroke();
-            doc.fill('#fff').fontSize(25).text('Bollettino di Pagamento', 0, headerHeight / 4, { align: 'center' });
-            doc.moveDown(3);
-
-            // Aggiunge informazioni di pagamento
-            const sideMargin = 50;
-            doc.fill('#000').fontSize(20);
-            doc.text(`Targa: ${targa}`, sideMargin, doc.y, { align: 'left' });
-            doc.text(`Data Transito: ${dataTransito}`, sideMargin, doc.y, { align: 'left' });
-            doc.text(`Importo Token: ${multa.importo_token}`, sideMargin, doc.y, { align: 'left' });
-            doc.text(`Stato Pagamento: ${statoPagamento}`, sideMargin, doc.y, { align: 'left' });
-            doc.moveDown(2);
-
-            // Aggiunge QR-code al PDF
-            const qrImageSize = 150;
-            doc.image(qrCodeUrl, {
-                fit: [qrImageSize, qrImageSize],
-                align: 'center',
-                valign: 'center'
-            });
-
-            // Finalizza il documento PDF e lo invia come risposta
-            doc.pipe(res);
-            doc.end();
+            createPDF(res, { multa, transito, veicolo, qrCodeUrl });
         } else {
-            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Multa non trovata'));
+            next(ErrorFactory.createError(ErrorTypes.NotFound, `Multa con uuid ${uuid} non trovata`));
         }
     } catch (error) {
         next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione del bollettino'));
     }
 };
+
+/**
+ * Crea un PDF con le informazioni fornite e lo invia come risposta.
+ * @param res La risposta HTTP.
+ * @param data I dati per popolare il PDF.
+ */
+const createPDF = (res: Response, data: { multa: any, transito: any, veicolo: any, qrCodeUrl: string }) => {
+    const { multa, transito, veicolo, qrCodeUrl } = data;
+    
+    const dataTransito = transito.data_ora.toLocaleString();
+    const targa = veicolo.targa;
+    const statoPagamento = multa.pagata ? 'Pagata' : 'Non pagata';
+    const headerColor = multa.pagata ? '#4CAF50' : '#FF0000';
+
+    const doc = new PDFDocument({ margin: 50 });
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=bollettino_${multa.id_multa}.pdf`);
+
+    const headerHeight = 50;
+    doc.rect(0, 0, doc.page.width, headerHeight).fill(headerColor).stroke();
+    doc.fill('#fff').fontSize(25).text('Bollettino di Pagamento', 0, headerHeight / 4, { align: 'center' });
+    doc.moveDown(3);
+
+    const sideMargin = 50;
+    doc.fill('#000').fontSize(20);
+    doc.text(`Targa: ${targa}`, sideMargin, doc.y, { align: 'left' });
+    doc.text(`Data Transito: ${dataTransito}`, sideMargin, doc.y, { align: 'left' });
+    doc.text(`Importo Token: ${multa.importo_token}`, sideMargin, doc.y, { align: 'left' });
+    doc.text(`Stato Pagamento: ${statoPagamento}`, sideMargin, doc.y, { align: 'left' });
+    doc.moveDown(2);
+
+    const qrImageSize = 150;
+    doc.image(qrCodeUrl, {
+        fit: [qrImageSize, qrImageSize],
+        align: 'center',
+        valign: 'center'
+    });
+
+    doc.pipe(res);
+    doc.end();
+};
+
+/**
+ * Genera un QR code a partire da una stringa.
+ * @param qrString La stringa da codificare nel QR code.
+ * @returns Una Promise che risolve con l'URL del QR code generato.
+ */
+const generateQRCode = async (qrString: string): Promise<string> => {
+    try {
+        return await QRCode.toDataURL(qrString);
+    } catch (error) {
+        throw ErrorFactory.createError(ErrorTypes.NotFound, 'Errore nella generazione del QR code');
+    }
+};
+
+// /**
+//  * Funzione per scaricare un bollettino di pagamento in formato PDF con un QR-code al suo interno, 
+//  * creato attraverso il recupero delle informazioni relative alla multa.
+//  */
+// export const downloadBollettino = async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//         // Estrae l'ID della multa dai parametri della richiesta e l'ID utente dal payload JWT
+//         const uuid = req.params.uuid;
+//         const utenteId = (req as any).user.id;
+
+//         // Recupera i dettagli della multa, del transito e del veicolo dal repository
+//         const result = await multaRepository.getMultaWithDetailsById(uuid, utenteId);
+        
+//         if (result) {
+//             const { multa, transito, veicolo} = result;
+
+//             const dataTransito = transito.data_ora.toLocaleString(); // Formatta la data del transito
+//             const targa = veicolo.targa; // Associa la targa del veicolo al transito
+//             const statoPagamento = multa.pagata ? 'Pagata' : 'Non pagata'; // Determina lo stato del pagamento
+
+//             // Determina il colore dell'intestazione in base allo stato del pagamento
+//             const headerColor = multa.pagata ? '#4CAF50' : '#FF0000'; // Verde se pagata, rosso se non pagata
+
+//             // Genera il QR-code stringa
+//             const qrString = `${multa.uuid_pagamento}|${multa.id_multa}|${targa}|${multa.importo_token}`;
+//             const qrCodeUrl = await QRCode.toDataURL(qrString);
+
+//             // Crea un nuovo documento PDF
+//             const doc = new PDFDocument({ margin: 50 });
+
+//             // Imposta il tipo di risposta come PDF
+//             res.setHeader('Content-Type', 'application/pdf');
+//             res.setHeader('Content-Disposition', `attachment; filename=bollettino_${multa.id_multa}.pdf`);
+
+//             // Aggiunge un'intestazione
+//             const headerHeight = 50;
+//             doc.rect(0, 0, doc.page.width, headerHeight).fill(headerColor).stroke();
+//             doc.fill('#fff').fontSize(25).text('Bollettino di Pagamento', 0, headerHeight / 4, { align: 'center' });
+//             doc.moveDown(3);
+
+//             // Aggiunge informazioni di pagamento
+//             const sideMargin = 50;
+//             doc.fill('#000').fontSize(20);
+//             doc.text(`Targa: ${targa}`, sideMargin, doc.y, { align: 'left' });
+//             doc.text(`Data Transito: ${dataTransito}`, sideMargin, doc.y, { align: 'left' });
+//             doc.text(`Importo Token: ${multa.importo_token}`, sideMargin, doc.y, { align: 'left' });
+//             doc.text(`Stato Pagamento: ${statoPagamento}`, sideMargin, doc.y, { align: 'left' });
+//             doc.moveDown(2);
+
+//             // Aggiunge QR-code al PDF
+//             const qrImageSize = 150;
+//             doc.image(qrCodeUrl, {
+//                 fit: [qrImageSize, qrImageSize],
+//                 align: 'center',
+//                 valign: 'center'
+//             });
+
+//             // Finalizza il documento PDF e lo invia come risposta
+//             doc.pipe(res);
+//             doc.end();
+//         } else {
+//             next(ErrorFactory.createError(ErrorTypes.NotFound, 'Multa non trovata'));
+//         }
+//     } catch (error) {
+//         next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione del bollettino'));
+//     }
+// };

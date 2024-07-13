@@ -4,7 +4,7 @@ import utenteDao from '../dao/utenteDao';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import { JwtPayload } from 'jsonwebtoken';
 import Database from '../utils/database';
-import { parse } from 'path';
+import { StatusCodes } from 'http-status-codes';
 
 /**
  * Funzione per pagare una multa.
@@ -49,10 +49,10 @@ export const payMulta = async (req: Request, res: Response, next: NextFunction) 
 
         await transaction.commit(); // Termina la transazione con successo
 
-        res.status(200).json({ 
-            multa_numero: multa.id_multa,
-            esito: 'Pagamento effettuato con successo',
-            token_residui: Number(utente.token_rimanenti.toFixed(2)),
+        res.status(StatusCodes.OK).json({ 
+            multa: multa,
+            esito: `Pagamento effettuato con successo da ${utente.email}`,
+            token_rimanenti: utente.token_rimanenti,
         });
     } catch (error) {
         await transaction.rollback();
@@ -68,10 +68,9 @@ export const rechargeTokens = async (req: Request, res: Response, next: NextFunc
     const tokens  = Number(req.body.tokens);
     try {
         const utente = await utenteDao.rechargeTokens(id, tokens);
-        res.status(200).json({ 
-            utente: utente.email,
-            message: 'Token ricaricati con successo', 
-            nuovo_credito: Number(utente.token_rimanenti.toFixed(2)),
+        res.status(StatusCodes.OK).json({ 
+            info: 'Token ricaricati con successo', 
+            utente: utente,
         });
     } catch (error) {
         next(error);
@@ -84,9 +83,9 @@ export const rechargeTokens = async (req: Request, res: Response, next: NextFunc
 export const checkToken = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = (req as any).user as JwtPayload; // ID dell'utente preso dal payload del token JWT
-        const tokenRimanenti = await utenteDao.checkToken(id);
-        res.status(200).json({
-            token_rimanenti: tokenRimanenti, 
+        const tokenRimanenti = await utenteDao.getById(id);
+        res.status(StatusCodes.OK).json({
+            tokenRimanenti, 
         });
     } catch (error) {
         next(error);

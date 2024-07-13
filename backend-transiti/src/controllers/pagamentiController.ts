@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import axiosInstance, { setAuthToken } from '../utils/axiosInstance';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import axios from 'axios';
+import { StatusCodes } from 'http-status-codes';
 /**
  * Funzione per gestire la richiesta di pagamento della multa
  */
@@ -24,11 +25,11 @@ export const payMulta = async (req: Request, res: Response, next: NextFunction) 
 
         // Richiesta POST all'endpoint tramite istanza axios per la connessione con backend-pagamenti
         const response = await axiosInstance.post('/pagamulta', { uuid });
-        res.status(200).json(response.data);
+        res.status(StatusCodes.OK).json(response.data);
     } catch (error) {
         // Gestisce gli errori di axios, ritornando un errore appropriato
         if (axios.isAxiosError(error)) {
-            const message = error.response?.data?.error.message || 'Errore nel pagamento';
+            const message = error.response?.data?.error.message || 'Errore nel pagamento'; // ritorno il messaggio della funzione chiamata
             return next(ErrorFactory.createError(ErrorTypes.BadRequest, message));
         }
         next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel pagamento'));
@@ -58,11 +59,11 @@ export const rechargeTokens = async (req: Request, res: Response, next: NextFunc
 
         // Richiesta POST all'endpoint tramite istanza axios per la connessione con backend-pagamenti
         const response = await axiosInstance.post(`/ricaricatoken/${id}`, { tokens });
-        res.status(200).json(response.data);
+        res.status(StatusCodes.OK).json(response.data);
     } catch (error) {
         // Gestisce gli errori di axios, ritornando un errore appropriato
         if (axios.isAxiosError(error)) {
-            const message = error.response?.data?.error.message || 'Errore nella ricarica';
+            const message = error.response?.data?.error.message || 'Errore nella ricarica'; // ritorno il messaggio della funzione chiamata
             return next(ErrorFactory.createError(ErrorTypes.BadRequest, message));
         }
         next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella ricarica'));
@@ -84,11 +85,11 @@ export const checkToken = async (req: Request, res: Response, next: NextFunction
 
         // Richiesta GET all'endpoint tramite istanza axios per la connessione con backend-pagamenti
         const response = await axiosInstance.get('/tokenresidui');
-        res.status(200).json(response.data);
+        res.status(StatusCodes.OK).json(response.data);
     } catch (error) {
         // Gestisce gli errori di axios e ritorna un errore appropriato
         if (axios.isAxiosError(error)) {
-            const message = error.response?.data?.error.message || 'Errore nel recupero dei token';
+            const message = error.response?.data?.error.message || 'Errore nel recupero dei token'; // ritorno il messaggio della funzione chiamata
             return next(ErrorFactory.createError(ErrorTypes.BadRequest, message));
         }
         next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero dei token'));
