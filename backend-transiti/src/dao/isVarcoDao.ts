@@ -53,7 +53,6 @@ class IsVarcoDao implements IsVarcoDAO {
         try {
             return await IsVarco.create(data, options);
         } catch (error) {
-            console.error('Errore nella creazione dell\'associazione is_varco:', error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione dell\'associazione is_varco');
         }
     }
@@ -73,7 +72,6 @@ class IsVarcoDao implements IsVarcoDAO {
             const updatedItems = await IsVarco.findAll({ where: { id_utente }, ...options });
             return [affectedCount, updatedItems];
         } catch (error) {
-            console.error(`Errore nell'aggiornamento dell'associazione is_varco per id ${id_utente}:`, error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nell'aggiornamento dell'associazione is_varco per id ${id_utente}`);
         }
     }
@@ -84,13 +82,12 @@ class IsVarcoDao implements IsVarcoDAO {
      * @param {number} id_utente L'ID dell'utente.
      * @param {Object} [options] Opzioni aggiuntive per la transazione.
      * @param {Transaction} [options.transaction] La transazione Sequelize.
-     * @returns {Promise<number>} Una promessa che risolve il numero di righe cancellate.
+     * @returns {Promise<number>} Una Promise che risolve il numero di righe cancellate.
      */
     public async delete(id_utente: number, options?: { transaction?: Transaction }): Promise<number> {
         try {
             return await IsVarco.destroy({ where: { id_utente }, ...options });
         } catch (error) {
-            console.error(`Errore nella cancellazione dell'associazione is_varco per id ${id_utente}:`, error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione dell'associazione is_varco per id ${id_utente}`);
         }
     }

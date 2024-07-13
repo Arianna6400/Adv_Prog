@@ -2,7 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import orarioChiusuraDao from '../dao/orarioChiusuraDao';
 
-// Controller per ottenere tutti gli orari di chiusura
+/**
+ * Funzione per ottenere tutti gli orari di chiusura.
+ */
 export const getAllOrariChiusura = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const orariChiusura = await orarioChiusuraDao.getAll();
@@ -12,13 +14,11 @@ export const getAllOrariChiusura = async (req: Request, res: Response, next: Nex
     }
 };
 
-// Controller per ottenere un orario di chiusura per ID
+/**
+ * Funzione per ottenere un orario di chiusura per ID.
+ */
 export const getOrarioChiusuraById = async (req: Request, res: Response, next: NextFunction) => {
     const id = parseInt(req.params.id);
-
-    if (isNaN(id)) {
-        return next(ErrorFactory.createError(ErrorTypes.BadRequest, 'ID non valido'));
-    }
 
     try {
         const orarioChiusura = await orarioChiusuraDao.getById(id);
@@ -32,7 +32,9 @@ export const getOrarioChiusuraById = async (req: Request, res: Response, next: N
     }
 };
 
-// Controller per creare un nuovo orario di chiusura
+/**
+ * Funzione per creare un nuovo orario di chiusura.
+ */
 export const createOrarioChiusura = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const nuovoOrarioChiusura = await orarioChiusuraDao.create(req.body);
@@ -42,13 +44,11 @@ export const createOrarioChiusura = async (req: Request, res: Response, next: Ne
     }
 };
 
-// Controller per aggiornare un orario di chiusura esistente
+/**
+ * Funzione per aggiornare un orario di chiusura esistente.
+ */
 export const updateOrarioChiusura = async (req: Request, res: Response, next: NextFunction) => {
     const id = parseInt(req.params.id);
-
-    if (isNaN(id)) {
-        return next(ErrorFactory.createError(ErrorTypes.BadRequest, 'ID non valido'));
-    }
 
     try {
         const [updated] = await orarioChiusuraDao.update(id, req.body);
@@ -63,13 +63,11 @@ export const updateOrarioChiusura = async (req: Request, res: Response, next: Ne
     }
 };
 
-// Controller per cancellare un orario di chiusura per ID
+/**
+ * Funzione per cancellare unn orario di chiusura per ID.
+ */
 export const deleteOrarioChiusura = async (req: Request, res: Response, next: NextFunction) => {
     const id = parseInt(req.params.id);
-
-    if (isNaN(id)) {
-        return next(ErrorFactory.createError(ErrorTypes.BadRequest, 'ID non valido'));
-    }
 
     try {
         const deleted = await orarioChiusuraDao.delete(id);
