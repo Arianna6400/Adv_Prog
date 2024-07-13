@@ -27,7 +27,7 @@ class MultaDao implements MultaDAO {
     /**
      * Recupera una multa per ID.
      * 
-     * @param {number} uuid uuid della multa da cercare
+     * @param {number} id L'ID della multa.
      * @returns {Promise<Multa | null>} Una Promise che risolve una multa o null se non trovata.
      */
     public async getById(id: number): Promise<Multa | null> {
@@ -38,19 +38,20 @@ class MultaDao implements MultaDAO {
           }
           return multa;
         } catch (error) {
-          if (error instanceof HttpError) {
-            throw error; // Rilancia l'errore personalizzato
-          }
           throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero della multa con id ${id}`);
         }
     }
 
     /**
-     * Metodo per ottenere la multa dato il suo UUID
+     * Metodo per ottenere la multa dato il suo UUID.
+     * 
+     * @param {string} uuid L'UUID della multa.
+     * @param {FindOptions} [options] Opzioni aggiuntive per la query di ricerca.
+     * @returns {Promise<Multa | null>} Una Promise che risolve la multa trovata o null se non trovata.
      */
     public async getMultaByUUID(uuid: string, options?: FindOptions): Promise<Multa | null> {
         try {
-            // Ricerca la multa nel db tramite UUID
+            // Ricerca la multa nel database tramite UUID
             const multa = await Multa.findOne({ where: { uuid_pagamento: uuid }, ...options });
             if (!multa) {
                 throw ErrorFactory.createError(ErrorTypes.NotFound, `Multa con uuid ${uuid} non trovata`);
@@ -84,7 +85,7 @@ class MultaDao implements MultaDAO {
      * @param {Partial<MultaAttributes>} data  I dati per aggiornare la multa.
      * @param {Object} [options] Opzioni aggiuntive per la transazione.
      * @param {Transaction} [options.transaction] La transazione Sequelize.
-     * @returns {Promise<[number, Multa[]]>} Una promessa che risolve il numero di righe aggiornate e l'array delle multe aggiornate.
+     * @returns {Promise<[number, Multa[]]>} Una Promise che risolve il numero di righe aggiornate e l'array delle multe aggiornate.
      */
     public async update(id: number, data: Partial<MultaAttributes>, options?: { transaction?: Transaction }): Promise<[number, Multa[]]> {
         try {
@@ -102,7 +103,7 @@ class MultaDao implements MultaDAO {
      * @param {number} id L'ID della multa.
      * @param {Object} [options] Opzioni aggiuntive per la transazione.
      * @param {Transaction} [options.transaction] La transazione Sequelize.
-     * @returns {Promise<number>} Una promessa che risolve il numero di righe cancellate.
+     * @returns {Promise<number>} Una Promise che risolve il numero di righe cancellate.
      */
     public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
         try {

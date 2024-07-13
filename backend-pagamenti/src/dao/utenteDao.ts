@@ -3,17 +3,22 @@ import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import { UtenteAttributes } from '../models/utente';
 import { FindOptions } from 'sequelize';
 
+// Interfaccia per il DAO degli utenti
 interface UtenteDAO<T, K> {
     getById(id: K): Promise<T | null>;
     checkToken(id: number): Promise<number>;
     rechargeTokens(id: number, tokens: number): Promise<Utente>;
 }
 
+// Classe UtenteDao che implementa l'interfaccia UtenteDAO
 class UtenteDao implements UtenteDAO<UtenteAttributes, number> {
 
     /**
      * Metodo per ottenere un utente tramite ID
-     * @param options Permette di specificare parametri per le query, fornita da sequelize, esempio transazione
+     * 
+     * @param {number} id L'ID dell'utente.
+     * @param {FindOptions} [options] Opzioni aggiuntive per la query di ricerca.
+     * @returns {Promise<Utente | null>} Una Promise che risolve l'utente trovato o null se non trovato.
      */
     public async getById(id: number, options?: FindOptions): Promise<Utente | null> {
         try {
@@ -28,7 +33,10 @@ class UtenteDao implements UtenteDAO<UtenteAttributes, number> {
     }
 
     /**
-     * Metodo per controllare i token rimanenti di un utente
+     * Metodo per controllare il numero di token rimanenti di un utente dato l'ID.
+     * 
+     * @param {number} id L'ID dell'utente.
+     * @returns {Promise<number>} Una Promise che risolve il numero di token rimanenti.
      */
     public async checkToken(id: number): Promise<number> {
         try {
@@ -43,9 +51,11 @@ class UtenteDao implements UtenteDAO<UtenteAttributes, number> {
     }
 
     /**
-     * Metodo per ricaricare i token di un utente dato l'ID
-     * @param id Identificativo dell'utente al quale effettuare la ricarica
-     * @param tokens Valore dei token da ricaricare per un utente
+     * Metodo per ricaricare i token di un utente dato l'ID.
+     * 
+     * @param {number} id L'ID dell'utente.
+     * @param {number} tokens Numero di token da ricaricare.
+     * @returns {Promise<Utente>} Una Promise che risolve l'utente aggiornato con i nuovi token.
      */
     public async rechargeTokens(id: number, tokens: number): Promise<Utente> {
         try {

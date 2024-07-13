@@ -107,7 +107,7 @@ class MultaRepository {
      * 
      * @param {number} uuid UUID della multa.
      * @param {number} utenteId L'ID dell'utente.
-     * @returns {Promise<{ multa: Multa, transito: Transito, veicolo: Veicolo } | null>} - Una Promise che risolve un oggetto con i dettagli della multa, transito e veicolo, 
+     * @returns {Promise<{ multa: Multa, transito: Transito, veicolo: Veicolo } | null>} Una Promise che risolve un oggetto con i dettagli della multa, transito e veicolo, 
      * o null se non trovato o non autorizzato.
      */
     public async getMultaWithDetailsById(uuid: string, utenteId: number): Promise<{ multa: Multa, transito: Transito, veicolo: Veicolo } | null> {

@@ -1,23 +1,34 @@
 import Utente, { UtenteAttributes, UtenteCreationAttributes } from '../models/utente';
 import { DAO } from '../dao/daoInterface';
-import { ErrorFactory, ErrorTypes, HttpError } from '../utils/errorFactory';
+import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import { Transaction } from 'sequelize';
 
+// Interfaccia UtenteDAO che estende la DAO per includere metodi specifici per Utente
 interface UtenteDAO extends DAO<UtenteAttributes, number> {
   // metodi specifici per l'utentee, se necessari
 }
 
+// Classe UtenteDao che implementa l'interfaccia UtenteDAO
 class UtenteDao implements UtenteDAO {
-
+  /**
+   * Recupera tutti gli utenti.
+   * 
+   * @returns {Promise<Utente[]>} Una Promise che risolve un array di utenti.
+   */
   public async getAll(): Promise<Utente[]> {
       try {
           return await Utente.findAll();
       } catch (error) {
-          console.error('Errore nel recupero degli utenti:', error);
           throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero degli utenti');
       }
   }
 
+  /**
+   * Recupera un utente per ID.
+   * 
+   * @param {number} id L'ID dell'utente.
+   * @returns {Promise<Utente | null>} Una Promise che risolve un utente o null se non trovato.
+   */
   public async getById(id: number): Promise<Utente | null> {
       try {
           const utente = await Utente.findByPk(id);
@@ -26,23 +37,35 @@ class UtenteDao implements UtenteDAO {
           }
           return utente;
       } catch (error) {
-          console.error(`Errore nel recupero dell'utente con id ${id}:`, error);
-          if (error instanceof HttpError) {
-              throw error; // Rilancia l'errore personalizzato
-          }
           throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero dell'utente con id ${id}`);
       }
   }
 
+  /**
+   * Crea un nuovo utente.
+   * 
+   * @param {UtenteCreationAttributes} data I dati per creare l'utente.
+   * @param {Object} [options] Opzioni aggiuntive per la transazione.
+   * @param {Transaction} [options.transaction] La transazione Sequelize.
+   * @returns {Promise<Utente>} Una Promise che risolve l'utente creato.
+   */
   public async create(data: UtenteCreationAttributes, options?: { transaction?: Transaction }): Promise<Utente> {
     try {
         return await Utente.create(data, options);
     } catch (error) {
-        console.error('Errore nella creazione dell\'utente:', error);
         throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione dell\'utente');
     }
-}
+  }
 
+  /**
+   * Aggiorna un utente esistente.
+   * 
+   * @param {number} id L'ID dell'utente.
+   * @param {Partial<UtenteAttributes>} data I dati per aggiornare l'utente.
+   * @param {Object} [options] Opzioni aggiuntive per la transazione.
+   * @param {Transaction} [options.transaction] La transazione Sequelize.
+   * @returns {Promise<[number, Utente[]]>} Una Promise che risolve il numero di righe aggiornate e l'array degli utenti aggiornati.
+   */
   public async update(id: number, data: Partial<UtenteAttributes>, options?: { transaction?: Transaction }): Promise<[number, Utente[]]> {
       try {
           const utente = await Utente.findByPk(id);
@@ -53,11 +76,18 @@ class UtenteDao implements UtenteDAO {
           const updatedUtenti = await Utente.findAll({ where: { id_utente: id } });
           return [affectedCount, updatedUtenti];
       } catch (error) {
-          console.error(`Errore nell'aggiornamento dell'utente con id ${id}:`, error);
           throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nell'aggiornamento dell'utente con id ${id}`);
       }
   }
 
+  /**
+   * Cancella un utente per ID.
+   * 
+   * @param {number} id L'ID dell'utente.
+   * @param {Object} [options] Opzioni aggiuntive per la transazione.
+   * @param {Transaction} [options.transaction] La transazione Sequelize.
+   * @returns {Promise<number>} Una Promise che risolve il numero di righe cancellate.
+   */
   public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
       try {
           const utente = await Utente.findByPk(id);
@@ -66,7 +96,6 @@ class UtenteDao implements UtenteDAO {
           }
           return await Utente.destroy({ where: { id_utente: id } });
       } catch (error) {
-          console.error(`Errore nella cancellazione dell'utente con id ${id}:`, error);
           throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione dell'utente con id ${id}`);
       }
   }
