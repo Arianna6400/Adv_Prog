@@ -1,5 +1,7 @@
 # Progetto Programmazione Avanzata A.A. 23/24
 
+![Typescript](https://img.shields.io/badge/Typescript-007ACC?style=for-the-badge&logo=typescript&logoColor=white) ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)![Sequelize](https://img.shields.io/badge/Sequelize-52B0E7?style=for-the-badge&logo=sequelize&logoColor=white)![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)![VSCode](https://img.shields.io/badge/VSCode-0078D4?style=for-the-badge&logo=visualstudiocode&logoColor=white)
+
 # Indice
 
 1. [Obiettivo](#obiettivo)
@@ -7,16 +9,17 @@
    1. [Architettura dei servizi](#architettura-dei-servizi)
    2. [Diagramma dei casi d'uso](#diagramma-dei-casi-duso)
    3. [Diagramma E-R](#diagramma-e-r)
+   4. [Diagrammi delle sequenze](#diagrammi-delle-sequenze)
 3. [API](#api)
 4. [Set-up](#set-up)
 5. [Strumenti utilizzati](#strumenti-utilizzati)
 6. [Autori](#autori)
 
-## Obiettivo
+## 📌 Obiettivo
 
-## Progettazione
+## 🏗️ Progettazione
 
-### Architettura dei servizi
+### 🖥️ Architettura dei servizi
 
 ```mermaid
 graph TD;
@@ -45,7 +48,7 @@ graph TD;
     style user fill:#acf,stroke:#333,stroke-width:4px
 ```
 
-### Diagramma dei casi d'uso
+### 📊 Diagramma dei casi d'uso
 
 ```mermaid
 graph TD
@@ -66,7 +69,7 @@ graph TD
     VerificaMulte ----|Controlla| CreazioneAutomaticaMulta
 ```
 
-### Diagramma E-R
+### 🗂️ Diagramma E-R
 
 ```mermaid
 erDiagram
@@ -147,16 +150,124 @@ erDiagram
     UTENTE ||--o| IS_VARCO : "has"
     VARCO_ZTL ||--o| IS_VARCO : "has"
 ```
+### 🔄 Diagrammi delle sequenze
 
-## API
+🚌 **Backend-Transiti**
 
-## Set-up
+💳 **Backend-Pagamenti**
 
-## Strumenti utilizzati
+* __POST /pagamulta__
+
+```mermaid
+sequenceDiagram
+    participant U as Utente
+    participant C as Controller
+    participant DAO_M as MultaDao
+    participant DAO_U as UtenteDao
+    participant M as Multa
+    participant DB as Database
+    participant Auth as AuthMiddleware
+    participant Err as ErrorHandler
+    participant JWT as JWT Library
+    participant ENV as Environment
+
+    U->>+Auth: Richiesta con token
+    Auth->>+ENV: Ottiene JWT_SECRET
+    ENV-->>Auth: JWT_SECRET
+    Auth->>+JWT: jwt.verify(token, JWT_SECRET)
+    alt Token valido
+        JWT-->>Auth: Payload decodificato
+        Auth->>C: Passa controllo
+    else Token non valido
+        JWT-->>Auth: null
+        Auth-->>Err: Genera errore
+        Err-->>U: Errore autenticazione
+    end
+    C->>+DB: Start Transaction
+    C->>+DAO_M: getMultaByUUID(uuid)
+    DAO_M->>+M: Trova multa per UUID
+    alt Multa trovata
+        M-->>DAO_M: Multa
+        DAO_M-->>C: Multa
+    else Multa non trovata
+        M-->>DAO_M: null
+        DAO_M-->>C: null
+        C->>DB: Rollback Transaction
+        C-->>U: Multa non trovata
+    end
+    alt Multa già pagata
+        C->>DB: Rollback Transaction
+        C-->>U: Multa già pagata
+    end
+    C->>+DAO_U: getById(id)
+    DAO_U->>+U: Trova utente per ID
+    alt Utente trovato
+        U-->>DAO_U: Utente
+        DAO_U-->>C: Utente
+    else Utente non trovato
+        U-->>DAO_U: null
+        DAO_U-->>C: null
+        C->>DB: Rollback Transaction
+        C-->>U: Utente non trovato
+    end
+    alt Token insufficienti
+        C->>DB: Rollback Transaction
+        C-->>U: Token insufficienti
+    end
+    C->>+DAO_U: Aggiorna token_rimanenti
+    DAO_U->>U: Aggiorna token
+    C->>+DAO_M: Aggiorna stato multa a pagata
+    DAO_M->>M: Aggiorna stato multa
+    C->>DB: Commit Transaction
+    C-->>U: Pagamento effettuato con successo
+```
+
+* __POST /ricaricatoken/:id__
+
+```mermaid
+sequenceDiagram
+    participant U as Utente
+    participant C as Controller
+    participant DAO_U as UtenteDao
+    participant Auth as AuthMiddleware
+    participant Err as ErrorHandler
+    participant JWT as JWT Library
+    participant ENV as Environment
+
+    U->>+Auth: Richiesta con token
+    Auth->>+ENV: Ottiene JWT_SECRET
+    ENV-->>Auth: JWT_SECRET
+    Auth->>+JWT: jwt.verify(token, JWT_SECRET)
+    alt Token valido
+        JWT-->>Auth: Payload decodificato
+        Auth->>C: Passa controllo
+    else Token non valido
+        JWT-->>Auth: null
+        Auth-->>Err: Genera errore
+        Err-->>U: Errore autenticazione
+    end
+    C->>+DAO_U: rechargeTokens(id, tokens)
+    DAO_U->>+U: Trova e aggiorna utente per ID
+    alt Utente trovato
+        U-->>DAO_U: Utente aggiornato
+        DAO_U-->>C: Utente aggiornato
+        C-->>U: Token ricaricati con successo
+    else Utente non trovato
+        U-->>DAO_U: null
+        DAO_U-->>C: null
+        C-->>U: Utente non trovato
+    end
+```
+
+## 🔌 API
+
+## ⚙️ Set-up
+
+## 🛠️ Strumenti utilizzati
 
 [![](https://skillicons.dev/icons?i=ts,express,nodejs,sequelize,docker,postgres,postman,github,vscode)](https://skillicons.dev)
 
-## Autori 
+## 👥 Autori 
 
 |Nome | GitHub |
 |-----------|--------|
