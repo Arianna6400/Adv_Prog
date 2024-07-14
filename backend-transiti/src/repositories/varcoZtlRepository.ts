@@ -8,6 +8,8 @@ import { UtenteCreationAttributes } from '../models/utente';
 import { VarcoZtlCreationAttributes, VarcoZtlAttributes } from '../models/varcoZtl';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import Database from '../utils/database';
+import transitoDao from '../dao/transitoDao';
+import veicoloDao from '../dao/veicoloDao';
 /**
  * Classe VarcoZtlRepository per gestire le operazioni CRUD sui varchi ZTL.
  */
@@ -55,6 +57,46 @@ class VarcoZtlRepository {
                 ...varcoZtl.dataValues,
                 zona_ztl: zonaZtl ? zonaZtl.dataValues : null,
                 orario_chiusura: orarioChiusura ? orarioChiusura.dataValues : null
+            };
+        } catch (error) {
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il varco ZTL con id ${id}`);
+        }
+    }
+
+    /**
+     * Recupera un varco ZTL per ID con tutti i transiti associati.
+     * 
+     * @param {number} id L'ID del varco ZTL.
+     * @returns {Promise<any | null>} Una Promise che risolve il varco ZTL con i transiti associati o null se non trovato.
+     */
+    public async getVarcoZtlWithTransiti(id: number): Promise<any | null> {
+        try {
+            const varcoZtl = await varcoZtlDao.getById(id);
+            if (!varcoZtl) {
+                return null;
+            }
+            const zonaZtl = await zonaZtlDao.getById(varcoZtl.zona_ztl);
+            
+            const orarioChiusura = await orarioChiusuraDao.getById(varcoZtl.orario_chiusura);
+
+            const transiti = (await transitoDao.getAll()).filter(transito => transito.varco === id);
+
+            // mappa il nuovo contenuto sull'array dei transiti precedentemente filtrato in base al varco
+            const transitiWithDetails = await Promise.all(transiti.map(async (transito) => {
+                const veicolo = await veicoloDao.getById(transito.veicolo);
+                return {
+                    ...transito.dataValues,
+                    id_transito: undefined, // rimuovo la visualizzazione dell'id del transito
+                    varco: undefined, // rimuovo la visualizzazione del varco
+                    veicolo: veicolo ? veicolo.dataValues : null,
+                };
+            }));
+
+            return {
+                ...varcoZtl.dataValues,
+                zona_ztl: zonaZtl ? zonaZtl.dataValues : null,
+                orario_chiusura: orarioChiusura ? orarioChiusura.dataValues : null,
+                transiti: transitiWithDetails,
             };
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il varco ZTL con id ${id}`);

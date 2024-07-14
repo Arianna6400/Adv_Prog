@@ -6,6 +6,11 @@ export const validateGetZonaZtlById = [
     validateRequest
 ];
 
+export const validategetZonaZtlWithTransiti = [
+    param('id').isInt({ min: 1 }).withMessage('ID zona deve essere un intero positivo'),
+    validateRequest
+]
+
 export const validateCreateZonaZtl = [
     body('nome').isString().withMessage('Nome deve essere una stringa'),
     validateRequest

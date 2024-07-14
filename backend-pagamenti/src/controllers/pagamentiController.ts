@@ -85,7 +85,7 @@ export const checkToken = async (req: Request, res: Response, next: NextFunction
         const { id } = (req as any).user as JwtPayload; // ID dell'utente preso dal payload del token JWT
         const tokenRimanenti = await utenteDao.getById(id);
         res.status(StatusCodes.OK).json({
-            tokenRimanenti, 
+            tokenRimanenti: Number(tokenRimanenti?.token_rimanenti)
         });
     } catch (error) {
         next(error);

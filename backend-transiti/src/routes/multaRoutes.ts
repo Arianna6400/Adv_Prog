@@ -15,7 +15,7 @@ router.use(authMiddleware);
 /**
  * Definizione delle rotte con relative validazioni ed autorizzazioni
  */
-router.get('/multe', authorize(['automobilista']), getMulteByUtente);
-router.get('/multe/bollettino/:uuid', authorize(['automobilista']), validateDownloadBollettino, downloadBollettino);
+router.get('/multe', authorize(['automobilista']), getMulteByUtente); // rotta per visualizzare tutte le multe di un automobilista 
+router.get('/multe/bollettino/:uuid', authorize(['automobilista']), validateDownloadBollettino, downloadBollettino); // rotta per scaricare il bollettino di pagamento di una multa
 
 export default router;

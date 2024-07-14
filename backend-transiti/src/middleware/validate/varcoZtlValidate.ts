@@ -6,6 +6,11 @@ export const validateGetVarcoZtlById = [
     validateRequest
 ];
 
+export const validategetVarcoZtlWithTransiti = [
+    param('id').isInt({ min: 1 }).withMessage('ID deve essere un intero positivo'),
+    validateRequest
+];
+
 export const validateCreateVarcoZtl = [
     body('nome').isString().withMessage('Nome deve essere una stringa'),
     body('via').optional().isString().withMessage('Via deve essere una stringa'),

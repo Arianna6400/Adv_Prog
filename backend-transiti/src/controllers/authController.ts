@@ -26,6 +26,6 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const token = generateToken({ id: user.id_utente, email: user.email, ruolo: user.ruolo});
     res.status(StatusCodes.OK).json({ token });
   } catch (error) {
-    next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore del server'));
+    return next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore del server'));
   }
 };

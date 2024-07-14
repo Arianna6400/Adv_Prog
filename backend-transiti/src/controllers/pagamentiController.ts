@@ -18,10 +18,11 @@ export const payMulta = async (req: Request, res: Response, next: NextFunction) 
         // Estrae il token di autorizzazione dall'intestazione della richiesta 
         const token = req.headers.authorization?.split(' ')[1];
         if (!token) {
-            return next(ErrorFactory.createError(ErrorTypes.Unauthorized, 'Token non fornito'));
+            next(ErrorFactory.createError(ErrorTypes.Unauthorized, 'Token non fornito'));
+        }else{
+             // Imposta il token di autenticazione per le richieste successive
+            setAuthToken(token);
         }
-        // Imposta il token di autenticazione per le richieste successive
-        setAuthToken(token);
 
         // Richiesta POST all'endpoint tramite istanza axios per la connessione con backend-pagamenti
         const response = await axiosInstance.post('/pagamulta', { uuid });
@@ -32,7 +33,7 @@ export const payMulta = async (req: Request, res: Response, next: NextFunction) 
             const message = error.response?.data?.error.message || 'Errore nel pagamento'; // ritorno il messaggio della funzione chiamata
             return next(ErrorFactory.createError(ErrorTypes.BadRequest, message));
         }
-        next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel pagamento'));
+        return next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel pagamento'));
     }
 };
 
@@ -53,9 +54,10 @@ export const rechargeTokens = async (req: Request, res: Response, next: NextFunc
         const token = req.headers.authorization?.split(' ')[1];
         if (!token) {
             return next(ErrorFactory.createError(ErrorTypes.Unauthorized, 'Token non fornito'));
+        }else{
+            // Imposta il token di autenticazione per le richieste successive
+            setAuthToken(token);
         }
-        // Imposta il token di autenticazione per le richieste successive
-        setAuthToken(token);
 
         // Richiesta POST all'endpoint tramite istanza axios per la connessione con backend-pagamenti
         const response = await axiosInstance.post(`/ricaricatoken/${id}`, { tokens });
@@ -66,7 +68,7 @@ export const rechargeTokens = async (req: Request, res: Response, next: NextFunc
             const message = error.response?.data?.error.message || 'Errore nella ricarica'; // ritorno il messaggio della funzione chiamata
             return next(ErrorFactory.createError(ErrorTypes.BadRequest, message));
         }
-        next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella ricarica'));
+        return next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella ricarica'));
     }
 };
 
@@ -79,9 +81,10 @@ export const checkToken = async (req: Request, res: Response, next: NextFunction
         const token = req.headers.authorization?.split(' ')[1];
         if (!token) {
             return next(ErrorFactory.createError(ErrorTypes.Unauthorized, 'Token non fornito'));
+        }else{
+            // Imposta il token di autenticazione per le richieste successive
+            setAuthToken(token);
         }
-        // Imposta il token di autenticazione per le richieste successive
-        setAuthToken(token);
 
         // Richiesta GET all'endpoint tramite istanza axios per la connessione con backend-pagamenti
         const response = await axiosInstance.get('/tokenresidui');
@@ -92,6 +95,6 @@ export const checkToken = async (req: Request, res: Response, next: NextFunction
             const message = error.response?.data?.error.message || 'Errore nel recupero dei token'; // ritorno il messaggio della funzione chiamata
             return next(ErrorFactory.createError(ErrorTypes.BadRequest, message));
         }
-        next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero dei token'));
+        return next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero dei token'));
     }
 };

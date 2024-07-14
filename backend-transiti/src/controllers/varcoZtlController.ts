@@ -35,6 +35,25 @@ export const getVarcoZtlById = async (req: Request, res: Response, next: NextFun
 };
 
 /**
+ * Funzione per ottenere un varco ZTL per ID con tutti i transiti associati.
+ */
+export const getVarcoZtlWithTransiti = async (req: Request, res: Response, next: NextFunction) => {
+    const id = parseInt(req.params.id);
+
+    try {
+        // Recupera il varco ZTL con transiti dal repository usando l'ID
+        const varcoZtlWithTransiti = await varcoZtlRepository.getVarcoZtlWithTransiti(id);
+        if (varcoZtlWithTransiti) {
+            res.status(StatusCodes.OK).json(varcoZtlWithTransiti);
+        } else {
+            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Varco ZTL non trovato'));
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
  * Funzione per creare un nuovo varco ZTL
  */
 export const createVarcoZtl = async (req: Request, res: Response, next: NextFunction) => {

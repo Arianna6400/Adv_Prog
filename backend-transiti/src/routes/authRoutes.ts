@@ -7,6 +7,6 @@ import { validateLogin } from '../middleware/validate/authValidate';
 
 const router = Router();
 
-router.post('/login', validateLogin, login);
+router.post('/login', validateLogin, login); // Rotta per il login utente
 
 export default router;

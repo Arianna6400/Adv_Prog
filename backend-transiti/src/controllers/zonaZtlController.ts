@@ -37,6 +37,25 @@ export const getZonaZtlById = async (req: Request, res: Response, next: NextFunc
 };
 
 /**
+ * Funzione per ottenere una zona ZTL per ID con tutti i transiti associati
+ */
+export const getZonaZtlWithTransiti = async (req: Request, res: Response, next: NextFunction) => {
+    const id = parseInt(req.params.id);
+
+    try {
+        // Recupera la zona ZTL dal repository usando l'ID
+        const zonaZtl = await zonaZtlRepository.getZonaZtlWithTransiti(id);
+        if (zonaZtl) {
+            res.status(StatusCodes.OK).json(zonaZtl);
+        } else {
+            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
  * Funzione per creare una nuova zona ZTL.
  */
 export const createZonaZtl = async (req: Request, res: Response, next: NextFunction) => {

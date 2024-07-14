@@ -4,6 +4,8 @@ import varcoZtlDao from '../dao/varcoZtlDao';
 import orarioChiusuraDao from '../dao/orarioChiusuraDao';
 import { ZonaZtlCreationAttributes, ZonaZtlAttributes } from '../models/zonaZtl';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
+import transitoDao from '../dao/transitoDao';
+import veicoloDao from '../dao/veicoloDao';
 
 // Definizione della classe ZonaZtlRepository
 class ZonaZtlRepository {
@@ -65,6 +67,51 @@ class ZonaZtlRepository {
             };
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.BadRequest, `Impossibile recuperare la zona ZTL con id ${id}`);
+        }
+    }
+
+    /**
+     * Recupera una zona ZTL per ID con tutti i transiti associati.
+     * 
+     * @param {number} id L'ID della zona ZTL.
+     * @returns {Promise<any | null>} Una Promise che risolve la zona ZTL con i transiti associati o null se non trovato.
+     */
+    public async getZonaZtlWithTransiti(id: number): Promise<any | null> {
+        try {
+            const zonaZtl = await zonaZtlDao.getById(id);
+            if (!zonaZtl) {
+                return null;
+            }
+
+            const varchiZtl = await varcoZtlDao.getAll();
+            const varchiNellaZona = varchiZtl.filter(varco => varco.zona_ztl === id);
+
+            const transitiWithDetails = await Promise.all(varchiNellaZona.map(async (varco) => {
+                const transiti = await transitoDao.getAll();
+                const transitiPerVarco = transiti.filter(transito => transito.varco === varco.id_varco);
+
+                const transitiDettagliati = await Promise.all(transitiPerVarco.map(async (transito) => {
+                    const veicolo = await veicoloDao.getById(transito.veicolo);
+                    return {
+                        ...transito.dataValues,
+                        id_transito: undefined,
+                        varco: undefined,
+                        veicolo: veicolo ? veicolo.dataValues : null,
+                    };
+                }));
+
+                return {
+                    varco: varco.dataValues,
+                    transiti: transitiDettagliati
+                };
+            }));
+
+            return {
+                ...zonaZtl.dataValues,
+                varchi: transitiWithDetails
+            };
+        } catch (error) {
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare la zona ZTL con id ${id}`);
         }
     }
 
