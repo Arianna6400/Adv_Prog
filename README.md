@@ -4,22 +4,22 @@
 
 # Indice
 
-1. [Obiettivo](#obiettivo)
-2. [Progettazione](#progettazione)
-   1. [Architettura dei servizi](#architettura-dei-servizi)
-   2. [Diagramma dei casi d'uso](#diagramma-dei-casi-duso)
-   3. [Diagramma E-R](#diagramma-e-r)
-   4. [Diagrammi delle sequenze](#diagrammi-delle-sequenze)
-3. [API](#api)
-4. [Set-up](#set-up)
-5. [Strumenti utilizzati](#strumenti-utilizzati)
-6. [Autori](#autori)
+1. [Obiettivo](#-obiettivo)
+2. [Progettazione](#-progettazione)
+   1. [Architettura dei servizi](#-architettura-dei-servizi)
+   2. [Diagramma dei casi d'uso](#-diagramma-dei-casi-duso)
+   3. [Diagramma E-R](#-diagramma-e-r)
+   4. [Diagrammi delle sequenze](#-diagrammi-delle-sequenze)
+3. [API](#-api)
+4. [Set-up](#-set-up)
+5. [Strumenti utilizzati](#-strumenti-utilizzati)
+6. [Autori](#-autori)
 
-## 📌 Obiettivo
+# 📌 Obiettivo
 
-## 🏗️ Progettazione
+# 🏗️ Progettazione
 
-### 🖥️ Architettura dei servizi
+## 🖥️ Architettura dei servizi
 
 ```mermaid
 graph TD;
@@ -48,7 +48,7 @@ graph TD;
     style user fill:#acf,stroke:#333,stroke-width:4px
 ```
 
-### 📊 Diagramma dei casi d'uso
+## 📊 Diagramma dei casi d'uso
 
 ```mermaid
 graph TD
@@ -69,7 +69,7 @@ graph TD
     VerificaMulte ----|Controlla| CreazioneAutomaticaMulta
 ```
 
-### 🗂️ Diagramma E-R
+## 🗂️ Diagramma E-R
 
 ```mermaid
 erDiagram
@@ -150,9 +150,250 @@ erDiagram
     UTENTE ||--o| IS_VARCO : "has"
     VARCO_ZTL ||--o| IS_VARCO : "has"
 ```
-### 🔄 Diagrammi delle sequenze
+## 🔄 Diagrammi delle sequenze
 
 🚌 **Backend-Transiti**
+
+* __GET /varchi/:id/transiti__
+
+```mermaid
+```
+
+* __POST /varcoZtl__
+
+```mermaid
+```
+
+* __DELETE /zonaZtl/:id__   
+
+```mermaid
+```
+
+* __GET /transiti/:id__
+
+```mermaid
+sequenceDiagram
+    participant U as Utente
+    participant C as Controller
+    participant R as TransitoRepository
+    participant DAO_T as TransitoDao
+    participant DAO_V as VeicoloDao
+    participant DAO_Z as VarcoZtlDao
+    participant T as Transito
+    participant V as Veicolo
+    participant Z as VarcoZtl
+    participant Auth as AuthMiddleware
+    participant Err as ErrorHandler
+    participant JWT as JWT
+    participant ENV as Environment
+
+    U->>+Auth: Richiesta con token
+    Auth->>+ENV: Ottiene JWT_SECRET
+    ENV-->>Auth: JWT_SECRET
+    Auth->>+JWT: jwt.verify(token, JWT_SECRET)
+    alt Token valido
+        JWT-->>Auth: Payload decodificato
+        Auth->>C: Passa controllo
+    else Token non valido
+        JWT-->>Auth: null
+        Auth-->>Err: Genera errore
+        Err-->>U: Errore autenticazione
+    end
+    C->>+R: getTransitoById(id)
+    R->>+DAO_T: getById(id)
+    DAO_T->>+T: Trova transito per ID
+    alt Transito trovato
+        T-->>DAO_T: Transito
+        DAO_T-->>R: Transito
+    else Transito non trovato
+        T-->>DAO_T: null
+        DAO_T-->>R: null
+        R-->>C: null
+        C-->>U: Transito non trovato
+    end
+    R->>+DAO_V: getById(transito.veicolo)
+    DAO_V->>+V: Trova veicolo per ID
+    alt Veicolo trovato
+        V-->>DAO_V: Veicolo
+        DAO_V-->>R: Veicolo
+    else Veicolo non trovato
+        V-->>DAO_V: null
+        DAO_V-->>R: null
+        R-->>C: null
+        C-->>U: Veicolo non trovato
+    end
+    R->>+DAO_Z: getById(transito.varco)
+    DAO_Z->>+Z: Trova varco ZTL per ID
+    alt Varco trovato
+        Z-->>DAO_Z: Varco ZTL
+        DAO_Z-->>R: Varco ZTL
+    else Varco non trovato
+        Z-->>DAO_Z: null
+        DAO_Z-->>R: null
+        R-->>C: null
+        C-->>U: Varco non trovato
+    end
+    R-->>C: Transito, Veicolo, Varco ZTL
+    C-->>U: Transito con dettagli
+```
+
+* __POST /transiti__
+
+```mermaid
+sequenceDiagram
+    participant U as Utente
+    participant C as Controller
+    participant R as TransitoRepository
+    participant DAO_T as TransitoDao
+    participant DAO_V as VeicoloDao
+    participant DAO_Z as VarcoZtlDao
+    participant DAO_M as MultaDao
+    participant T as Transito
+    participant V as Veicolo
+    participant Z as VarcoZtl
+    participant M as Multa
+    participant Auth as AuthMiddleware
+    participant Err as ErrorHandler
+    participant JWT as JWT
+    participant ENV as Environment
+    participant DB as Database
+    participant TR as Transaction
+
+    U->>+Auth: Richiesta con token
+    Auth->>+ENV: Ottiene JWT_SECRET
+    ENV-->>Auth: JWT_SECRET
+    Auth->>+JWT: jwt.verify(token, JWT_SECRET)
+    alt Token valido
+        JWT-->>Auth: Payload decodificato
+        Auth->>C: Passa controllo
+    else Token non valido
+        JWT-->>Auth: null
+        Auth-->>Err: Genera errore
+        Err-->>U: Errore autenticazione
+    end
+    C->>+R: createTransito(req.body)
+    R->>+DB: Ottiene istanza database
+    DB-->>R: Istanza database
+    R->>+TR: Start Transaction
+    R->>+DAO_T: create(data, { transaction })
+    DAO_T->>+T: Crea nuovo transito
+    T-->>DAO_T: Nuovo transito
+    DAO_T-->>R: Nuovo transito
+    R->>+DAO_V: getById(transito.veicolo)
+    DAO_V->>+V: Trova veicolo per ID
+    alt Veicolo trovato
+        V-->>DAO_V: Veicolo
+        DAO_V-->>R: Veicolo
+    else Veicolo non trovato
+        V-->>DAO_V: null
+        DAO_V-->>R: null
+        R-->>TR: Rollback Transaction
+        R-->>C: Veicolo non trovato
+        C-->>U: Errore creazione transito
+    end
+    R->>+DAO_Z: getById(transito.varco)
+    DAO_Z->>+Z: Trova varco ZTL per ID
+    alt Varco trovato
+        Z-->>DAO_Z: Varco ZTL
+        DAO_Z-->>R: Varco ZTL
+    else Varco non trovato
+        Z-->>DAO_Z: null
+        DAO_Z-->>R: null
+        R-->>TR: Rollback Transaction
+        R-->>C: Varco non trovato
+        C-->>U: Errore creazione transito
+    end
+    alt Necessario calcolare multa
+        R->>+R: shouldCalculateMulta(newTransito)
+        R->>+DAO_M: calcolaMulta(newTransito)
+        DAO_M->>+M: Calcola e crea multa
+        M-->>DAO_M: Multa creata
+        DAO_M-->>R: Multa creata
+    else Non necessario calcolare multa
+        R-->>TR: Commit Transaction
+        R-->>C: Nuovo transito
+        C-->>U: Transito creato con successo
+    end
+```
+
+* __GET /multe/bollettino/:uuid__
+
+```mermaid
+sequenceDiagram
+    participant U as Utente
+    participant C as Controller
+    participant R as MultaRepository
+    participant DAO_M as MultaDao
+    participant DAO_T as TransitoDao
+    participant DAO_V as VeicoloDao
+    participant M as Multa
+    participant T as Transito
+    participant V as Veicolo
+    participant Auth as AuthMiddleware
+    participant Err as ErrorHandler
+    participant JWT as JWT
+    participant ENV as Environment
+    participant QR as QRCode
+    participant PDF as PDFDocument
+
+    U->>+Auth: Richiesta con token
+    Auth->>+ENV: Ottiene JWT_SECRET
+    ENV-->>Auth: JWT_SECRET
+    Auth->>+JWT: jwt.verify(token, JWT_SECRET)
+    alt Token valido
+        JWT-->>Auth: Payload decodificato
+        Auth->>C: Passa controllo
+    else Token non valido
+        JWT-->>Auth: null
+        Auth-->>Err: Genera errore
+        Err-->>U: Errore autenticazione
+    end
+    C->>+R: getMultaWithDetailsByUUID(uuid, utenteId)
+    R->>+DAO_M: getMultaByUUID(uuid)
+    DAO_M->>+M: Trova multa per UUID
+    alt Multa trovata
+        M-->>DAO_M: Multa
+        DAO_M-->>R: Multa
+    else Multa non trovata
+        M-->>DAO_M: null
+        DAO_M-->>R: null
+        R-->>C: null
+        C-->>U: Multa non trovata
+    end
+    R->>+DAO_T: getById(multa.transito)
+    DAO_T->>+T: Trova transito per ID
+    alt Transito trovato
+        T-->>DAO_T: Transito
+        DAO_T-->>R: Transito
+    else Transito non trovato
+        T-->>DAO_T: null
+        DAO_T-->>R: null
+        R-->>C: null
+        C-->>U: Transito non trovato
+    end
+    R->>+DAO_V: getById(transito.veicolo)
+    DAO_V->>+V: Trova veicolo per ID
+    alt Veicolo trovato
+        V-->>DAO_V: Veicolo
+        DAO_V-->>R: Veicolo
+    else Veicolo non trovato
+        V-->>DAO_V: null
+        DAO_V-->>R: null
+        R-->>C: null
+        C-->>U: Veicolo non trovato
+    end
+    alt Utente autorizzato
+        R-->>C: Multa, Transito, Veicolo
+        C->>+QR: generateQRCode(qrString)
+        QR-->>C: qrCodeUrl
+        C->>+PDF: createPDF(res, { multa, transito, veicolo, qrCodeUrl })
+        PDF-->>U: Bollettino PDF
+    else Utente non autorizzato
+        R-->>C: null
+        C-->>U: Non autorizzato
+    end
+
+```
 
 💳 **Backend-Pagamenti**
 
@@ -168,7 +409,7 @@ sequenceDiagram
     participant DB as Database
     participant Auth as AuthMiddleware
     participant Err as ErrorHandler
-    participant JWT as JWT Library
+    participant JWT as JWT
     participant ENV as Environment
 
     U->>+Auth: Richiesta con token
@@ -231,7 +472,7 @@ sequenceDiagram
     participant DAO_U as UtenteDao
     participant Auth as AuthMiddleware
     participant Err as ErrorHandler
-    participant JWT as JWT Library
+    participant JWT as JWT
     participant ENV as Environment
 
     U->>+Auth: Richiesta con token
@@ -259,15 +500,15 @@ sequenceDiagram
     end
 ```
 
-## 🔌 API
+# 🔌 API
 
-## ⚙️ Set-up
+# ⚙️ Set-up
 
-## 🛠️ Strumenti utilizzati
+# 🛠️ Strumenti utilizzati
 
 [![](https://skillicons.dev/icons?i=ts,express,nodejs,sequelize,docker,postgres,postman,github,vscode)](https://skillicons.dev)
 
-## 👥 Autori 
+# 👥 Autori 
 
 |Nome | GitHub |
 |-----------|--------|
