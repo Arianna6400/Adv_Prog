@@ -51,6 +51,7 @@ Transito.init(
     data_ora: {
       type: DataTypes.DATE,
       allowNull: false,
+      defaultValue: DataTypes.NOW
     },
   },
   {

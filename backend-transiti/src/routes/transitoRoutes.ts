@@ -22,10 +22,10 @@ router.use(authMiddleware);
 /**
  * Definizione delle rotte con relative validazioni ed autorizzazioni
  */
-router.get('/transiti', authorize(['operatore']), getAllTransiti);
-router.get('/transiti/:id', authorize(['operatore']), validateGetTransitoById, getTransitoById);
-router.post('/transiti', authorize(['operatore','varco']), validateCreateTransito, createTransito);
-router.put('/transiti/:id', authorize(['operatore']), validateUpdateTransito, updateTransito);
-router.delete('/transiti/:id', authorize(['operatore']), validateDeleteTransito, deleteTransito);
+router.get('/transito', authorize(['operatore']), getAllTransiti);
+router.get('/transito/:id', authorize(['operatore']), validateGetTransitoById, getTransitoById);
+router.post('/transito', authorize(['operatore','varco']), validateCreateTransito, createTransito);
+router.put('/transito/:id', authorize(['operatore']), validateUpdateTransito, updateTransito);
+router.delete('/transito/:id', authorize(['operatore']), validateDeleteTransito, deleteTransito);
 
 export default router;
