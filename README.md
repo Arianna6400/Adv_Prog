@@ -227,9 +227,17 @@ Per la gestione delle risorse condivise, come la connessione al DB, questo patte
 
 ### 🔄 Diagrammi delle sequenze
 
+I diagrammi delle sequenze permettono di illustrare la sequenza di messaggi di richiesta e risposta tra un gruppo di oggetti che interagiscono tra di loro. Essi offrono una rappresentazione utile alla comprensione della comunicazione tra le varie entità, perciò sono particolarmente consigliati per mostrare il processo di interazione in un contesto basato su rotte API. Poiché il sistema sviluppato presenta numerose rotte relative alle principali operazioni CRUD (Create, Read, Update, Delete), è stato deciso di mostrare solamente i diagrammi delle rotte più significative e complesse per entrambi i backend sviluppati.
+
 🚌 **Backend-Transiti**
 
 * __POST /login__
+
+La seguente rotta rappresenta la base d'autenticazione dell'intero sistema, in cui l'utente invia una richiesta di autenticazione con credenziali all'`authMiddleware`. Quest'ultimo interagisce con l'ambiente di esecuzione, rappresentato dal file `.env`, chiedendo la chiave segreta, cioè il **JWT Secret**. Una volta restituita la chiave al middleware, viene generato un token firmato con la chiave segreta, contenente le informazioni di autenticazione dell'utente, che viene restituito all'utente.
+
+A questo punto, l'utente invia una richiesta con il token al middleware di autenticazione, che esegue il processo di verifica inverso utilizzando la chiave segreta dell'ambiente di esecuzione. Se il token è valido, la libreria JWT restituisce il payload decodificato al middleware, il quale concede l'accesso all'utente. Se il token non è valido, la libreria restituisce un valore `null`, generando un errore e restituendo un messaggio di accesso negato all'utente. 
+
+Il JWT restituito all'utente, poi, verrà consumato per fare le richieste API, ove necessaria l'autenticazione dell'utente.
 
 ```mermaid
 sequenceDiagram
@@ -262,12 +270,20 @@ sequenceDiagram
 
 * __GET /varchi/:id/transiti__
 
+L'utente invia una richiesta con un token all'`authMiddleware`, il quale verifica il token e il ruolo dell'utente. Se il token è valido e l'utente è autorizzato, Auth passa il controllo al Controller, il quale invia una richiesta al Repository per ottenere il varco ZTL e i suoi transiti, fornendo l'ID del varco. Il repository contatta il DAO del varco ZTL per ottenere il varco ZTL per ID. Se il varco viene trovato, il DAO lo restituisce al Repository; in caso contrario, restituisce *null*, e il Repository comunica al Controller che il varco ZTL non è stato trovato, il quale a sua volta informa l'utente.
+
+Successivamente, il Repository invia una richiesta al DAO della zona ZTL per ottenere la zona ZTL per ID del varco ZTL. Se la zona viene trovata, il DAO la restituisce al Repository; se non viene trovata, restituisce *null*, e il Repository comunica al Controller che la zona ZTL non è stata trovata, il quale informa l'utente. Lo stesso processo viene ripetuto per ottenere l'orario di chiusura tramite il DAO dell'orario di chiusura. Se l'orario di chiusura viene trovato, viene restituito al Repository; se non viene trovato, viene restituito *null*, e il Repository comunica al Controller che l'orario di chiusura non è stato trovato, il quale informa l'utente.
+
+Il Repository invia quindi una richiesta al DAO dei transiti per ottenere tutti i transiti. Se i transiti vengono trovati, il DAO li restituisce al Repository, il quale invia poi una richiesta al DAO del veicolo per ottenere il veicolo per ID del transito. Se il veicolo viene trovato, viene restituito al Repository; se non viene trovato, viene restituito *null*.
+
+Se tutti i dettagli del varco ZTL, della zona, dell'orario di chiusura, dei transiti e dei veicoli sono stati trovati, il Repository restituisce al Controller il varco ZTL con tutti i dettagli e i transiti. Il Controller, infine, restituisce all'utente il varco ZTL con i transiti. Se alcuni dettagli non sono stati trovati, il Controller informa l'utente del problema specifico (varco ZTL, zona ZTL, orario di chiusura, transiti o veicoli non trovati).
+
+Se l'utente non è autorizzato, il middleware genera un errore e lo comunica al gestore degli errori, che restituisce un messaggio di accesso non autorizzato all'utente.
+
 ```mermaid
 sequenceDiagram
-participant U as Utente
+    participant U as Utente
     participant Auth as AuthMiddleware
-    participant ENV as Environment
-    participant JWT as JWT
     participant C as Controller
     participant Err as ErrorHandler
     participant R as VarcoZtlRepository
@@ -283,72 +299,67 @@ participant U as Utente
     participant V as Veicolo
     
     U->>+Auth: Richiesta con token
-    Auth->>+ENV: Ottiene JWT_SECRET
-    ENV-->>Auth: JWT_SECRET
-    Auth->>+JWT: jwt.verify(token, JWT_SECRET)
-    alt Token valido
-        JWT-->>Auth: Payload decodificato
-        Auth->>C: Passa controllo
-    else Token non valido
-        JWT-->>Auth: null
-        Auth-->>Err: Genera errore
-        Err-->>U: Errore autenticazione
-    end
-    C->>+R: getVarcoZtlWithTransiti(id)
-    R->>+DAO_VZ: getById(id)
-    DAO_VZ->>+VZ: Trova varco ZTL per ID
-    alt Varco trovato
-        VZ-->>DAO_VZ: Varco ZTL
-        DAO_VZ-->>R: Varco ZTL
-    else Varco non trovato
-        VZ-->>DAO_VZ: null
-        DAO_VZ-->>R: null
-        R-->>C: null
-        C-->>U: Varco ZTL non trovato
-    end
-    R->>+DAO_Z: getById(varcoZtl.zona_ztl)
-    DAO_Z->>+Z: Trova zona ZTL per ID
-    alt Zona trovata
-        Z-->>DAO_Z: Zona ZTL
-        DAO_Z-->>R: Zona ZTL
-    else Zona non trovata
-        Z-->>DAO_Z: null
-        DAO_Z-->>R: null
-        R-->>C: null
-        C-->>U: Zona ZTL non trovata
-    end
-    R->>+DAO_OC: getById(varcoZtl.orario_chiusura)
-    DAO_OC->>+OC: Trova orario di chiusura per ID
-    alt Orario trovato
-        OC-->>DAO_OC: Orario di chiusura
-        DAO_OC-->>R: Orario di chiusura
-    else Orario non trovato
-        OC-->>DAO_OC: null
-        DAO_OC-->>R: null
-        R-->>C: null
-        C-->>U: Orario di chiusura non trovato
-    end
-    R->>+DAO_T: getAll()
-    DAO_T->>+T: Trova tutti i transiti
-    alt Transiti trovati
-        T-->>DAO_T: Transiti
-        DAO_T-->>R: Transiti
-        R->>+DAO_V: getById(transito.veicolo)
-        DAO_V->>+V: Trova veicolo per ID
-        alt Veicolo trovato
-            V-->>DAO_V: Veicolo
-            DAO_V-->>R: Veicolo
-        else Veicolo non trovato
-            V-->>DAO_V: null
-            DAO_V-->>R: null
+    Auth->>C: Token valido e ruolo verificato
+    alt Utente autorizzato
+        C->>+R: getVarcoZtlWithTransiti(id)
+        R->>+DAO_VZ: getById(id)
+        DAO_VZ->>+VZ: Trova varco ZTL per ID
+        alt Varco trovato
+            VZ-->>DAO_VZ: Varco ZTL
+            DAO_VZ-->>R: Varco ZTL
+        else Varco non trovato
+            VZ-->>DAO_VZ: null
+            DAO_VZ-->>R: null
+            R-->>C: null
+            C-->>U: Varco ZTL non trovato
         end
-        R-->>C: Varco ZTL con dettagli e transiti
-        C-->>U: Varco ZTL con transiti
-    else Transiti non trovati
-        T-->>DAO_T: null
-        DAO_T-->>R: null
-        R-->>C: null
-        C-->>U: Transiti non trovati
+        R->>+DAO_Z: getById(varcoZtl.zona_ztl)
+        DAO_Z->>+Z: Trova zona ZTL per ID
+        alt Zona trovata
+            Z-->>DAO_Z: Zona ZTL
+            DAO_Z-->>R: Zona ZTL
+        else Zona non trovata
+            Z-->>DAO_Z: null
+            DAO_Z-->>R: null
+            R-->>C: null
+            C-->>U: Zona ZTL non trovata
+        end
+        R->>+DAO_OC: getById(varcoZtl.orario_chiusura)
+        DAO_OC->>+OC: Trova orario di chiusura per ID
+        alt Orario trovato
+            OC-->>DAO_OC: Orario di chiusura
+            DAO_OC-->>R: Orario di chiusura
+        else Orario non trovato
+            OC-->>DAO_OC: null
+            DAO_OC-->>R: null
+            R-->>C: null
+            C-->>U: Orario di chiusura non trovato
+        end
+        R->>+DAO_T: getAll()
+        DAO_T->>+T: Trova tutti i transiti
+        alt Transiti trovati
+            T-->>DAO_T: Transiti
+            DAO_T-->>R: Transiti
+            R->>+DAO_V: getById(transito.veicolo)
+            DAO_V->>+V: Trova veicolo per ID
+            alt Veicolo trovato
+                V-->>DAO_V: Veicolo
+                DAO_V-->>R: Veicolo
+            else Veicolo non trovato
+                V-->>DAO_V: null
+                DAO_V-->>R: null
+            end
+            R-->>C: Varco ZTL con dettagli e transiti
+            C-->>U: Varco ZTL con transiti
+        else Transiti non trovati
+            T-->>DAO_T: null
+            DAO_T-->>R: null
+            R-->>C: null
+            C-->>U: Transiti non trovati
+        end
+    else Utente non autorizzato
+        Auth-->>Err: Genera errore, accesso non autorizzato
+        Err-->>U: Accesso non autorizzato
     end
 ```
 
