@@ -9,6 +9,7 @@
    - [Architettura dei servizi](#-architettura-dei-servizi)
    - [Diagramma dei casi d'uso](#-diagramma-dei-casi-duso)
    - [Diagramma E-R](#-diagramma-e-r)
+   - [Pattern utilizzati](#-pattern-utilizzati)
    - [Diagrammi delle sequenze](#-diagrammi-delle-sequenze)
 - [API](#-api)
 - [Set-up](#-set-up)
@@ -47,7 +48,7 @@ graph TD;
     user[Utente]
     
     user --> |API calls| transiti
-    user --> |API calls| pagamenti
+    transiti --> |API calls| pagamenti
     transiti --> |depends_on| db
     pagamenti --> |depends_on| db
 
@@ -57,7 +58,7 @@ graph TD;
     style user fill:#acf,stroke:#333,stroke-width:4px,color:#000
 ```
 
-Il diagramma rappresenta l'intera architettura del sistema sviluppato. All'interno della rete backend, ci sono tre container principali, che rappresentano i servizi `Docker`, orchestrati tramite `docker-compose`, che compongono l'applicazione. 
+Il diagramma rappresenta l'intera architettura del sistema sviluppato. All'interno della rete backend ci sono tre container principali, i quali rappresentano i servizi `Docker`, orchestrati tramite `docker-compose`, che compongono l'applicazione. 
 
 Il container Transiti ospita un servizio chiamato "**backend-transiti**", accessibile all'indirizzo `transiti:3000`, mentre il container Pagamenti contiene il servizio "**backend-pagamenti**", accessibile all'indirizzo `pagamenti:3001`. Il container del DB, invece, contiene un database **PostgreSQL** accessibile all'indirizzo `db:5432`.
 
@@ -88,7 +89,7 @@ graph TD
 
 ### 🗂️ Diagramma E-R
 
-Come già anticipato precedentemente, il RDBMS scelto per la realizzazione del sistema è **PostgreSQL**, un database open source che gode di una solida reputazione per affidabilità, flessibilità e scalabilità. In particolare, in un contesto di backend puro come quello del sistema sviluppato, in cui è necessaria l'autenticazione dei dati e la velocità di lettura/scrittura, PostgreSQL è uno dei sistemi di basi di dati più efficiente e ottimizzato. 
+Il RDBMS scelto per la realizzazione del sistema è **PostgreSQL**, un database open source che gode di una solida reputazione per affidabilità, flessibilità e scalabilità. In particolare, in un contesto di backend puro come quello del sistema sviluppato, in cui è necessaria l'autenticazione dei dati e la velocità di lettura/scrittura, PostgreSQL è uno dei sistemi di basi di dati più efficiente e ottimizzato. 
 
 Di seguito, viene mostrato il diagramma "Entity-Relationship"(E-R) di rappresentazione concettuale e grafica delle classi all'interno del database utilizzato.
 
@@ -172,7 +173,39 @@ erDiagram
     VARCO_ZTL ||--o| IS_VARCO : "has"
 ```
 
-### Pattern 
+### 🧱 Pattern utilizzati
+
+**Model-View-Controller (MVC)**
+
+Il pattern architetturale scelto per la struttura del sistema è il **Model-View-Controller** (**MVC**), il quale permette di separare la presentazione e l'interazione dai dati del sistema. In generale, il pattern prevede l'utilizzo di tre componenti logiche che interagiscono tra loro:
+
+* **Model**: Rappresenta i dati e la logica dell'applicazione. Nel caso specifico del sistema sviluppato, i Model sono definiti utilizzando [Sequelize](https://sequelize.org/), un framework per l'Object-Relational Mapping (ORM) per interagire con il database.
+
+* **Controller**: Contiene la logica di business per le varie operazioni CRUD (Create, Read, Update, Delete), interagendo con i livelli sottostanti per eseguire le operazioni richieste e restituire le risposte appropriate. Nel sistema sviluppato, i Controller recuperano i dati necessari dai Repository (se previsti) o dai DAO, eseguendo le operazioni e i metodi specifici che verranno poi utilizzati dalle Routes API.
+
+* **View**: Rappresenta i dati recuperati dal modello, gestendo la logica di presentazione. Nel caso specifico del sistema sviluppato, che risulta essere un backend puro, la componente logica della View non è stata propriamente sviluppata. Tuttavia, **Postman** viene utilizzato per fornire una visualizzazione dei dati in formato JSON, a seconda della richiesta.
+
+**Data Access Object (DAO)**
+
+Per separare la logica di accesso ai dati dal resto dell'applicazione è stato scelto il pattern **Data Access Object** (**DAO**). Esso fornisce un'interfaccia astratta comune per eseguire operazioni CRUD e altre operazioni di accesso ai dati, isolando il codice di accesso ai dati dal codice di business. 
+
+Il DAO presenta diverse componenti: l'*interfaccia* di definizione dei metodi di accesso ai dati che devono essere implementati, l'*implementazione* concreta dei metodi definiti dall'interfaccia DAO che contiene il codice specifico di interazione con le fonti di dati e le *classi di entità*, cioè i Model, che rappresentano i dati che vengono manipolati dal DAO. Queste ultime classi sono mappate alle tabelle del database.
+
+L'utilità principale del pattern è rappresentata dal fatto che ad un singolo Model viene corrisposto un singolo DAO, garantendo l'accesso ai dati necessari, e, soprattutto, uno o più DAO possono essere richiamati da componenti superiori quali **Repository** (se previsto) o **Controller**, per l'utilizzo combinato dell'accesso ai dati. In questo modo, non solo è garantita un'elevata riutilizzabilità del codice in diverse parti dell'applicazione, ma soprattutto viene implementata una forte modularità e separazione delle responsabilità da parte di tutte le componenti.
+
+**Repository**
+
+Per avere una centralizzazione della logica di accesso ai dati e offrire un'interfaccia coerente per il resto dell'applicazione, è stato utilizzato il pattern **Repository**, il quale fornisce un'astrazione dell'accesso ai dati, nascondendo i dettagli di come i dati vengono effettivamente recuperati o memorizzati. 
+
+Centralizzando la logica di accesso ai dati, un Repository permette di trattare le entità come se fossero raccolte di memoria, fornendo metodi per aggiungere, rimuovere e recuperare oggetti. Al suo interno, il Repository fornisce l'implementazione concreta dei metodi necessari, utilizzando i DAO come tecnica di persistenza per l'interazione con le classi di dato.
+
+Mentre il DAO lavora ad un livello più basso, vicino al database, per eseguire operazioni CRUD, il Repository fornisce un livello di astrazione superiore, incapsulando la logica di accesso ai dati e utilizzando uno o più DAO per realizzare le operazioni di persistenza. Il vantaggio principale del Repository consiste proprio nella capacità di astrazione sopra il livello di persistenza, consentendo di cambiare facilmente l'implementazione senza influenzare il resto dell'applicazione.
+
+**Chain Of Responsability (COR)**
+
+**Factory**
+
+**Singleton**
 
 ### 🔄 Diagrammi delle sequenze
 
