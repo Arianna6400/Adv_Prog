@@ -177,9 +177,39 @@ class VarcoZtlRepository {
      * @returns {Promise<number>} Una Promise che risolve il numero di righe cancellate.
      */
     public async deleteVarcoZtl(id: number): Promise<number> {
+        const sequelize = Database.getInstance();
+        const transaction = await sequelize.transaction();
+    
         try {
-            return await varcoZtlDao.delete(id);
+            // Verifica l'esistenza del varco ZTL
+            const varcoZtl = await varcoZtlDao.getById(id);
+            if (!varcoZtl) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, 'Varco ZTL non trovato');
+            }
+    
+            // Recupera tutte le relazioni nella tabella is_varco e trova quella corrispondente
+            const isVarco = (await IsVarcoDao.getAll()).find(iv => iv.id_varco === id);
+    
+            if (!isVarco) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, 'Relazione is_varco non trovata');
+            }
+    
+            // Elimina la relazione nella tabella is_varco
+            await IsVarcoDao.delete(isVarco.id_utente, { transaction });
+    
+            // Elimina l'utente corrispondente nella tabella utente
+            await UtenteDao.delete(isVarco.id_utente, { transaction });
+    
+            // Elimina il varco ZTL nella tabella varcoZtl
+            const deletedVarco = await varcoZtlDao.delete(id, { transaction });
+    
+            // Esegui il commit della transazione
+            await transaction.commit();
+    
+            return deletedVarco;
         } catch (error) {
+            // Annulla la transazione in caso di errore
+            await transaction.rollback();
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile cancellare il varco ZTL con id ${id}`);
         }
     }

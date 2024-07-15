@@ -112,19 +112,31 @@ class TransitoRepository {
     }
 
     /**
-     * Cancella un transito per ID.
-     * 
-     * @param {number} id L'ID del transito. 
-     * @returns {Promise<number>} Una Promise che risolve il numero di righe cancellate.
-     */
-    public async deleteTransito(id: number): Promise<number> {
-        try {
-            return await transitoDao.delete(id);
-        } catch (error) {
-            console.error(`Errore nella cancellazione del transito con id ${id} nel repository:`, error);
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile cancellare il transito');
+ * Cancella un transito per ID.
+ * 
+ * @param {number} id L'ID del transito. 
+ * @returns {Promise<number>} Una Promise che risolve il numero di righe cancellate.
+ */
+public async deleteTransito(id: number): Promise<number> {
+    try {
+        // Verifica l'esistenza del transito
+        const transito = await transitoDao.getById(id);
+        if (!transito) {
+            throw ErrorFactory.createError(ErrorTypes.NotFound, 'Transito non trovato');
         }
+
+        // Recupera tutte le multe e verifica se ce n'è una associata al transito
+        const multaAssociata = (await multaDao.getAll()).find(multa => multa.transito === id);
+        if (multaAssociata) {
+            throw ErrorFactory.createError(ErrorTypes.BadRequest, 'Non è possibile eliminare il transito poiché è associato a una multa');
+        }
+
+        // Procedi con l'eliminazione del transito
+        return await transitoDao.delete(id);
+    } catch (error) {
+        throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile cancellare il transito');
     }
+}
 
     /**
      * Metodo privato per verificare se è necessario calcolare una multa.
