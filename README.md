@@ -430,61 +430,67 @@ sequenceDiagram
     participant DAO_M as MultaDao
     participant DAO_U as UtenteDao
     participant M as Multa
-    participant DB as Database
+    participant UTE as Utente
     participant Auth as AuthMiddleware
     participant Err as ErrorHandler
-    participant JWT as JWT
-    participant ENV as Environment
+    participant TR as Transaction
+    participant DB as Database
 
     U->>+Auth: Richiesta con token
-    Auth->>+ENV: Ottiene JWT_SECRET
-    ENV-->>Auth: JWT_SECRET
-    Auth->>+JWT: jwt.verify(token, JWT_SECRET)
-    alt Token valido
-        JWT-->>Auth: Payload decodificato
-        Auth->>C: Passa controllo
-    else Token non valido
-        JWT-->>Auth: null
-        Auth-->>Err: Genera errore
-        Err-->>U: Errore autenticazione
+    Auth->>+C: Token valido e ruolo verificato
+    alt Utente autorizzato
+        C->>+DB: Ottiene istanza database
+        DB-->>C: Istanza database
+        C->>+TR: Start Transaction
+        C->>+DAO_M: getMultaByUUID(uuid, { transaction })
+        DAO_M->>+M: Trova multa per UUID
+        alt Multa trovata
+            M-->>DAO_M: Multa
+            DAO_M-->>C: Multa
+            alt Multa non pagata
+                C->>+DAO_U: getById(id, { transaction })
+                DAO_U->>+UTE: Trova utente per ID
+                alt Utente trovato
+                    UTE-->>DAO_U: Utente
+                    DAO_U-->>C: Utente
+                    alt Token sufficienti
+                        C->>UTE: Aggiorna token
+                        C->>M: Segna multa come pagata
+                        C->>+TR: Commit Transaction
+                        TR-->>C: Transazione completata
+                        C-->>U: Pagamento effettuato con successo
+                    else Token insufficienti
+                        C-->>TR: Rollback Transaction
+                        TR-->>C: Transazione annullata
+                        C-->>Err: Genera errore, token insufficienti
+                        Err-->>U: Errore, token insufficienti
+                    end
+                else Utente non trovato
+                    UTE-->>DAO_U: null
+                    DAO_U-->>C: null
+                    C-->>TR: Rollback Transaction
+                    TR-->>C: Transazione annullata
+                    C-->>Err: Genera errore, utente non trovato
+                    Err-->>U: Errore, utente non trovato
+                end
+            else Multa già pagata
+                C-->>TR: Rollback Transaction
+                TR-->>C: Transazione annullata
+                C-->>Err: Genera errore, multa già pagata
+                Err-->>U: Multa già pagata
+            end
+        else Multa non trovata
+            M-->>DAO_M: null
+            DAO_M-->>C: null
+            C-->>TR: Rollback Transaction
+            TR-->>C: Transazione annullata
+            C-->>Err: Genera errore, multa non trovata
+            Err-->>U: Errore, multa non trovata
+        end
+    else Utente non autorizzato
+        C-->>Err: Genera errore, accesso non autorizzato
+        Err-->>U: Accesso non autorizzato
     end
-    C->>+DB: Start Transaction
-    C->>+DAO_M: getMultaByUUID(uuid)
-    DAO_M->>+M: Trova multa per UUID
-    alt Multa trovata
-        M-->>DAO_M: Multa
-        DAO_M-->>C: Multa
-    else Multa non trovata
-        M-->>DAO_M: null
-        DAO_M-->>C: null
-        C->>DB: Rollback Transaction
-        C-->>U: Multa non trovata
-    end
-    alt Multa già pagata
-        C->>DB: Rollback Transaction
-        C-->>U: Multa già pagata
-    end
-    C->>+DAO_U: getById(id)
-    DAO_U->>+U: Trova utente per ID
-    alt Utente trovato
-        U-->>DAO_U: Utente
-        DAO_U-->>C: Utente
-    else Utente non trovato
-        U-->>DAO_U: null
-        DAO_U-->>C: null
-        C->>DB: Rollback Transaction
-        C-->>U: Utente non trovato
-    end
-    alt Token insufficienti
-        C->>DB: Rollback Transaction
-        C-->>U: Token insufficienti
-    end
-    C->>+DAO_U: Aggiorna token_rimanenti
-    DAO_U->>U: Aggiorna token
-    C->>+DAO_M: Aggiorna stato multa a pagata
-    DAO_M->>M: Aggiorna stato multa
-    C->>DB: Commit Transaction
-    C-->>U: Pagamento effettuato con successo
 ```
 
 * __POST /ricaricatoken/:id__
@@ -494,33 +500,28 @@ sequenceDiagram
     participant U as Utente
     participant C as Controller
     participant DAO_U as UtenteDao
+    participant UTE as Utente
     participant Auth as AuthMiddleware
     participant Err as ErrorHandler
-    participant JWT as JWT
-    participant ENV as Environment
 
     U->>+Auth: Richiesta con token
-    Auth->>+ENV: Ottiene JWT_SECRET
-    ENV-->>Auth: JWT_SECRET
-    Auth->>+JWT: jwt.verify(token, JWT_SECRET)
-    alt Token valido
-        JWT-->>Auth: Payload decodificato
-        Auth->>C: Passa controllo
-    else Token non valido
-        JWT-->>Auth: null
-        Auth-->>Err: Genera errore
-        Err-->>U: Errore autenticazione
-    end
-    C->>+DAO_U: rechargeTokens(id, tokens)
-    DAO_U->>+U: Trova e aggiorna utente per ID
-    alt Utente trovato
-        U-->>DAO_U: Utente aggiornato
-        DAO_U-->>C: Utente aggiornato
-        C-->>U: Token ricaricati con successo
-    else Utente non trovato
-        U-->>DAO_U: null
-        DAO_U-->>C: null
-        C-->>U: Utente non trovato
+    Auth->>+C: Token valido e ruolo verificato
+    alt Utente autorizzato
+        C->>+DAO_U: rechargeTokens(id, tokens)
+        DAO_U->>+UTE: Ricarica token utente
+        alt Utente trovato
+            UTE-->>DAO_U: Utente aggiornato
+            DAO_U-->>C: Utente aggiornato
+            C-->>U: Token ricaricati con successo
+        else Utente non trovato
+            UTE-->>DAO_U: null
+            DAO_U-->>C: null
+            C-->>Err: Genera errore, utente non trovato
+            Err-->>U: Errore, utente non trovato
+        end
+    else Utente non autorizzato
+        C-->>Err: Genera errore, accesso non autorizzato
+        Err-->>U: Accesso non autorizzato
     end
 ```
 
