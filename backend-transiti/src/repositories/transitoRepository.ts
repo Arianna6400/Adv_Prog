@@ -59,7 +59,7 @@ class TransitoRepository {
                 varco: varcoZtl ? varcoZtl.dataValues : null
             };
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile recuperare il transito');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il transito con id ${id}`);
         }
     }
 
@@ -107,11 +107,11 @@ class TransitoRepository {
         try {
             return await transitoDao.update(id, data);
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile aggiornare il transito');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile aggiornare il transito con id ${id}`);
         }
     }
 
-    /**
+/**
  * Cancella un transito per ID.
  * 
  * @param {number} id L'ID del transito. 
@@ -122,19 +122,19 @@ public async deleteTransito(id: number): Promise<number> {
         // Verifica l'esistenza del transito
         const transito = await transitoDao.getById(id);
         if (!transito) {
-            throw ErrorFactory.createError(ErrorTypes.NotFound, 'Transito non trovato');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Transito con id ${id} non trovato`);
         }
 
         // Recupera tutte le multe e verifica se ce n'è una associata al transito
         const multaAssociata = (await multaDao.getAll()).find(multa => multa.transito === id);
         if (multaAssociata) {
-            throw ErrorFactory.createError(ErrorTypes.BadRequest, 'Non è possibile eliminare il transito poiché è associato a una multa');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile eliminare il transito con id ${id}, poichè associato ad una multa`);
         }
 
         // Procedi con l'eliminazione del transito
         return await transitoDao.delete(id);
     } catch (error) {
-        throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile cancellare il transito');
+        throw (error);
     }
 }
 

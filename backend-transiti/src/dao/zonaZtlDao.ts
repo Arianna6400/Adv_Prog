@@ -20,7 +20,6 @@ class ZonaZtlDao implements ZonaZtlDAO {
         try {
             return await ZonaZtl.findAll();
         } catch (error) {
-            console.error('Errore nel recupero delle zone ZTL:', error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero delle zone ZTL');
         }
     }
@@ -39,10 +38,6 @@ class ZonaZtlDao implements ZonaZtlDAO {
             }
             return zonaZtl;
         } catch (error) {
-            console.error(`Errore nel recupero della zona ZTL con id ${id}:`, error);
-            if (error instanceof HttpError) {
-                throw error; // Rilancia l'errore personalizzato
-            }
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nel recupero della zona ZTL con id ${id}`);
         }
     }
@@ -59,7 +54,6 @@ class ZonaZtlDao implements ZonaZtlDAO {
         try {
             return await ZonaZtl.create(data);
         } catch (error) {
-            console.error('Errore nella creazione della zona ZTL:', error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione della zona ZTL');
         }
     }
@@ -83,7 +77,6 @@ class ZonaZtlDao implements ZonaZtlDAO {
             const updatedItems = await ZonaZtl.findAll({ where: { id_zona: id } });
             return [affectedCount, updatedItems];
         } catch (error) {
-            console.error(`Errore nell'aggiornamento della zona ZTL con id ${id}:`, error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nell'aggiornamento della zona ZTL con id ${id}`);
         }
     }
@@ -104,7 +97,6 @@ class ZonaZtlDao implements ZonaZtlDAO {
             }
             return await ZonaZtl.destroy({ where: { id_zona: id } });
         } catch (error) {
-            console.error(`Errore nella cancellazione della zona ZTL con id ${id}:`, error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione della zona ZTL con id ${id}`);
         }
     }

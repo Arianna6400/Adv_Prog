@@ -7,6 +7,7 @@ import { StatusCodes } from 'http-status-codes';
  * Funzione per la gestione di una richiesta di login
  */
 export const login = async (req: Request, res: Response, next: NextFunction) => {
+  
   // Estrae l'email dal corpo della richiesta o dai parametri della query
   const email = req.body.email || req.query.email;
 
@@ -20,12 +21,11 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const user = await User.findOne({ where: { email } });
     if (!user) {
       return next(ErrorFactory.createError(ErrorTypes.Unauthorized, `Nessun utente con email ${email}`));
-      
     }
     // Genera il token, email potrebbe essere opzionale
     const token = generateToken({ id: user.id_utente, email: user.email, ruolo: user.ruolo});
     res.status(StatusCodes.OK).json({ token });
   } catch (error) {
-    return next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore del server'));
+    return next(error);
   }
 };

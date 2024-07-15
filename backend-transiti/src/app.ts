@@ -32,7 +32,8 @@ app.use('/', varcoZtlRoutes);
 app.use('/', zonaZtlRoutes);
 app.use('/', transitoRoutes);
 app.use('/', multaRoutes);
-// Rotte aggiuntive 
+
+// Rotte aggiuntive, non verificate, superflue ai fini dell'esame
 app.use('/', veicoloRoutes);
 app.use('/', tipoVeicoloRoutes);
 app.use('/', orarioChiusuraRoutes);

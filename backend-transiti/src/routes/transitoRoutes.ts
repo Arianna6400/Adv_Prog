@@ -15,10 +15,12 @@ import {
 } from '../middleware/validate/transitoValidate';
 
 const router = Router();
+
 /**
  * Middleware di autenticazione per tutte le rotte
  */
 router.use(authMiddleware);
+
 /**
  * Definizione delle rotte con relative validazioni ed autorizzazioni
  */

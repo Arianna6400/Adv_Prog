@@ -27,6 +27,8 @@ export enum ErrorTypes {
     Unauthorized = 'Unauthorized',
     InvalidToken = 'InvalidToken',
     Forbidden = 'Forbidden',
+    TokenExpired = 'TokenExpired',
+    JsonWebTokenError = 'JsonWebTokenError'
   }
   
   /**
@@ -47,6 +49,10 @@ export enum ErrorTypes {
         return new HttpError(StatusCodes.BAD_REQUEST, message, 'INVALID_TOKEN');
         case ErrorTypes.Forbidden:
           return new HttpError(StatusCodes.FORBIDDEN, message, 'FORBIDDEN');
+        case ErrorTypes.TokenExpired:
+          return new HttpError(StatusCodes.UNAUTHORIZED, message, 'TOKEN_EXPIRED');
+        case ErrorTypes.JsonWebTokenError:
+          return new HttpError(StatusCodes.BAD_REQUEST, message, 'JWT_ERROR');
         case ErrorTypes.InternalServerError:
         default:
           return new HttpError(StatusCodes.INTERNAL_SERVER_ERROR, message, 'INTERNAL_SERVER_ERROR');

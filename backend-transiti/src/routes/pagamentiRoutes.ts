@@ -3,10 +3,12 @@ import { payMulta, rechargeTokens, checkToken } from '../controllers/pagamentiCo
 import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();
+
 /**
  * Middleware di autenticazione per tutte le rotte
  */
 router.use(authMiddleware);
+
 /**
  * Definizione delle rotte al backend-pagamenti
  */
