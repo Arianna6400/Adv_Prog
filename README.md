@@ -155,60 +155,56 @@ erDiagram
 🚌 **Backend-Transiti**
 
 * __POST /login__
+
 ```mermaid
 sequenceDiagram
-    participant C as Controller
+    participant U as Utente
+    participant Auth as AuthMiddleware
     participant JWT as JWT Library
     participant ENV as Environment
-
-    Note over C,ENV: Generazione del Token
-    C->>+ENV: Ottiene JWT_SECRET
-    ENV-->>C: JWT_SECRET
-    C->>+JWT: jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' })
-    JWT-->>C: Token generato
-
-    Note over C,JWT: Verifica del Token
-    C->>+JWT: jwt.verify(token, JWT_SECRET)
+    participant Err as ErrorHandler
+ 
+    U->>+Auth: Richiesta con credenziali
+    Auth->>+ENV: Ottiene JWT_SECRET
+    ENV-->>Auth: JWT_SECRET
+    Auth->>+JWT: jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' })
+    JWT-->>Auth: Token generato
+    Auth-->>U: Restituisce token
+ 
+    U->>+Auth: Richiesta con token
+    Auth->>+ENV: Ottiene JWT_SECRET
+    ENV-->>Auth: JWT_SECRET
+    Auth->>+JWT: jwt.verify(token, JWT_SECRET)
     alt Token valido
-        JWT-->>C: Payload decodificato
-        C-->>C: Ritorna il payload decodificato
+        JWT-->>Auth: Payload decodificato
+        Auth-->>U: Accesso consentito
     else Token non valido
-        JWT-->>C: null
-        C-->>C: Ritorna null
+        JWT-->>Auth: null
+        Auth-->>Err: Genera errore, token non valido
+        Err-->>U: Accesso negato
     end
 ```
 
 * __GET /varchi/:id/transiti__
 
 ```mermaid
-```
-
-* __POST /varcoZtl__
-
-```mermaid
-```
-
-* __DELETE /zonaZtl/:id__   
-
-```mermaid
-```
-
-* __GET /transiti/:id__
-
-```mermaid
 sequenceDiagram
     participant U as Utente
     participant C as Controller
-    participant R as TransitoRepository
+    participant R as VarcoZtlRepository
+    participant DAO_VZ as VarcoZtlDao
+    participant DAO_Z as ZonaZtlDao
+    participant DAO_OC as OrarioChiusuraDao
     participant DAO_T as TransitoDao
     participant DAO_V as VeicoloDao
-    participant DAO_Z as VarcoZtlDao
+    participant VZ as VarcoZtl
+    participant Z as ZonaZtl
+    participant OC as OrarioChiusura
     participant T as Transito
     participant V as Veicolo
-    participant Z as VarcoZtl
     participant Auth as AuthMiddleware
     participant Err as ErrorHandler
-    participant JWT as JWT
+    participant JWT as JWT 
     participant ENV as Environment
 
     U->>+Auth: Richiesta con token
@@ -223,42 +219,255 @@ sequenceDiagram
         Auth-->>Err: Genera errore
         Err-->>U: Errore autenticazione
     end
-    C->>+R: getTransitoById(id)
-    R->>+DAO_T: getById(id)
-    DAO_T->>+T: Trova transito per ID
-    alt Transito trovato
-        T-->>DAO_T: Transito
-        DAO_T-->>R: Transito
-    else Transito non trovato
-        T-->>DAO_T: null
-        DAO_T-->>R: null
-        R-->>C: null
-        C-->>U: Transito non trovato
-    end
-    R->>+DAO_V: getById(transito.veicolo)
-    DAO_V->>+V: Trova veicolo per ID
-    alt Veicolo trovato
-        V-->>DAO_V: Veicolo
-        DAO_V-->>R: Veicolo
-    else Veicolo non trovato
-        V-->>DAO_V: null
-        DAO_V-->>R: null
-        R-->>C: null
-        C-->>U: Veicolo non trovato
-    end
-    R->>+DAO_Z: getById(transito.varco)
-    DAO_Z->>+Z: Trova varco ZTL per ID
+    C->>+R: getVarcoZtlWithTransiti(id)
+    R->>+DAO_VZ: getById(id)
+    DAO_VZ->>+VZ: Trova varco ZTL per ID
     alt Varco trovato
-        Z-->>DAO_Z: Varco ZTL
-        DAO_Z-->>R: Varco ZTL
+        VZ-->>DAO_VZ: Varco ZTL
+        DAO_VZ-->>R: Varco ZTL
     else Varco non trovato
+        VZ-->>DAO_VZ: null
+        DAO_VZ-->>R: null
+        R-->>C: null
+        C-->>U: Varco ZTL non trovato
+    end
+    R->>+DAO_Z: getById(varcoZtl.zona_ztl)
+    DAO_Z->>+Z: Trova zona ZTL per ID
+    alt Zona trovata
+        Z-->>DAO_Z: Zona ZTL
+        DAO_Z-->>R: Zona ZTL
+    else Zona non trovata
         Z-->>DAO_Z: null
         DAO_Z-->>R: null
         R-->>C: null
-        C-->>U: Varco non trovato
+        C-->>U: Zona ZTL non trovata
     end
-    R-->>C: Transito, Veicolo, Varco ZTL
-    C-->>U: Transito con dettagli
+    R->>+DAO_OC: getById(varcoZtl.orario_chiusura)
+    DAO_OC->>+OC: Trova orario di chiusura per ID
+    alt Orario trovato
+        OC-->>DAO_OC: Orario di chiusura
+        DAO_OC-->>R: Orario di chiusura
+    else Orario non trovato
+        OC-->>DAO_OC: null
+        DAO_OC-->>R: null
+        R-->>C: null
+        C-->>U: Orario di chiusura non trovato
+    end
+    R->>+DAO_T: getAll()
+    DAO_T->>+T: Trova tutti i transiti
+    alt Transiti trovati
+        T-->>DAO_T: Transiti
+        DAO_T-->>R: Transiti
+        R->>+DAO_V: getById(transito.veicolo)
+        DAO_V->>+V: Trova veicolo per ID
+        alt Veicolo trovato
+            V-->>DAO_V: Veicolo
+            DAO_V-->>R: Veicolo
+        else Veicolo non trovato
+            V-->>DAO_V: null
+            DAO_V-->>R: null
+        end
+        R-->>C: Varco ZTL con dettagli e transiti
+        C-->>U: Varco ZTL con transiti
+    else Transiti non trovati
+        T-->>DAO_T: null
+        DAO_T-->>R: null
+        R-->>C: null
+        C-->>U: Transiti non trovati
+    end
+```
+
+* __POST /varcoZtl__
+
+```mermaid
+sequenceDiagram
+    participant U as Utente
+    participant Auth as AuthMiddleware
+    participant C as Controller
+    participant R as VarcoZtlRepository
+    participant DAO_VZ as VarcoZtlDao
+    participant DAO_U as UtenteDao
+    participant DAO_IV as IsVarcoDao
+    participant VZ as VarcoZtl
+    participant UTE as Utente
+    participant IV as IsVarco
+    participant Err as ErrorHandler
+    participant DB as Database
+    participant TR as Transaction
+
+    U->>+Auth: Richiesta con token
+    Auth->>+C: Token valido e ruolo verificato
+    alt Utente autorizzato
+        Auth-->>C: Autorizzazione passata
+        C->>+R: createVarcoZtl(req.body)
+        R->>+DB: Ottiene istanza database
+        DB-->>R: Istanza database
+        R->>+TR: Start Transaction
+        R->>+DAO_VZ: create(data, { transaction })
+        DAO_VZ->>+VZ: Crea nuovo varco ZTL
+        alt Varco creato
+            VZ-->>DAO_VZ: Nuovo varco ZTL
+            DAO_VZ-->>R: Nuovo varco ZTL
+        else Varco non creato
+            VZ-->>DAO_VZ: null
+            DAO_VZ-->>R: null
+            R-->>TR: Rollback Transaction
+            R-->>C: Errore creazione varco
+            C-->>Err: Genera errore, creazione varco fallita
+            Err-->>U: Errore creazione varco
+        end
+        R->>+DAO_U: create(data, { transaction })
+        DAO_U->>+UTE: Crea nuovo utente
+        alt Utente creato
+            UTE-->>DAO_U: Nuovo utente
+            DAO_U-->>R: Nuovo utente
+        else Utente non creato
+            UTE-->>DAO_U: null
+            DAO_U-->>R: null
+            R-->>TR: Rollback Transaction
+            R-->>C: Errore creazione utente
+            C-->>Err: Genera errore, creazione utente fallita
+            Err-->>U: Errore creazione utente
+        end
+        R->>+DAO_IV: create(data, { transaction })
+        DAO_IV->>+IV: Crea associazione is_varco
+        alt Associazione creata
+            IV-->>DAO_IV: Associazione creata
+            DAO_IV-->>R: Associazione creata
+            R-->>TR: Commit Transaction
+            R-->>C: Varco creato con successo
+            C-->>U: Varco creato con successo
+        else Associazione non creata
+            IV-->>DAO_IV: null
+            DAO_IV-->>R: null
+            R-->>TR: Rollback Transaction
+            R-->>C: Errore creazione associazione
+            C-->>Err: Genera errore, creazione associazione fallita
+            Err-->>U: Errore creazione associazione
+        end
+    else Utente non autorizzato
+        Auth-->>C: Autorizzazione fallita
+        C-->>Err: Genera errore, accesso non autorizzato
+        Err-->>U: Accesso non autorizzato
+    end
+```
+
+* __DELETE /zonaZtl/:id__   
+
+```mermaid
+sequenceDiagram
+    participant U as Utente
+    participant Auth as AuthMiddleware
+    participant C as Controller
+    participant R as ZonaZtlRepository
+    participant DAO_VZ as VarcoZtlDao
+    participant DAO_ZZ as ZonaZtlDao
+    participant ZZ as ZonaZtl
+    participant VZ as VarcoZtl
+    participant Err as ErrorHandler
+
+    U->>+Auth: Richiesta con token
+    Auth->>+C: Token valido e ruolo verificato
+    alt Utente autorizzato
+        Auth-->>C: Autorizzazione passata
+        C->>+R: deleteZonaZtl(id)
+        R->>+DAO_VZ: getAll()
+        DAO_VZ->>+VZ: Verifica varchi associati alla zona
+        alt Varchi associati trovati
+            VZ-->>DAO_VZ: Varchi associati trovati
+            DAO_VZ-->>R: Varchi associati trovati
+            R-->>C: Impossibile eliminare zona con varchi associati
+            C-->>Err: Genera errore, zona con varchi associati
+            Err-->>U: Errore, zona con varchi associati
+        else Nessun varco associato
+            VZ-->>DAO_VZ: Nessun varco associato
+            DAO_VZ-->>R: Nessun varco associato
+            R->>+DAO_ZZ: delete(id)
+            DAO_ZZ->>+ZZ: Cancella zona ZTL
+            alt Zona cancellata
+                ZZ-->>DAO_ZZ: Zona ZTL cancellata
+                DAO_ZZ-->>R: Zona ZTL cancellata
+                R-->>C: Zona ZTL cancellata
+                C-->>U: Zona ZTL cancellata con successo
+            else Zona non trovata
+                ZZ-->>DAO_ZZ: null
+                DAO_ZZ-->>R: null
+                R-->>C: Zona ZTL non trovata
+                C-->>Err: Genera errore, zona ZTL non trovata
+                Err-->>U: Errore, zona ZTL non trovata
+            end
+        end
+    else Utente non autorizzato
+        Auth-->>C: Autorizzazione fallita
+        C-->>Err: Genera errore, accesso non autorizzato
+        Err-->>U: Accesso non autorizzato
+    end
+```
+
+* __GET /transiti/:id__
+
+```mermaid
+sequenceDiagram
+    participant U as Utente
+    participant Auth as AuthMiddleware
+    participant C as Controller
+    participant R as TransitoRepository
+    participant DAO_T as TransitoDao
+    participant DAO_V as VeicoloDao
+    participant DAO_Z as VarcoZtlDao
+    participant T as Transito
+    participant V as Veicolo
+    participant Z as VarcoZtl
+    participant Err as ErrorHandler
+
+    U->>+Auth: Richiesta con token
+    Auth->>+C: Token valido e ruolo verificato
+    alt Utente autorizzato
+        Auth-->>C: Autorizzazione passata
+        C->>+R: getTransitoById(id)
+        R->>+DAO_T: getById(id)
+        DAO_T->>+T: Trova transito per ID
+        alt Transito trovato
+            T-->>DAO_T: Transito
+            DAO_T-->>R: Transito
+        else Transito non trovato
+            T-->>DAO_T: null
+            DAO_T-->>R: null
+            R-->>C: null
+            C-->>Err: Genera errore, transito non trovato
+            Err-->>U: Transito non trovato
+        end
+        R->>+DAO_V: getById(transito.veicolo)
+        DAO_V->>+V: Trova veicolo per ID
+        alt Veicolo trovato
+            V-->>DAO_V: Veicolo
+            DAO_V-->>R: Veicolo
+        else Veicolo non trovato
+            V-->>DAO_V: null
+            DAO_V-->>R: null
+            R-->>C: null
+            C-->>Err: Genera errore, veicolo non trovato
+            Err-->>U: Veicolo non trovato
+        end
+        R->>+DAO_Z: getById(transito.varco)
+        DAO_Z->>+Z: Trova varco ZTL per ID
+        alt Varco trovato
+            Z-->>DAO_Z: Varco ZTL
+            DAO_Z-->>R: Varco ZTL
+        else Varco non trovato
+            Z-->>DAO_Z: null
+            DAO_Z-->>R: null
+            R-->>C: null
+            C-->>Err: Genera errore, varco non trovato
+            Err-->>U: Varco non trovato
+        end
+        R-->>C: Transito, Veicolo, Varco ZTL
+        C-->>U: Transito con dettagli
+    else Utente non autorizzato
+        Auth-->>C: Autorizzazione fallita
+        C-->>Err: Genera errore, accesso non autorizzato
+        Err-->>U: Accesso non autorizzato
+    end
 ```
 
 * __POST /transiti__
@@ -266,6 +475,7 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant U as Utente
+    participant Auth as AuthMiddleware
     participant C as Controller
     participant R as TransitoRepository
     participant DAO_T as TransitoDao
@@ -276,67 +486,66 @@ sequenceDiagram
     participant V as Veicolo
     participant Z as VarcoZtl
     participant M as Multa
-    participant Auth as AuthMiddleware
     participant Err as ErrorHandler
-    participant JWT as JWT
-    participant ENV as Environment
     participant DB as Database
     participant TR as Transaction
 
     U->>+Auth: Richiesta con token
-    Auth->>+ENV: Ottiene JWT_SECRET
-    ENV-->>Auth: JWT_SECRET
-    Auth->>+JWT: jwt.verify(token, JWT_SECRET)
-    alt Token valido
-        JWT-->>Auth: Payload decodificato
-        Auth->>C: Passa controllo
-    else Token non valido
-        JWT-->>Auth: null
-        Auth-->>Err: Genera errore
-        Err-->>U: Errore autenticazione
-    end
-    C->>+R: createTransito(req.body)
-    R->>+DB: Ottiene istanza database
-    DB-->>R: Istanza database
-    R->>+TR: Start Transaction
-    R->>+DAO_T: create(data, { transaction })
-    DAO_T->>+T: Crea nuovo transito
-    T-->>DAO_T: Nuovo transito
-    DAO_T-->>R: Nuovo transito
-    R->>+DAO_V: getById(transito.veicolo)
-    DAO_V->>+V: Trova veicolo per ID
-    alt Veicolo trovato
-        V-->>DAO_V: Veicolo
-        DAO_V-->>R: Veicolo
-    else Veicolo non trovato
-        V-->>DAO_V: null
-        DAO_V-->>R: null
-        R-->>TR: Rollback Transaction
-        R-->>C: Veicolo non trovato
-        C-->>U: Errore creazione transito
-    end
-    R->>+DAO_Z: getById(transito.varco)
-    DAO_Z->>+Z: Trova varco ZTL per ID
-    alt Varco trovato
-        Z-->>DAO_Z: Varco ZTL
-        DAO_Z-->>R: Varco ZTL
-    else Varco non trovato
-        Z-->>DAO_Z: null
-        DAO_Z-->>R: null
-        R-->>TR: Rollback Transaction
-        R-->>C: Varco non trovato
-        C-->>U: Errore creazione transito
-    end
-    alt Necessario calcolare multa
-        R->>+R: shouldCalculateMulta(newTransito)
-        R->>+DAO_M: calcolaMulta(newTransito)
-        DAO_M->>+M: Calcola e crea multa
-        M-->>DAO_M: Multa creata
-        DAO_M-->>R: Multa creata
-    else Non necessario calcolare multa
-        R-->>TR: Commit Transaction
-        R-->>C: Nuovo transito
-        C-->>U: Transito creato con successo
+    Auth->>+C: Token valido e ruolo verificato
+    alt Utente autorizzato
+        Auth-->>C: Autorizzazione passata
+        C->>+R: createTransito(req.body)
+        R->>+DB: Ottiene istanza database
+        DB-->>R: Istanza database
+        R->>+TR: Start Transaction
+        R->>+DAO_T: create(data, { transaction })
+        DAO_T->>+T: Crea nuovo transito
+        T-->>DAO_T: Nuovo transito
+        DAO_T-->>R: Nuovo transito
+        R->>+DAO_V: getById(transito.veicolo)
+        DAO_V->>+V: Trova veicolo per ID
+        alt Veicolo trovato
+            V-->>DAO_V: Veicolo
+            DAO_V-->>R: Veicolo
+        else Veicolo non trovato
+            V-->>DAO_V: null
+            DAO_V-->>R: null
+            R-->>TR: Rollback Transaction
+            R-->>C: Veicolo non trovato
+            C-->>Err: Genera errore, veicolo non trovato
+            Err-->>U: Errore creazione transito
+        end
+        R->>+DAO_Z: getById(transito.varco)
+        DAO_Z->>+Z: Trova varco ZTL per ID
+        alt Varco trovato
+            Z-->>DAO_Z: Varco ZTL
+            DAO_Z-->>R: Varco ZTL
+        else Varco non trovato
+            Z-->>DAO_Z: null
+            DAO_Z-->>R: null
+            R-->>TR: Rollback Transaction
+            R-->>C: Varco non trovato
+            C-->>Err: Genera errore, varco non trovato
+            Err-->>U: Errore creazione transito
+        end
+        alt Necessario calcolare multa
+            R->>+R: shouldCalculateMulta(newTransito)
+            R->>+DAO_M: calcolaMulta(newTransito)
+            DAO_M->>+M: Calcola e crea multa
+            M-->>DAO_M: Multa creata
+            DAO_M-->>R: Multa creata
+            R-->>TR: Commit Transaction
+            R-->>C: Nuovo transito e multa creati
+            C-->>U: Transito e multa creati con successo
+        else Non necessario calcolare multa
+            R-->>TR: Commit Transaction
+            R-->>C: Nuovo transito
+            C-->>U: Transito creato con successo
+        end
+    else Utente non autorizzato
+        Auth-->>C: Autorizzazione fallita
+        C-->>Err: Genera errore, accesso non autorizzato
+        Err-->>U: Accesso non autorizzato
     end
 ```
 
@@ -345,6 +554,7 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant U as Utente
+    participant Auth as AuthMiddleware
     participant C as Controller
     participant R as MultaRepository
     participant DAO_M as MultaDao
@@ -353,70 +563,61 @@ sequenceDiagram
     participant M as Multa
     participant T as Transito
     participant V as Veicolo
-    participant Auth as AuthMiddleware
     participant Err as ErrorHandler
-    participant JWT as JWT
-    participant ENV as Environment
     participant QR as QRCode
     participant PDF as PDFDocument
 
     U->>+Auth: Richiesta con token
-    Auth->>+ENV: Ottiene JWT_SECRET
-    ENV-->>Auth: JWT_SECRET
-    Auth->>+JWT: jwt.verify(token, JWT_SECRET)
-    alt Token valido
-        JWT-->>Auth: Payload decodificato
-        Auth->>C: Passa controllo
-    else Token non valido
-        JWT-->>Auth: null
-        Auth-->>Err: Genera errore
-        Err-->>U: Errore autenticazione
-    end
-    C->>+R: getMultaWithDetailsByUUID(uuid, utenteId)
-    R->>+DAO_M: getMultaByUUID(uuid)
-    DAO_M->>+M: Trova multa per UUID
-    alt Multa trovata
-        M-->>DAO_M: Multa
-        DAO_M-->>R: Multa
-    else Multa non trovata
-        M-->>DAO_M: null
-        DAO_M-->>R: null
-        R-->>C: null
-        C-->>U: Multa non trovata
-    end
-    R->>+DAO_T: getById(multa.transito)
-    DAO_T->>+T: Trova transito per ID
-    alt Transito trovato
-        T-->>DAO_T: Transito
-        DAO_T-->>R: Transito
-    else Transito non trovato
-        T-->>DAO_T: null
-        DAO_T-->>R: null
-        R-->>C: null
-        C-->>U: Transito non trovato
-    end
-    R->>+DAO_V: getById(transito.veicolo)
-    DAO_V->>+V: Trova veicolo per ID
-    alt Veicolo trovato
-        V-->>DAO_V: Veicolo
-        DAO_V-->>R: Veicolo
-    else Veicolo non trovato
-        V-->>DAO_V: null
-        DAO_V-->>R: null
-        R-->>C: null
-        C-->>U: Veicolo non trovato
-    end
+    Auth->>+C: Token valido e ruolo verificato
     alt Utente autorizzato
+        Auth-->>C: Autorizzazione passata
+        C->>+R: getMultaWithDetailsByUUID(uuid, utenteId)
+        R->>+DAO_M: getMultaByUUID(uuid)
+        DAO_M->>+M: Trova multa per UUID
+        alt Multa trovata
+            M-->>DAO_M: Multa
+            DAO_M-->>R: Multa
+        else Multa non trovata
+            M-->>DAO_M: null
+            DAO_M-->>R: null
+            R-->>C: null
+            C-->>Err: Genera errore, multa non trovata
+            Err-->>U: Multa non trovata
+        end
+        R->>+DAO_T: getById(multa.transito)
+        DAO_T->>+T: Trova transito per ID
+        alt Transito trovato
+            T-->>DAO_T: Transito
+            DAO_T-->>R: Transito
+        else Transito non trovato
+            T-->>DAO_T: null
+            DAO_T-->>R: null
+            R-->>C: null
+            C-->>Err: Genera errore, transito non trovato
+            Err-->>U: Transito non trovato
+        end
+        R->>+DAO_V: getById(transito.veicolo)
+        DAO_V->>+V: Trova veicolo per ID
+        alt Veicolo trovato
+            V-->>DAO_V: Veicolo
+            DAO_V-->>R: Veicolo
+        else Veicolo non trovato
+            V-->>DAO_V: null
+            DAO_V-->>R: null
+            R-->>C: null
+            C-->>Err: Genera errore, veicolo non trovato
+            Err-->>U: Veicolo non trovato
+        end
         R-->>C: Multa, Transito, Veicolo
         C->>+QR: generateQRCode(qrString)
         QR-->>C: qrCodeUrl
         C->>+PDF: createPDF(res, { multa, transito, veicolo, qrCodeUrl })
         PDF-->>U: Bollettino PDF
     else Utente non autorizzato
-        R-->>C: null
-        C-->>U: Non autorizzato
+        Auth-->>C: Autorizzazione fallita
+        C-->>Err: Genera errore, accesso non autorizzato
+        Err-->>U: Accesso non autorizzato
     end
-
 ```
 
 💳 **Backend-Pagamenti**
@@ -426,12 +627,12 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant U as Utente
+    participant Auth as AuthMiddleware
     participant C as Controller
     participant DAO_M as MultaDao
     participant DAO_U as UtenteDao
     participant M as Multa
     participant UTE as Utente
-    participant Auth as AuthMiddleware
     participant Err as ErrorHandler
     participant TR as Transaction
     participant DB as Database
@@ -498,10 +699,10 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant U as Utente
+    participant Auth as AuthMiddleware
     participant C as Controller
     participant DAO_U as UtenteDao
     participant UTE as Utente
-    participant Auth as AuthMiddleware
     participant Err as ErrorHandler
 
     U->>+Auth: Richiesta con token
