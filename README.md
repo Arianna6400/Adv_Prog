@@ -177,17 +177,17 @@ erDiagram
 
 **Model-View-Controller (MVC)**
 
-Il pattern architetturale scelto per la struttura del sistema è il **Model-View-Controller** (**MVC**), il quale permette di separare la presentazione e l'interazione dai dati del sistema. In generale, il pattern prevede l'utilizzo di tre componenti logiche che interagiscono tra loro:
+Il pattern architetturale scelto per la struttura del sistema è il **Model-View-Controller** (**MVC**), il quale permette di separare la presentazione e l'interazione dai dati del sistema, facilitando la manutenzione e l'evoluzione del codice. L'utilizzo di questo pattern prevede la separazione dell'applicazione in tre componenti logiche che interagiscono tra loro:
 
-* **Model**: Rappresenta i dati e la logica dell'applicazione. Nel caso specifico del sistema sviluppato, i Model sono definiti utilizzando [Sequelize](https://sequelize.org/), un framework per l'Object-Relational Mapping (ORM) per interagire con il database.
+* **Model**: Rappresenta i dati e la logica dell'applicazione. È responsabile della gestione dello stato e dell'interazione con il database. Nel caso del sistema sviluppato, i Model sono definiti utilizzando [Sequelize](https://sequelize.org/), un framework per l'Object-Relational Mapping (ORM) per interagire con il database.
 
-* **Controller**: Contiene la logica di business per le varie operazioni CRUD (Create, Read, Update, Delete), interagendo con i livelli sottostanti per eseguire le operazioni richieste e restituire le risposte appropriate. Nel sistema sviluppato, i Controller recuperano i dati necessari dai Repository (se previsti) o dai DAO, eseguendo le operazioni e i metodi specifici che verranno poi utilizzati dalle Routes API.
+* **Controller**: Gestisce l'interazione dell'utente e le operazioni CRUD (Create, Read, Update, Delete). Interagisce con i livelli sottostanti per eseguire le operazioni richieste e restituire le risposte appropriate. Nel sistema sviluppato, i Controller recuperano i dati necessari dai Repository (se previsti) o dai DAO, eseguendo le operazioni e i metodi specifici che verranno poi utilizzati dalle Routes API.
 
-* **View**: Rappresenta i dati recuperati dal modello, gestendo la logica di presentazione. Nel caso specifico del sistema sviluppato, che risulta essere un backend puro, la componente logica della View non è stata propriamente sviluppata. Tuttavia, **Postman** viene utilizzato per fornire una visualizzazione dei dati in formato JSON, a seconda della richiesta.
+* **View**: Rappresenta i dati recuperati dal modello, gestendo la logica di presentazione. Nel caso specifico del sistema sviluppato, che risulta essere un backend puro, la componente logica della View non è stata propriamente sviluppata. Tuttavia, **Postman** viene utilizzato per fornire una visualizzazione dei dati in formato JSON, a seconda della richiesta inoltrata.
 
 **Data Access Object (DAO)**
 
-Per separare la logica di accesso ai dati dal resto dell'applicazione è stato scelto il pattern **Data Access Object** (**DAO**). Esso fornisce un'interfaccia astratta comune per eseguire operazioni CRUD e altre operazioni di accesso ai dati, isolando il codice di accesso ai dati dal codice di business. 
+Per astrarre la logica di accesso ai dati, indipendentemente dal tipo di meccanismo di memorizzazione utilizzato, è stato scelto il pattern **Data Access Object** (**DAO**). Esso fornisce un'interfaccia astratta comune per eseguire operazioni CRUD e altre operazioni di accesso ai dati, isolando il codice di accesso ai dati dal codice di business.
 
 Il DAO presenta diverse componenti: l'*interfaccia* di definizione dei metodi di accesso ai dati che devono essere implementati, l'*implementazione* concreta dei metodi definiti dall'interfaccia DAO che contiene il codice specifico di interazione con le fonti di dati e le *classi di entità*, cioè i Model, che rappresentano i dati che vengono manipolati dal DAO. Queste ultime classi sono mappate alle tabelle del database.
 
