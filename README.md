@@ -235,8 +235,8 @@ Per la gestione delle risorse condivise, come la connessione al DB, questo patte
 sequenceDiagram
     participant U as Utente
     participant Auth as AuthMiddleware
-    participant JWT as JWT Library
     participant ENV as Environment
+    participant JWT as JWT Library
     participant Err as ErrorHandler
  
     U->>+Auth: Richiesta con credenziali
@@ -264,24 +264,24 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant U as Utente
+participant U as Utente
+    participant Auth as AuthMiddleware
+    participant ENV as Environment
+    participant JWT as JWT
     participant C as Controller
+    participant Err as ErrorHandler
     participant R as VarcoZtlRepository
     participant DAO_VZ as VarcoZtlDao
-    participant DAO_Z as ZonaZtlDao
-    participant DAO_OC as OrarioChiusuraDao
-    participant DAO_T as TransitoDao
-    participant DAO_V as VeicoloDao
     participant VZ as VarcoZtl
+    participant DAO_Z as ZonaZtlDao
     participant Z as ZonaZtl
+    participant DAO_OC as OrarioChiusuraDao
     participant OC as OrarioChiusura
+    participant DAO_T as TransitoDao
     participant T as Transito
+    participant DAO_V as VeicoloDao
     participant V as Veicolo
-    participant Auth as AuthMiddleware
-    participant Err as ErrorHandler
-    participant JWT as JWT 
-    participant ENV as Environment
-
+    
     U->>+Auth: Richiesta con token
     Auth->>+ENV: Ottiene JWT_SECRET
     ENV-->>Auth: JWT_SECRET
@@ -360,16 +360,16 @@ sequenceDiagram
     participant Auth as AuthMiddleware
     participant C as Controller
     participant R as VarcoZtlRepository
-    participant DAO_VZ as VarcoZtlDao
-    participant DAO_U as UtenteDao
-    participant DAO_IV as IsVarcoDao
-    participant VZ as VarcoZtl
-    participant UTE as Utente
-    participant IV as IsVarco
-    participant Err as ErrorHandler
     participant DB as Database
     participant TR as Transaction
-
+    participant DAO_VZ as VarcoZtlDao
+    participant VZ as VarcoZtl
+    participant Err as ErrorHandler
+    participant DAO_U as UtenteDao
+    participant UTE as Utente
+    participant DAO_IV as IsVarcoDao
+    participant IV as IsVarco
+    
     U->>+Auth: Richiesta con token
     Auth->>+C: Token valido e ruolo verificato
     alt Utente autorizzato
@@ -436,10 +436,10 @@ sequenceDiagram
     participant C as Controller
     participant R as ZonaZtlRepository
     participant DAO_VZ as VarcoZtlDao
-    participant DAO_ZZ as ZonaZtlDao
-    participant ZZ as ZonaZtl
     participant VZ as VarcoZtl
     participant Err as ErrorHandler
+    participant DAO_ZZ as ZonaZtlDao
+    participant ZZ as ZonaZtl
 
     U->>+Auth: Richiesta con token
     Auth->>+C: Token valido e ruolo verificato
@@ -488,13 +488,13 @@ sequenceDiagram
     participant C as Controller
     participant R as TransitoRepository
     participant DAO_T as TransitoDao
-    participant DAO_V as VeicoloDao
-    participant DAO_Z as VarcoZtlDao
     participant T as Transito
-    participant V as Veicolo
-    participant Z as VarcoZtl
     participant Err as ErrorHandler
-
+    participant DAO_V as VeicoloDao
+    participant V as Veicolo
+    participant DAO_Z as VarcoZtlDao
+    participant Z as VarcoZtl
+    
     U->>+Auth: Richiesta con token
     Auth->>+C: Token valido e ruolo verificato
     alt Utente autorizzato
@@ -553,18 +553,18 @@ sequenceDiagram
     participant Auth as AuthMiddleware
     participant C as Controller
     participant R as TransitoRepository
-    participant DAO_T as TransitoDao
-    participant DAO_V as VeicoloDao
-    participant DAO_Z as VarcoZtlDao
-    participant DAO_M as MultaDao
-    participant T as Transito
-    participant V as Veicolo
-    participant Z as VarcoZtl
-    participant M as Multa
-    participant Err as ErrorHandler
     participant DB as Database
     participant TR as Transaction
-
+    participant DAO_T as TransitoDao
+    participant T as Transito
+    participant DAO_V as VeicoloDao
+    participant V as Veicolo
+    participant Err as ErrorHandler
+    participant DAO_Z as VarcoZtlDao
+    participant Z as VarcoZtl
+    participant DAO_M as MultaDao
+    participant M as Multa
+    
     U->>+Auth: Richiesta con token
     Auth->>+C: Token valido e ruolo verificato
     alt Utente autorizzato
@@ -633,12 +633,12 @@ sequenceDiagram
     participant C as Controller
     participant R as MultaRepository
     participant DAO_M as MultaDao
-    participant DAO_T as TransitoDao
-    participant DAO_V as VeicoloDao
     participant M as Multa
-    participant T as Transito
-    participant V as Veicolo
     participant Err as ErrorHandler
+    participant DAO_T as TransitoDao
+    participant T as Transito
+    participant DAO_V as VeicoloDao
+    participant V as Veicolo
     participant QR as QRCode
     participant PDF as PDFDocument
 
@@ -704,13 +704,15 @@ sequenceDiagram
     participant U as Utente
     participant Auth as AuthMiddleware
     participant C as Controller
+    participant DB as Database
+    participant TR as Transaction
     participant DAO_M as MultaDao
-    participant DAO_U as UtenteDao
     participant M as Multa
+    participant DAO_U as UtenteDao
     participant UTE as Utente
     participant Err as ErrorHandler
-    participant TR as Transaction
-    participant DB as Database
+    
+    
 
     U->>+Auth: Richiesta con token
     Auth->>+C: Token valido e ruolo verificato
