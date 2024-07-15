@@ -4,22 +4,31 @@
 
 # Indice
 
-1. [Obiettivo](#-obiettivo)
-2. [Progettazione](#-progettazione)
-   1. [Architettura dei servizi](#-architettura-dei-servizi)
-   2. [Diagramma dei casi d'uso](#-diagramma-dei-casi-duso)
-   3. [Diagramma E-R](#-diagramma-e-r)
-   4. [Diagrammi delle sequenze](#-diagrammi-delle-sequenze)
-3. [API](#-api)
-4. [Set-up](#-set-up)
-5. [Strumenti utilizzati](#-strumenti-utilizzati)
-6. [Autori](#-autori)
+- [Obiettivo](#-obiettivo)
+- [Progettazione](#-progettazione)
+   - [Architettura dei servizi](#-architettura-dei-servizi)
+   - [Diagramma dei casi d'uso](#-diagramma-dei-casi-duso)
+   - [Diagramma E-R](#-diagramma-e-r)
+   - [Diagrammi delle sequenze](#-diagrammi-delle-sequenze)
+- [API](#-api)
+- [Set-up](#-set-up)
+- [Strumenti utilizzati](#-strumenti-utilizzati)
+- [Autori](#-autori)
 
-# 📌 Obiettivo
+## 📌 Obiettivo
 
-# 🏗️ Progettazione
+L'obiettivo del progetto consiste nello sviluppo di un sistema per la gestione del calcolo delle multe dovute al passaggio di veicoli attraverso varchi ZTL (Zone a Traffico Limitato) in una città. Il sistema deve consentire:
 
-## 🖥️ Architettura dei servizi
+* La gestione delle diverse tipologie di veicoli, ciascuna con costi di transito differenti.
+* La modellazione dei varchi ZTL, che possono essere aperti o chiusi in specifici orari del giorno e della settimana. 
+* L'inserimento dei transiti dei veicoli, con data e ora del passaggio e targa del veicolo.
+* Il calcolo automatico delle multe in base alla tipologia del veicolo, alla fascia oraria e al giorno della settimana, tenendo conto di eventuali esenzioni di alcuni veicoli. Le tariffe relative ai varchi saranno differenziate anche a seconda del passaggio in giorni e orari festivi o feriali.
+
+L'intero sistema prevede due backend distinti: uno per la gestione dei **transiti** e uno per la gestione dei **pagamenti** delle multe, ciascuno con funzionalità specifiche accessibili tramite rotte API.
+
+## 🏗️ Progettazione
+
+### 🖥️ Architettura dei servizi
 
 ```mermaid
 graph TD;
@@ -42,13 +51,21 @@ graph TD;
     transiti --> |depends_on| db
     pagamenti --> |depends_on| db
 
-    style transiti fill:#f9f,stroke:#333,stroke-width:4px
-    style pagamenti fill:#9ff,stroke:#333,stroke-width:4px
-    style db fill:#ff9,stroke:#333,stroke-width:4px
-    style user fill:#acf,stroke:#333,stroke-width:4px
+    style transiti fill:#f9f,stroke:#333,stroke-width:4px,color:#000
+    style pagamenti fill:#9ff,stroke:#333,stroke-width:4px,color:#000
+    style db fill:#ff9,stroke:#333,stroke-width:4px,color:#000
+    style user fill:#acf,stroke:#333,stroke-width:4px,color:#000
 ```
 
-## 📊 Diagramma dei casi d'uso
+Il diagramma rappresenta l'intera architettura del sistema sviluppato. All'interno della rete backend, ci sono tre container principali, che rappresentano i servizi `Docker`, orchestrati tramite `docker-compose`, che compongono l'applicazione. 
+
+Il container Transiti ospita un servizio chiamato "**backend-transiti**", accessibile all'indirizzo `transiti:3000`, mentre il container Pagamenti contiene il servizio "**backend-pagamenti**", accessibile all'indirizzo `pagamenti:3001`. Il container del DB, invece, contiene un database **PostgreSQL** accessibile all'indirizzo `db:5432`.
+
+L'utente finale, rappresentato da un elemento separato nel diagramma, interagisce con il sistema inviando chiamate API sia al servizio backend-transiti sia al servizio backend-pagamenti. Entrambi questi servizi backend dipendono dal database PostgreSQL, il che significa che per funzionare correttamente devono poter accedere ai dati memorizzati in esso. Questa struttura permette una chiara separazione dei servizi e una gestione centralizzata dei dati tramite il database PostgreSQL.
+
+### 📊 Diagramma dei casi d'uso
+
+Il diagramma dei casi d'uso mostrato di seguito offre una visualizzazione delle funzioni e/o servizi offerti dal sistema sviluppato, a seconda del livello di utenza che interagisce col sistema stesso.
 
 ```mermaid
 graph TD
@@ -69,7 +86,11 @@ graph TD
     VerificaMulte ----|Controlla| CreazioneAutomaticaMulta
 ```
 
-## 🗂️ Diagramma E-R
+### 🗂️ Diagramma E-R
+
+Come già anticipato precedentemente, il RDBMS scelto per la realizzazione del sistema è **PostgreSQL**, un database open source che gode di una solida reputazione per affidabilità, flessibilità e scalabilità. In particolare, in un contesto di backend puro come quello del sistema sviluppato, in cui è necessaria l'autenticazione dei dati e la velocità di lettura/scrittura, PostgreSQL è uno dei sistemi di basi di dati più efficiente e ottimizzato. 
+
+Di seguito, viene mostrato il diagramma "Entity-Relationship"(E-R) di rappresentazione concettuale e grafica delle classi all'interno del database utilizzato.
 
 ```mermaid
 erDiagram
@@ -150,7 +171,10 @@ erDiagram
     UTENTE ||--o| IS_VARCO : "has"
     VARCO_ZTL ||--o| IS_VARCO : "has"
 ```
-## 🔄 Diagrammi delle sequenze
+
+### Pattern 
+
+### 🔄 Diagrammi delle sequenze
 
 🚌 **Backend-Transiti**
 
@@ -726,15 +750,15 @@ sequenceDiagram
     end
 ```
 
-# 🔌 API
+## 🔌 API
 
-# ⚙️ Set-up
+## ⚙️ Set-up
 
-# 🛠️ Strumenti utilizzati
+## 🛠️ Strumenti utilizzati
 
 [![](https://skillicons.dev/icons?i=ts,express,nodejs,sequelize,docker,postgres,postman,github,vscode)](https://skillicons.dev)
 
-# 👥 Autori 
+## 👥 Autori 
 
 |Nome | GitHub |
 |-----------|--------|
