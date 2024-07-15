@@ -154,6 +154,30 @@ erDiagram
 
 🚌 **Backend-Transiti**
 
+* __POST /login__
+```mermaid
+sequenceDiagram
+    participant C as Controller
+    participant JWT as JWT Library
+    participant ENV as Environment
+
+    Note over C,ENV: Generazione del Token
+    C->>+ENV: Ottiene JWT_SECRET
+    ENV-->>C: JWT_SECRET
+    C->>+JWT: jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' })
+    JWT-->>C: Token generato
+
+    Note over C,JWT: Verifica del Token
+    C->>+JWT: jwt.verify(token, JWT_SECRET)
+    alt Token valido
+        JWT-->>C: Payload decodificato
+        C-->>C: Ritorna il payload decodificato
+    else Token non valido
+        JWT-->>C: null
+        C-->>C: Ritorna null
+    end
+```
+
 * __GET /varchi/:id/transiti__
 
 ```mermaid
