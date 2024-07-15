@@ -80,7 +80,7 @@ class ZonaZtlRepository {
         try {
             const zonaZtl = await zonaZtlDao.getById(id);
             if (!zonaZtl) {
-                return null;
+                throw ErrorFactory.createError(ErrorTypes.BadRequest, `Impossibile recuperare la zona ZTL con id ${id}`);
             }
 
             const varchiZtl = await varcoZtlDao.getAll();

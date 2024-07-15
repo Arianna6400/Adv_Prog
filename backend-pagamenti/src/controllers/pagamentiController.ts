@@ -50,8 +50,8 @@ export const payMulta = async (req: Request, res: Response, next: NextFunction) 
         await transaction.commit(); // Termina la transazione con successo
 
         res.status(StatusCodes.OK).json({ 
-            multa: multa,
             esito: `Pagamento effettuato con successo da ${utente.email}`,
+            multa: multa,
             token_rimanenti: utente.token_rimanenti,
         });
     } catch (error) {

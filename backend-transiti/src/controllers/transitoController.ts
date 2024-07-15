@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import transitoRepository from '../repositories/transitoRepository';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import { StatusCodes } from 'http-status-codes';
+
 /**
  * Funzione per ottenere tutti i transiti.
  */
@@ -11,7 +12,7 @@ export const getAllTransiti = async (req: Request, res: Response, next: NextFunc
         const transiti = await transitoRepository.getAllTransiti();
         res.status(StatusCodes.OK).json(transiti);
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };
 
@@ -27,10 +28,10 @@ export const getTransitoById = async (req: Request, res: Response, next: NextFun
         if (transito) {
             res.status(StatusCodes.OK).json(transito);
         } else {
-            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Transito non trovato'));
+            return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Transito non trovato'));
         }
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };
 
@@ -43,7 +44,7 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
         const nuovoTransito = await transitoRepository.createTransito(req.body);
         res.status(StatusCodes.CREATED).json(nuovoTransito);
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };
 
@@ -60,10 +61,10 @@ export const updateTransito = async (req: Request, res: Response, next: NextFunc
             const updatedTransito = await transitoRepository.getTransitoById(id);
             res.status(StatusCodes.OK).json(updatedTransito);
         } else {
-            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Transito non trovato'));
+            return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Transito non trovato'));
         }
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };
 
@@ -79,9 +80,9 @@ export const deleteTransito = async (req: Request, res: Response, next: NextFunc
         if (deleted) {
             res.status(StatusCodes.NO_CONTENT).send();
         } else {
-            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Transito non trovato'));
+            return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Transito non trovato'));
         }
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };

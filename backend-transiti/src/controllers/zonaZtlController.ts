@@ -1,19 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
-import varcoZtlDao from '../dao/varcoZtlDao';
-import zonaZtlDao from '../dao/zonaZtlDao';
 import { StatusCodes } from 'http-status-codes';
 import zonaZtlRepository from '../repositories/zonaZtlRepository';
 import varcoZtlRepository from '../repositories/varcoZtlRepository';
+
 /**
  * Funzione per ottenere tutte le zone ZTL.
  */
 export const getAllZonaZtl = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        // Recupera le zone ZTL dal repository
         const zoneZtl = await zonaZtlRepository.getAllZonaZtl();
         res.status(StatusCodes.OK).json(zoneZtl);
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };
 
@@ -29,10 +29,10 @@ export const getZonaZtlById = async (req: Request, res: Response, next: NextFunc
         if (zonaZtl) {
             res.status(StatusCodes.OK).json(zonaZtl);
         } else {
-            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
+            return (ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
         }
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };
 
@@ -48,10 +48,10 @@ export const getZonaZtlWithTransiti = async (req: Request, res: Response, next: 
         if (zonaZtl) {
             res.status(StatusCodes.OK).json(zonaZtl);
         } else {
-            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
+            return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
         }
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };
 
@@ -73,7 +73,7 @@ export const createZonaZtl = async (req: Request, res: Response, next: NextFunct
             res.status(StatusCodes.CREATED).json(nuovaZonaZtl);
         }
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };
 
@@ -89,11 +89,11 @@ export const updateZonaZtl = async (req: Request, res: Response, next: NextFunct
         if (updated) {
             const updatedZonaZtl = await zonaZtlRepository.getZonaZtlById(id);
             res.status(StatusCodes.OK).json(updatedZonaZtl);
-        } else {
-            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
+        }else{
+            return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
         }
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };
 
@@ -107,18 +107,18 @@ export const deleteZonaZtl = async (req: Request, res: Response, next: NextFunct
         // Controlla se esistono varchi associati alla zona ZTL
         const isNotFree = await (await varcoZtlRepository.getAllVarcoZtl()).filter((varco => varco.zona_ztl === id)).length;
         if (isNotFree){
-            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Non è possibile eliminare una zona con varchi associati'));
+            return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Non è possibile eliminare una zona con varchi associati'));
         }else{
             // Cancella la zona ZTL esistente
             const deleted = await zonaZtlRepository.deleteZonaZtl(id);
             console.log
             if (deleted) {
                 res.status(StatusCodes.NO_CONTENT).json({ message: `Zona ${id} eliminata con successo` });
-            } else {
-                next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
+            }else{
+                return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
             }
         }
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };

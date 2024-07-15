@@ -88,7 +88,7 @@ class IsVarcoDao implements IsVarcoDAO {
         try {
             return await IsVarco.destroy({ where: { id_utente }, ...options });
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione dell'associazione is_varco per id ${id_utente}`);
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione dell'associazione is_varco con id_utente ${id_utente}`);
         }
     }
 

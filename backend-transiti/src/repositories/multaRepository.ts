@@ -51,7 +51,7 @@ class MultaRepository {
             // Recupera la multa dal DAO tramite il suo UUID
             const multa = await multaDao.getMultaByUUID(uuid);
             if (!multa) {
-                throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare la multa con uuid ${uuid}`);
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Multa con uuid ${uuid} non trovata`);
             }
             
             // Recupera il transito associato alla multa

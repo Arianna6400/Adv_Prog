@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import varcoZtlRepository from '../repositories/varcoZtlRepository';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import { StatusCodes } from 'http-status-codes';
+
 /**
  * Funzione per ottenere tutti i varchi ZTL
  */
@@ -11,7 +12,7 @@ export const getAllVarcoZtl = async (req: Request, res: Response, next: NextFunc
         const varchiZtl = await varcoZtlRepository.getAllVarcoZtl();
         res.status(StatusCodes.OK).json(varchiZtl);
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };
 
@@ -27,10 +28,10 @@ export const getVarcoZtlById = async (req: Request, res: Response, next: NextFun
         if (varcoZtl) {
             res.status(StatusCodes.OK).json(varcoZtl);
         } else {
-            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Varco ZTL non trovato'));
+            return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Varco ZTL non trovato'));
         }
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };
 
@@ -46,10 +47,10 @@ export const getVarcoZtlWithTransiti = async (req: Request, res: Response, next:
         if (varcoZtlWithTransiti) {
             res.status(StatusCodes.OK).json(varcoZtlWithTransiti);
         } else {
-            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Varco ZTL non trovato'));
+            return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Varco ZTL non trovato'));
         }
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };
 
@@ -71,7 +72,7 @@ export const createVarcoZtl = async (req: Request, res: Response, next: NextFunc
             res.status(StatusCodes.CREATED).json(nuovoVarcoZtl);
         }
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };
 
@@ -88,10 +89,10 @@ export const updateVarcoZtl = async (req: Request, res: Response, next: NextFunc
             const updatedVarcoZtl = await varcoZtlRepository.getVarcoZtlById(id);
             res.status(StatusCodes.OK).json(updatedVarcoZtl);
         } else {
-            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Varco ZTL non trovato'));
+            return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Varco ZTL non trovato'));
         }
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };
 
@@ -107,9 +108,9 @@ export const deleteVarcoZtl = async (req: Request, res: Response, next: NextFunc
         if (deleted) {
             res.status(StatusCodes.NO_CONTENT).send();
         } else {
-            next(ErrorFactory.createError(ErrorTypes.NotFound, 'Varco ZTL non trovato'));
+            return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Varco ZTL non trovato'));
         }
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };

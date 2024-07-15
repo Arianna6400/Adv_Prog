@@ -10,6 +10,7 @@ import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import Database from '../utils/database';
 import transitoDao from '../dao/transitoDao';
 import veicoloDao from '../dao/veicoloDao';
+
 /**
  * Classe VarcoZtlRepository per gestire le operazioni CRUD sui varchi ZTL.
  */
@@ -49,7 +50,7 @@ class VarcoZtlRepository {
         try {
             const varcoZtl = await varcoZtlDao.getById(id);
             if (!varcoZtl) {
-                return null;
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il varco ZTL con id ${id}`);
             }
             const zonaZtl = await zonaZtlDao.getById(varcoZtl.zona_ztl);
             const orarioChiusura = await orarioChiusuraDao.getById(varcoZtl.orario_chiusura);
@@ -73,7 +74,7 @@ class VarcoZtlRepository {
         try {
             const varcoZtl = await varcoZtlDao.getById(id);
             if (!varcoZtl) {
-                return null;
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il varco ZTL con id ${id}`);
             }
             const zonaZtl = await zonaZtlDao.getById(varcoZtl.zona_ztl);
             
@@ -187,24 +188,18 @@ class VarcoZtlRepository {
                 throw ErrorFactory.createError(ErrorTypes.NotFound, 'Varco ZTL non trovato');
             }
 
-            console.log('---------- varco', varcoZtl);
-    
             // Recupera tutte le relazioni nella tabella is_varco e trova quella corrispondente
             const isVarco = (await IsVarcoDao.getAll()).find(iv => iv.id_varco === id);
             if (!isVarco) {
                 throw ErrorFactory.createError(ErrorTypes.NotFound, 'Relazione is_varco non trovata');
             }
 
-            console.log('---------- is varco', isVarco);
-    
             // Verifica l'esistenza dell'utente
             const utente = await UtenteDao.getById(isVarco.id_utente);
             if (!utente) {
                 throw ErrorFactory.createError(ErrorTypes.NotFound, 'Utente non trovato');
             }
 
-            console.log('---------- utente', utente);
-    
             // Elimina la relazione nella tabella is_varco
             await IsVarcoDao.delete(isVarco.id_utente, { transaction });
             // Elimina l'utente corrispondente nella tabella utente

@@ -37,7 +37,7 @@ export const authorize = (roles: string[]) => {
       }
       // Se il ruolo non è presente tra quelli autorizzati genera l'errore
       if (!roles.includes(user.ruolo)) {
-        throw ErrorFactory.createError(ErrorTypes.Unauthorized, 'Accesso non autorizzato.');
+        throw ErrorFactory.createError(ErrorTypes.Unauthorized, 'Accesso negato.');
       }
 
       next();
