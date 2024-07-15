@@ -90,11 +90,11 @@ class UtenteDao implements UtenteDAO {
    */
   public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
       try {
-          const utente = await Utente.findByPk(id);
+          const utente = await Utente.findByPk(id, options);
           if (!utente) {
               throw ErrorFactory.createError(ErrorTypes.NotFound, `Utente con id ${id} non trovato`);
           }
-          return await Utente.destroy({ where: { id_utente: id } });
+          return await Utente.destroy({ where: { id_utente: id }, ...options });
       } catch (error) {
           throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione dell'utente con id ${id}`);
       }

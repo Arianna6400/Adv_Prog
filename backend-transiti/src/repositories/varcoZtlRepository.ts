@@ -186,26 +186,34 @@ class VarcoZtlRepository {
             if (!varcoZtl) {
                 throw ErrorFactory.createError(ErrorTypes.NotFound, 'Varco ZTL non trovato');
             }
+
+            console.log('---------- varco', varcoZtl);
     
             // Recupera tutte le relazioni nella tabella is_varco e trova quella corrispondente
             const isVarco = (await IsVarcoDao.getAll()).find(iv => iv.id_varco === id);
-    
             if (!isVarco) {
                 throw ErrorFactory.createError(ErrorTypes.NotFound, 'Relazione is_varco non trovata');
             }
+
+            console.log('---------- is varco', isVarco);
+    
+            // Verifica l'esistenza dell'utente
+            const utente = await UtenteDao.getById(isVarco.id_utente);
+            if (!utente) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, 'Utente non trovato');
+            }
+
+            console.log('---------- utente', utente);
     
             // Elimina la relazione nella tabella is_varco
             await IsVarcoDao.delete(isVarco.id_utente, { transaction });
-    
             // Elimina l'utente corrispondente nella tabella utente
             await UtenteDao.delete(isVarco.id_utente, { transaction });
-    
             // Elimina il varco ZTL nella tabella varcoZtl
             const deletedVarco = await varcoZtlDao.delete(id, { transaction });
     
             // Esegui il commit della transazione
             await transaction.commit();
-    
             return deletedVarco;
         } catch (error) {
             // Annulla la transazione in caso di errore
