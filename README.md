@@ -1644,7 +1644,7 @@ Authorization: Bearer {authToken}
 
 *Risposta:*
 
-```bash
+```json
 [
     {
         "id_transito": 1,
@@ -1733,7 +1733,7 @@ Authorization: Bearer {authToken}
 
 *Risposta:*
 
-```bash
+```json
 {
     "id_transito": 1,
     "veicolo": {
@@ -1768,7 +1768,7 @@ Authorization: Bearer {authToken}
 ```
 Nel body:
 
-```bash
+```json
 {
     "veicolo": "AB123CD",
     "varco": 1
@@ -1779,7 +1779,7 @@ Nel body:
 
 *Risposta:*
 
-```bash
+```json
 {
     "data_ora": "2024-07-16T14:28:36.452Z",
     "id_transito": 5,
@@ -1804,7 +1804,7 @@ Authorization: Bearer {authToken}
 ```
 Nel body:
 
-```bash
+```json
 {
     "veicolo": "IJ789KL",
     "varco": 1,
@@ -1814,7 +1814,7 @@ Nel body:
 
 *Risposta:*
 
-```bash
+```json
 {
     "id_transito": 5,
     "veicolo": {
@@ -1851,7 +1851,10 @@ Authorization: Bearer {authToken}
 
 *Risposta:*
 
-```bash
+```json
+{
+    "message": "Transito 5 eliminato con successo"
+}
 ```
 
 ### Multe
@@ -1872,7 +1875,7 @@ Authorization: Bearer {authToken}
 
 *Risposta:*
 
-```bash
+```json
 [
     {
         "id_multa": 1,
@@ -1907,9 +1910,8 @@ Authorization: Bearer {authToken}
 
 *Risposta:*
 
-```bash
 ![](https://github.com/Arianna6400/Adv_Prog/blob/master/example_bollettino.png)
-```
+
 > Se il bollettino ha lo stato pagamento aggiornato a `Pagato`, il colore del bollettino cambia in verde.
 
 ### Pagamenti
@@ -1931,7 +1933,7 @@ Authorization: Bearer {authToken}
 
 Nel body:
 
-```bash
+```json
 {
   "uuid": "550e8400-e29b-41d4-a716-446655440000"
 }
@@ -1939,7 +1941,7 @@ Nel body:
 
 *Risposta:*
 
-```bash
+```json
 {
     "esito": "Pagamento effettuato con successo da arianna.agresta@gmail.com",
     "multa": {
@@ -1971,7 +1973,7 @@ Authorization: Bearer {authToken}
 
 Nel body:
 
-```bash
+```json
 {
   "token": "1"
 }
@@ -1979,7 +1981,7 @@ Nel body:
 
 *Risposta:*
 
-```bash
+```json
 {
     "info": "Token ricaricati con successo",
     "utente": {
