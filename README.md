@@ -1463,8 +1463,9 @@ Authorization: Bearer {authToken}
 *Risposta:*
 
 ```bash
-![](example_bollettino.png)
+![](https://github.com/Arianna6400/Adv_Prog/blob/master/example_bollettino.png)
 ```
+> Se il bollettino ha lo stato pagamento aggiornato a `Pagato`, il colore del bollettino cambia in verde.
 
 ### Pagamenti
 
@@ -1474,16 +1475,38 @@ Authorization: Bearer {authToken}
 *Rotta:*
 
 ```bash
+POST /pagamulta
 ```
 
 *Richiesta:*
 
 ```bash
+Authorization: Bearer {authToken}
+```
+
+Nel body:
+
+```bash
+{
+  "uuid": "550e8400-e29b-41d4-a716-446655440000"
+}
 ```
 
 *Risposta:*
 
 ```bash
+{
+    "esito": "Pagamento effettuato con successo da arianna.agresta@gmail.com",
+    "multa": {
+        "id_multa": 1,
+        "transito": 1,
+        "data_multa": "2024-07-07T10:00:00.000Z",
+        "pagata": true,
+        "importo_token": "5.00",
+        "uuid_pagamento": "550e8400-e29b-41d4-a716-446655440000"
+    },
+    "token_rimanenti": 15
+}
 ```
 
 **Recharge Tokens**
@@ -1492,16 +1515,37 @@ Authorization: Bearer {authToken}
 *Rotta:*
 
 ```bash
+POST /ricaricatoken/1
 ```
 
 *Richiesta:*
 
 ```bash
+Authorization: Bearer {authToken}
+```
+
+Nel body:
+
+```bash
+{
+  "token": "1"
+}
 ```
 
 *Risposta:*
 
 ```bash
+{
+    "info": "Token ricaricati con successo",
+    "utente": {
+        "id_utente": 1,
+        "nome": "Arianna",
+        "cognome": "Agresta",
+        "email": "arianna.agresta@gmail.com",
+        "ruolo": "automobilista",
+        "token_rimanenti": 16
+    }
+}
 ```
 
 **Check Token**
@@ -1510,16 +1554,22 @@ Authorization: Bearer {authToken}
 *Rotta:*
 
 ```bash
+GET /tokenresidui
 ```
 
 *Richiesta:*
 
 ```bash
+Authorization: Bearer {authToken}
 ```
 
 *Risposta:*
 
 ```bash
+{
+    "utente": "arianna.agresta@gmail.com",
+    "token_rimanenti": 15
+}
 ```
 
 ## ⚙️ Set-up
