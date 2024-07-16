@@ -110,14 +110,14 @@ class ZonaZtlRepository {
     public async deleteZonaZtl(id: number): Promise<number> {
         try {
             // Verifica se ci sono riferimenti a questa zona ZTL nei varchi ZTL
-            const zoneReferenced = await varcoZtlDao.getById(id);
+            const zoneReferenced = (await varcoZtlDao.getAll()).find(varco => varco.zona_ztl === id);
             if (zoneReferenced) {
                 throw ErrorFactory.createError(ErrorTypes.BadRequest, 'Non è possibile eliminare una zona ZTL che ha varchi associati');
             }
             // Esegui l'operazione di eliminazione
             return await zonaZtlDao.delete(id);
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.BadRequest, `Impossibile cancellare la zona ZTL con id ${id}`);
+            throw (error);
         }
     }
 

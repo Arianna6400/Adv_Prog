@@ -6,29 +6,37 @@
 
 # Indice
 
-- [Obiettivo](#-obiettivo)
-- [Progettazione](#-progettazione)
-   - [Architettura dei servizi](#-architettura-dei-servizi)
-   - [Diagramma dei casi d'uso](#-diagramma-dei-casi-duso)
-   - [Diagramma E-R](#-diagramma-e-r)
-   - [Pattern utilizzati](#-pattern-utilizzati)
-   - [Diagrammi delle sequenze](#-diagrammi-delle-sequenze)
-- [API Routes](#-api-routes)
-- [Set-up](#-set-up)
-- [Scelte implementative da sottolineare](#-scelte-implementative-da-sottolineare)
-- [Strumenti utilizzati](#-strumenti-utilizzati)
-- [Autori](#-autori)
+- [Progetto Programmazione Avanzata A.A. 23/24](#progetto-programmazione-avanzata-aa-2324)
+- [Indice](#indice)
+  - [📌 Obiettivo](#-obiettivo)
+  - [🏗️ Progettazione](#️-progettazione)
+    - [🖥️ Architettura dei servizi](#️-architettura-dei-servizi)
+    - [📊 Diagramma dei casi d'uso](#-diagramma-dei-casi-duso)
+    - [🗂️ Diagramma E-R](#️-diagramma-e-r)
+    - [🧱 Pattern utilizzati](#-pattern-utilizzati)
+    - [🔄 Diagrammi delle sequenze](#-diagrammi-delle-sequenze)
+  - [🔌 API Routes](#-api-routes)
+    - [Login](#login)
+    - [VarcoZtl](#varcoztl)
+    - [ZonaZtl](#zonaztl)
+    - [Transito](#transito)
+    - [Multe](#multe)
+    - [Pagamenti](#pagamenti)
+  - [⚙️ Set-up](#️-set-up)
+  - [📘 Scelte implementative da sottolineare](#-scelte-implementative-da-sottolineare)
+  - [🛠️ Strumenti utilizzati](#️-strumenti-utilizzati)
+  - [👥 Autori](#-autori)
 
 ## 📌 Obiettivo
 
-L'obiettivo del progetto consiste nello sviluppo di un sistema per la gestione del calcolo delle multe dovute al passaggio di veicoli attraverso varchi ZTL (Zone a Traffico Limitato) in una città. Il sistema deve consentire:
+Il presente progetto ha come obiettivo quello di sviluppare un sistema di gestione di ZTL (Zone a Traffico Limitato) in una città, che permetta, qualora fosse necessario, di calcolare in modo automatico le multe dovute al passaggio di veicoli attraverso varchi ZTL. Il sistema dovrà consentire nello specifico:
 
 * La gestione delle diverse tipologie di veicoli, ciascuna con costi di transito differenti.
 * La modellazione dei varchi ZTL, che possono essere aperti o chiusi in specifici orari del giorno e della settimana. 
 * L'inserimento dei transiti dei veicoli, con data e ora del passaggio e targa del veicolo.
 * Il calcolo automatico delle multe in base alla tipologia del veicolo, alla fascia oraria e al giorno della settimana, tenendo conto di eventuali esenzioni di alcuni veicoli. Le tariffe relative ai varchi saranno differenziate anche a seconda del passaggio in giorni e orari festivi o feriali.
 
-L'intero sistema prevede due backend distinti: uno per la gestione dei **transiti** e uno per la gestione dei **pagamenti** delle multe, ciascuno con funzionalità specifiche accessibili tramite rotte API.
+L’intero sistema prevede l’implementazione di due backend distinti: uno per la gestione dei **transiti** e uno per la gestione dei **pagamenti** delle multe, ciascuno con funzionalità specifiche accessibili tramite rotte API.
 
 ## 🏗️ Progettazione
 
@@ -61,11 +69,14 @@ graph TD;
     style user fill:#acf,stroke:#333,stroke-width:4px,color:#000
 ```
 
-Il diagramma rappresenta l'intera architettura del sistema sviluppato. All'interno della rete backend ci sono tre container principali, i quali rappresentano i servizi `Docker`, orchestrati tramite `docker-compose`, che compongono l'applicazione. 
+Il diagramma rappresenta la struttura dell'architettura del sistema sviluppato. L'intera rete backend prevede l'orchestrazione, tramite `docker-compose`, di tre container rappresentati da servizi `Docker`.
 
-Il container Transiti ospita un servizio chiamato "**backend-transiti**", accessibile all'indirizzo `transiti:3000`, mentre il container Pagamenti contiene il servizio "**backend-pagamenti**", accessibile all'indirizzo `pagamenti:3001`. Il container del DB, invece, contiene un database **PostgreSQL** accessibile all'indirizzo `db:5432`.
+Il container Transiti ospita il servizio "**backend-transiti**", accessibile all'indirizzo `transiti:3000`, che è responsabile della gestione delle zone ztl, dei varchi, dei veicoli e dell’emissione delle multe. 
+Il container Pagamenti ospita il servizio "**backend-pagamenti**", accessibile all'indirizzo `pagamenti:3001`,responsabile della gestione dei crediti degli utenti e dei pagamenti delle multe. 
+Il container del DB, invece, contiene un database **PostgreSQL** accessibile all'indirizzo `db:5432`, è il responsabile della gestione della persistenza dei dati.
 
-L'utente finale, rappresentato da un elemento separato nel diagramma, interagisce con il sistema inviando chiamate API alla rete backend. Entrambi questi i servizi introdotti dipendono dal database PostgreSQL, il che significa che per funzionare correttamente devono poter accedere ai dati memorizzati in esso. Questa struttura permette una chiara separazione dei servizi e una gestione centralizzata dei dati tramite il database PostgreSQL.
+Entrambe i backend sono pensati e sviluppati in modo tale da poter funzionare indipendentemente l'uno dall'altro. L'utente finale, rappresentato da un elemento separato nel diagramma, interagisce con il sistema inviando chiamate API al backend-transiti, il quale provvede autonomamente a comunicare, quando necessario, con il backend-pagamenti. 
+Entrambi questi i servizi introdotti dipendono dal database PostgreSQL, il che significa che per funzionare correttamente devono poter accedere ai dati memorizzati in esso. Questa struttura permette una chiara separazione dei servizi e una gestione centralizzata dei dati tramite il database PostgreSQL.
 
 L'architettura dei servizi si riflette sulla struttura stessa dell'intero progetto. Le directory, infatti, sono organizzate come di seguito:
 
@@ -961,16 +972,24 @@ All'interno del sistema sono state predisposte le rotte mostrate in tabella; ogn
 *Rotta:*
 
 ```bash
+POST /login
 ```
-
 *Richiesta:*
 
-```bash
+Nel body/query:
+
+```json
+{
+    "email": "andrea.iasenzaniro@gmail.com"
+}
 ```
 
 *Risposta:*
 
-```bash
+```json
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhbmRyZWEuaWFzZW56YW5pcm9AZ21haWwuY29tIiwicnVvbG8iOiJvcGVyYXRvcmUiLCJpYXQiOjE3MjExNDM2MTAsImV4cCI6MTcyMTE0NzIxMH0.QAZMhRl2aJIc3A2apO-3l4oWf4tDFjF4sDjX9c5_tNM"
+}
 ```
 
 ### VarcoZtl
@@ -980,16 +999,96 @@ All'interno del sistema sono state predisposte le rotte mostrate in tabella; ogn
 *Rotta:*
 
 ```bash
+GET /varcoZtl
 ```
 
 *Richiesta:*
 
 ```bash
+Authorization: Bearer {authToken}
 ```
 
 *Risposta:*
 
-```bash
+```json
+[
+    {
+        "id_varco": 1,
+        "nome": "Varco 1",
+        "via": "Via Roma",
+        "zona_ztl": {
+            "id_zona": 1,
+            "nome": "Centro Storico"
+        },
+        "orario_chiusura": {
+            "id_orario": 1,
+            "giorno_chiusura": "lunedì",
+            "orario_inizio_f": "08:00:00",
+            "orario_fine_f": "18:00:00",
+            "orario_inizio_l": "08:00:00",
+            "orario_fine_l": "18:00:00",
+            "tariffa_f": "2.00",
+            "tariffa_l": "1.50"
+        }
+    },
+    {
+        "id_varco": 2,
+        "nome": "Varco 2",
+        "via": "Via Milano",
+        "zona_ztl": {
+            "id_zona": 1,
+            "nome": "Centro Storico"
+        },
+        "orario_chiusura": {
+            "id_orario": 2,
+            "giorno_chiusura": "sabato",
+            "orario_inizio_f": "10:00:00",
+            "orario_fine_f": "20:00:00",
+            "orario_inizio_l": "10:00:00",
+            "orario_fine_l": "20:00:00",
+            "tariffa_f": "3.00",
+            "tariffa_l": "2.50"
+        }
+    },
+    {
+        "id_varco": 3,
+        "nome": "Varco 3",
+        "via": "Via Napoli",
+        "zona_ztl": {
+            "id_zona": 2,
+            "nome": "Zona Industriale"
+        },
+        "orario_chiusura": {
+            "id_orario": 3,
+            "giorno_chiusura": "venerdì, sabato, domenica",
+            "orario_inizio_f": "07:00:00",
+            "orario_fine_f": "19:00:00",
+            "orario_inizio_l": "07:00:00",
+            "orario_fine_l": "19:00:00",
+            "tariffa_f": "2.50",
+            "tariffa_l": "1.75"
+        }
+    },
+    {
+        "id_varco": 4,
+        "nome": "Varco 4",
+        "via": "Via Torino",
+        "zona_ztl": {
+            "id_zona": 3,
+            "nome": "Zona Residenziale"
+        },
+        "orario_chiusura": {
+            "id_orario": 1,
+            "giorno_chiusura": "lunedì",
+            "orario_inizio_f": "08:00:00",
+            "orario_fine_f": "18:00:00",
+            "orario_inizio_l": "08:00:00",
+            "orario_fine_l": "18:00:00",
+            "tariffa_f": "2.00",
+            "tariffa_l": "1.50"
+        }
+    }
+]
 ```
 
 **Get Varco By Id**
@@ -997,16 +1096,37 @@ All'interno del sistema sono state predisposte le rotte mostrate in tabella; ogn
 *Rotta:*
 
 ```bash
+GET /varcoZtl/1
 ```
 
 *Richiesta:*
 
 ```bash
+Authorization: Bearer {authToken}
 ```
 
 *Risposta:*
 
-```bash
+```json
+{
+    "id_varco": 1,
+    "nome": "Varco 1",
+    "via": "Via Roma",
+    "zona_ztl": {
+        "id_zona": 1,
+        "nome": "Centro Storico"
+    },
+    "orario_chiusura": {
+        "id_orario": 1,
+        "giorno_chiusura": "lunedì",
+        "orario_inizio_f": "08:00:00",
+        "orario_fine_f": "18:00:00",
+        "orario_inizio_l": "08:00:00",
+        "orario_fine_l": "18:00:00",
+        "tariffa_f": "2.00",
+        "tariffa_l": "1.50"
+    }
+}
 ```
 
 **Get Varco with Transiti**
@@ -1014,16 +1134,48 @@ All'interno del sistema sono state predisposte le rotte mostrate in tabella; ogn
 *Rotta:*
 
 ```bash
+GET /varcoZtl/1/transiti
 ```
 
 *Richiesta:*
 
 ```bash
+Authorization: Bearer {authToken}
 ```
 
 *Risposta:*
 
-```bash
+```json
+{
+    "id_varco": 1,
+    "nome": "Varco 1",
+    "via": "Via Roma",
+    "zona_ztl": {
+        "id_zona": 1,
+        "nome": "Centro Storico"
+    },
+    "orario_chiusura": {
+        "id_orario": 1,
+        "giorno_chiusura": "lunedì",
+        "orario_inizio_f": "08:00:00",
+        "orario_fine_f": "18:00:00",
+        "orario_inizio_l": "08:00:00",
+        "orario_fine_l": "18:00:00",
+        "tariffa_f": "2.00",
+        "tariffa_l": "1.50"
+    },
+    "transiti": [
+        {
+            "veicolo": {
+                "targa": "AB123CD",
+                "esente": false,
+                "tipo_veicolo": 1,
+                "utente": 1
+            },
+            "data_ora": "2024-07-07T08:30:00.000Z"
+        }
+    ]
+}
 ```
 
 **Create Varco**
@@ -1031,16 +1183,35 @@ All'interno del sistema sono state predisposte le rotte mostrate in tabella; ogn
 *Rotta:*
 
 ```bash
+POST /varcoZtl
 ```
 
 *Richiesta:*
 
 ```bash
+Authorization: Bearer {authToken}
+```
+
+Nel body:
+```json
+{
+    "nome": "Varco 5",
+    "via": "Via Romaaa",
+    "zona_ztl": 1,
+    "orario_chiusura": 1
+}
 ```
 
 *Risposta:*
 
-```bash
+```json
+{
+    "id_varco": 5,
+    "nome": "Varco 5",
+    "via": "Via Romaaa",
+    "zona_ztl": 1,
+    "orario_chiusura": 1
+}
 ```
 
 **Update Varco**
@@ -1048,16 +1219,47 @@ All'interno del sistema sono state predisposte le rotte mostrate in tabella; ogn
 *Rotta:*
 
 ```bash
+PUT /varcoZtl/5
 ```
 
 *Richiesta:*
 
 ```bash
+Authorization: Bearer {authToken}
+```
+
+Nel body:
+```json
+{
+    "nome": "nuovo nome",
+    "via": "nuova via",
+    "zona_ztl": 1,
+    "orario_chiusura": 1
+}
 ```
 
 *Risposta:*
 
-```bash
+```json
+{
+    "id_varco": 5,
+    "nome": "nuovo nome",
+    "via": "nuova via",
+    "zona_ztl": {
+        "id_zona": 1,
+        "nome": "Centro Storico"
+    },
+    "orario_chiusura": {
+        "id_orario": 1,
+        "giorno_chiusura": "lunedì",
+        "orario_inizio_f": "08:00:00",
+        "orario_fine_f": "18:00:00",
+        "orario_inizio_l": "08:00:00",
+        "orario_fine_l": "18:00:00",
+        "tariffa_f": "2.00",
+        "tariffa_l": "1.50"
+    }
+}
 ```
 
 **Delete Varco**
@@ -1065,16 +1267,21 @@ All'interno del sistema sono state predisposte le rotte mostrate in tabella; ogn
 *Rotta:*
 
 ```bash
+DELETE /varcoZtl/5
 ```
 
 *Richiesta:*
 
 ```bash
+Authorization: Bearer {authToken}
 ```
 
 *Risposta:*
 
-```bash
+```json
+{
+    "message": "Varco 5 eliminato con successo"
+}
 ```
 
 ### ZonaZtl
@@ -1084,16 +1291,102 @@ All'interno del sistema sono state predisposte le rotte mostrate in tabella; ogn
 *Rotta:*
 
 ```bash
+GET /zonaZtl
 ```
 
 *Richiesta:*
 
 ```bash
+Authorization: Bearer {authToken}
 ```
 
 *Risposta:*
 
-```bash
+```json
+[
+    {
+        "id_zona": 1,
+        "nome": "Centro Storico",
+        "varchi": [
+            {
+                "id_varco": 1,
+                "nome": "Varco 1",
+                "via": "Via Roma",
+                "zona_ztl": 1,
+                "orario_chiusura": {
+                    "id_orario": 1,
+                    "giorno_chiusura": "lunedì",
+                    "orario_inizio_f": "08:00:00",
+                    "orario_fine_f": "18:00:00",
+                    "orario_inizio_l": "08:00:00",
+                    "orario_fine_l": "18:00:00",
+                    "tariffa_f": "2.00",
+                    "tariffa_l": "1.50"
+                }
+            },
+            {
+                "id_varco": 2,
+                "nome": "Varco 2",
+                "via": "Via Milano",
+                "zona_ztl": 1,
+                "orario_chiusura": {
+                    "id_orario": 2,
+                    "giorno_chiusura": "sabato",
+                    "orario_inizio_f": "10:00:00",
+                    "orario_fine_f": "20:00:00",
+                    "orario_inizio_l": "10:00:00",
+                    "orario_fine_l": "20:00:00",
+                    "tariffa_f": "3.00",
+                    "tariffa_l": "2.50"
+                }
+            }
+        ]
+    },
+    {
+        "id_zona": 2,
+        "nome": "Zona Industriale",
+        "varchi": [
+            {
+                "id_varco": 3,
+                "nome": "Varco 3",
+                "via": "Via Napoli",
+                "zona_ztl": 2,
+                "orario_chiusura": {
+                    "id_orario": 3,
+                    "giorno_chiusura": "venerdì, sabato, domenica",
+                    "orario_inizio_f": "07:00:00",
+                    "orario_fine_f": "19:00:00",
+                    "orario_inizio_l": "07:00:00",
+                    "orario_fine_l": "19:00:00",
+                    "tariffa_f": "2.50",
+                    "tariffa_l": "1.75"
+                }
+            }
+        ]
+    },
+    {
+        "id_zona": 3,
+        "nome": "Zona Residenziale",
+        "varchi": [
+            {
+                "id_varco": 4,
+                "nome": "Varco 4",
+                "via": "Via Torino",
+                "zona_ztl": 3,
+                "orario_chiusura": {
+                    "id_orario": 1,
+                    "giorno_chiusura": "lunedì",
+                    "orario_inizio_f": "08:00:00",
+                    "orario_fine_f": "18:00:00",
+                    "orario_inizio_l": "08:00:00",
+                    "orario_fine_l": "18:00:00",
+                    "tariffa_f": "2.00",
+                    "tariffa_l": "1.50"
+                }
+            }
+        ]
+    }
+]
 ```
 
 **Get Zona By Id**
@@ -1101,16 +1394,102 @@ All'interno del sistema sono state predisposte le rotte mostrate in tabella; ogn
 *Rotta:*
 
 ```bash
+GET /zonaZtl/1
 ```
 
 *Richiesta:*
 
 ```bash
+Authorization: Bearer {authToken}
 ```
 
 *Risposta:*
 
-```bash
+```json
+[
+    {
+        "id_zona": 1,
+        "nome": "Centro Storico",
+        "varchi": [
+            {
+                "id_varco": 1,
+                "nome": "Varco 1",
+                "via": "Via Roma",
+                "zona_ztl": 1,
+                "orario_chiusura": {
+                    "id_orario": 1,
+                    "giorno_chiusura": "lunedì",
+                    "orario_inizio_f": "08:00:00",
+                    "orario_fine_f": "18:00:00",
+                    "orario_inizio_l": "08:00:00",
+                    "orario_fine_l": "18:00:00",
+                    "tariffa_f": "2.00",
+                    "tariffa_l": "1.50"
+                }
+            },
+            {
+                "id_varco": 2,
+                "nome": "Varco 2",
+                "via": "Via Milano",
+                "zona_ztl": 1,
+                "orario_chiusura": {
+                    "id_orario": 2,
+                    "giorno_chiusura": "sabato",
+                    "orario_inizio_f": "10:00:00",
+                    "orario_fine_f": "20:00:00",
+                    "orario_inizio_l": "10:00:00",
+                    "orario_fine_l": "20:00:00",
+                    "tariffa_f": "3.00",
+                    "tariffa_l": "2.50"
+                }
+            }
+        ]
+    },
+    {
+        "id_zona": 2,
+        "nome": "Zona Industriale",
+        "varchi": [
+            {
+                "id_varco": 3,
+                "nome": "Varco 3",
+                "via": "Via Napoli",
+                "zona_ztl": 2,
+                "orario_chiusura": {
+                    "id_orario": 3,
+                    "giorno_chiusura": "venerdì, sabato, domenica",
+                    "orario_inizio_f": "07:00:00",
+                    "orario_fine_f": "19:00:00",
+                    "orario_inizio_l": "07:00:00",
+                    "orario_fine_l": "19:00:00",
+                    "tariffa_f": "2.50",
+                    "tariffa_l": "1.75"
+                }
+            }
+        ]
+    },
+    {
+        "id_zona": 3,
+        "nome": "Zona Residenziale",
+        "varchi": [
+            {
+                "id_varco": 4,
+                "nome": "Varco 4",
+                "via": "Via Torino",
+                "zona_ztl": 3,
+                "orario_chiusura": {
+                    "id_orario": 1,
+                    "giorno_chiusura": "lunedì",
+                    "orario_inizio_f": "08:00:00",
+                    "orario_fine_f": "18:00:00",
+                    "orario_inizio_l": "08:00:00",
+                    "orario_fine_l": "18:00:00",
+                    "tariffa_f": "2.00",
+                    "tariffa_l": "1.50"
+                }
+            }
+        ]
+    }
+]
 ```
 
 **Get Zona with Transiti**
@@ -1118,16 +1497,50 @@ All'interno del sistema sono state predisposte le rotte mostrate in tabella; ogn
 *Rotta:*
 
 ```bash
+GET /zona/ztl/1/transiti
 ```
 
 *Richiesta:*
 
 ```bash
+Authorization: Bearer {authToken}
 ```
 
 *Risposta:*
 
-```bash
+```json
+{
+    "id_zona": 1,
+    "nome": "Centro Storico",
+    "varchi": [
+        {
+            "transiti": [
+                {
+                    "veicolo": {
+                        "targa": "AB123CD",
+                        "esente": false,
+                        "tipo_veicolo": 1,
+                        "utente": 1
+                    },
+                    "data_ora": "2024-07-07T08:30:00.000Z"
+                }
+            ]
+        },
+        {
+            "transiti": [
+                {
+                    "veicolo": {
+                        "targa": "IJ789KL",
+                        "esente": true,
+                        "tipo_veicolo": 2,
+                        "utente": 2
+                    },
+                    "data_ora": "2024-07-07T09:00:00.000Z"
+                }
+            ]
+        }
+    ]
+}
 ```
 
 **Create Zona**
@@ -1135,16 +1548,29 @@ All'interno del sistema sono state predisposte le rotte mostrate in tabella; ogn
 *Rotta:*
 
 ```bash
+POST /zonaZtl
 ```
 
 *Richiesta:*
 
 ```bash
+Authorization: Bearer {authToken}
+```
+
+Nel body:
+```json
+{
+    "nome": "Zona aggiuntiva"
+}
 ```
 
 *Risposta:*
 
-```bash
+```json
+{
+    "id_zona": 4,
+    "nome": "Zona aggiuntiva"
+}
 ```
 
 **Update Zona**
@@ -1152,16 +1578,30 @@ All'interno del sistema sono state predisposte le rotte mostrate in tabella; ogn
 *Rotta:*
 
 ```bash
+PUT /zonaZtl/4
 ```
 
 *Richiesta:*
 
 ```bash
+Authorization: Bearer {authToken}
+```
+
+Nel body:
+```json
+{
+    "nome": "Zona modificata"
+}
 ```
 
 *Risposta:*
 
-```bash
+```json
+{
+    "id_zona": 4,
+    "nome": "Zona modificata",
+    "varchi": []
+}
 ```
 
 **Delete Zona**
@@ -1169,16 +1609,21 @@ All'interno del sistema sono state predisposte le rotte mostrate in tabella; ogn
 *Rotta:*
 
 ```bash
+DELETE /zonaZtl/4
 ```
 
 *Richiesta:*
 
 ```bash
+Authorization: Bearer {authToken}
 ```
 
 *Risposta:*
 
-```bash
+```json
+{
+    "message": "Zona 4 eliminata con successo"
+}
 ```
 
 ### Transito
