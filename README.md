@@ -1,8 +1,6 @@
 # Progetto Programmazione Avanzata A.A. 23/24
 
-<div align="center">
-    <align src="https://github.com/Arianna6400/Adv_Prog/blob/master/logo.png">
-</div>
+![](https://github.com/Arianna6400/Adv_Prog/blob/master/logo.png)
 
 ![Typescript](https://img.shields.io/badge/Typescript-007ACC?style=for-the-badge&logo=typescript&logoColor=white) ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)![Sequelize](https://img.shields.io/badge/Sequelize-52B0E7?style=for-the-badge&logo=sequelize&logoColor=white)![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)![VSCode](https://img.shields.io/badge/VSCode-0078D4?style=for-the-badge&logo=visualstudiocode&logoColor=white)
 
@@ -957,6 +955,572 @@ All'interno del sistema sono state predisposte le rotte mostrate in tabella; ogn
 | `POST`  | /ricaricatoken/:id | ✔️ | Admin |
 
 > **Nota**: Sono state implementate delle rotte aggiuntive all'interno del sistema, per permettere di visualizzare, aggiungere, aggiornare o cancellare informazioni ulteriori direttamente su Postman. Le CRUD aggiuntive riguardano le classi `veicolo`, `tipoVeicolo`, `orarioChiusura`, `utente`. Le suddette rotte sono state implementate solamente per scopi di completezza e di possibilità di personalizzazione in fase di test. 
+
+### Login
+
+*Rotta:*
+
+```bash
+```
+
+*Richiesta:*
+
+```bash
+```
+
+*Risposta:*
+
+```bash
+```
+
+### VarcoZtl
+
+**Get All Varchi**
+
+*Rotta:*
+
+```bash
+```
+
+*Richiesta:*
+
+```bash
+```
+
+*Risposta:*
+
+```bash
+```
+
+**Get Varco By Id**
+
+*Rotta:*
+
+```bash
+```
+
+*Richiesta:*
+
+```bash
+```
+
+*Risposta:*
+
+```bash
+```
+
+**Get Varco with Transiti**
+
+*Rotta:*
+
+```bash
+```
+
+*Richiesta:*
+
+```bash
+```
+
+*Risposta:*
+
+```bash
+```
+
+**Create Varco**
+
+*Rotta:*
+
+```bash
+```
+
+*Richiesta:*
+
+```bash
+```
+
+*Risposta:*
+
+```bash
+```
+
+**Update Varco**
+
+*Rotta:*
+
+```bash
+```
+
+*Richiesta:*
+
+```bash
+```
+
+*Risposta:*
+
+```bash
+```
+
+**Delete Varco**
+
+*Rotta:*
+
+```bash
+```
+
+*Richiesta:*
+
+```bash
+```
+
+*Risposta:*
+
+```bash
+```
+
+### ZonaZtl
+
+**Get All Zone**
+
+*Rotta:*
+
+```bash
+```
+
+*Richiesta:*
+
+```bash
+```
+
+*Risposta:*
+
+```bash
+```
+
+**Get Zona By Id**
+
+*Rotta:*
+
+```bash
+```
+
+*Richiesta:*
+
+```bash
+```
+
+*Risposta:*
+
+```bash
+```
+
+**Get Zona with Transiti**
+
+*Rotta:*
+
+```bash
+```
+
+*Richiesta:*
+
+```bash
+```
+
+*Risposta:*
+
+```bash
+```
+
+**Create Zona**
+
+*Rotta:*
+
+```bash
+```
+
+*Richiesta:*
+
+```bash
+```
+
+*Risposta:*
+
+```bash
+```
+
+**Update Zona**
+
+*Rotta:*
+
+```bash
+```
+
+*Richiesta:*
+
+```bash
+```
+
+*Risposta:*
+
+```bash
+```
+
+**Delete Zona**
+
+*Rotta:*
+
+```bash
+```
+
+*Richiesta:*
+
+```bash
+```
+
+*Risposta:*
+
+```bash
+```
+
+### Transito
+
+**Get All Transiti**
+
+*Rotta:*
+
+```bash
+GET /transito
+```
+
+*Richiesta:*
+
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+
+```bash
+[
+    {
+        "id_transito": 1,
+        "veicolo": {
+            "targa": "AB123CD",
+            "esente": false,
+            "tipo_veicolo": 1,
+            "utente": 1
+        },
+        "varco": {
+            "id_varco": 1,
+            "nome": "Varco 1",
+            "via": "Via Roma",
+            "zona_ztl": 1,
+            "orario_chiusura": 1
+        },
+        "data_ora": "2024-07-07T08:30:00.000Z"
+    },
+    {
+        "id_transito": 2,
+        "veicolo": {
+            "targa": "IJ789KL",
+            "esente": true,
+            "tipo_veicolo": 2,
+            "utente": 2
+        },
+        "varco": {
+            "id_varco": 2,
+            "nome": "Varco 2",
+            "via": "Via Milano",
+            "zona_ztl": 1,
+            "orario_chiusura": 2
+        },
+        "data_ora": "2024-07-07T09:00:00.000Z"
+    },
+    {
+        "id_transito": 3,
+        "veicolo": {
+            "targa": "XY456ZT",
+            "esente": false,
+            "tipo_veicolo": 3,
+            "utente": 3
+        },
+        "varco": {
+            "id_varco": 3,
+            "nome": "Varco 3",
+            "via": "Via Napoli",
+            "zona_ztl": 2,
+            "orario_chiusura": 3
+        },
+        "data_ora": "2024-07-07T10:15:00.000Z"
+    },
+    {
+        "id_transito": 4,
+        "veicolo": {
+            "targa": "MN234OP",
+            "esente": true,
+            "tipo_veicolo": 4,
+            "utente": 4
+        },
+        "varco": {
+            "id_varco": 4,
+            "nome": "Varco 4",
+            "via": "Via Torino",
+            "zona_ztl": 3,
+            "orario_chiusura": 1
+        },
+        "data_ora": "2024-07-07T11:45:00.000Z"
+    }
+]
+```
+
+**Get Transito By ID**
+
+*Rotta:*
+
+```bash
+GET transito/1
+```
+
+*Richiesta:*
+
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+
+```bash
+{
+    "id_transito": 1,
+    "veicolo": {
+        "targa": "AB123CD",
+        "esente": false,
+        "tipo_veicolo": 1,
+        "utente": 1
+    },
+    "varco": {
+        "id_varco": 1,
+        "nome": "Varco 1",
+        "via": "Via Roma",
+        "zona_ztl": 1,
+        "orario_chiusura": 1
+    },
+    "data_ora": "2024-07-07T08:30:00.000Z"
+}
+```
+
+**Create Transito**
+
+*Rotta:*
+
+```bash
+POST /transito
+```
+
+*Richiesta:*
+
+```bash
+Authorization: Bearer {authToken}
+```
+Nel body:
+
+```bash
+{
+    "veicolo": "AB123CD",
+    "varco": 1
+    //"data_ora": "2024-07-15T13:01:04.115Z"
+}
+```
+> `data_ora` è commentato poiché opzionale; se non inserito verrà preso in considerazione il valore *datetime* attuale. Inoltre, se il transito inserito rispetta i criteri per la generazione della multa (orario e giorno chiusura, veicolo non esente), prevede in automatico la generazione della multa associata al transito.
+
+*Risposta:*
+
+```bash
+{
+    "data_ora": "2024-07-16T14:28:36.452Z",
+    "id_transito": 5,
+    "veicolo": "AB123CD",
+    "varco": 1
+}
+```
+
+**Update Transito**
+
+
+*Rotta:*
+
+```bash
+PUT /transito/5
+```
+
+*Richiesta:*
+
+```bash
+Authorization: Bearer {authToken}
+```
+Nel body:
+
+```bash
+{
+    "veicolo": "IJ789KL",
+    "varco": 1,
+    "data_ora": "2024-07-15T12:01:04.115Z"
+}
+```
+
+*Risposta:*
+
+```bash
+{
+    "id_transito": 5,
+    "veicolo": {
+        "targa": "IJ789KL",
+        "esente": true,
+        "tipo_veicolo": 2,
+        "utente": 2
+    },
+    "varco": {
+        "id_varco": 1,
+        "nome": "Varco 1",
+        "via": "Via Roma",
+        "zona_ztl": 1,
+        "orario_chiusura": 1
+    },
+    "data_ora": "2024-07-15T12:01:04.115Z"
+}
+```
+
+**Delete Transito**
+
+
+*Rotta:*
+
+```bash
+DELETE transito/5
+```
+
+*Richiesta:*
+
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+
+```bash
+```
+
+### Multe
+
+**Get Multe By Utente**
+
+*Rotta:*
+
+```bash
+GET /multe
+```
+
+*Richiesta:*
+
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+
+```bash
+[
+    {
+        "id_multa": 1,
+        "transito": {
+            "id_transito": 1,
+            "veicolo": "AB123CD",
+            "varco": 1,
+            "data_ora": "2024-07-07T08:30:00.000Z"
+        },
+        "data_multa": "2024-07-07T10:00:00.000Z",
+        "pagata": false,
+        "importo_token": "5.00",
+        "uuid_pagamento": "550e8400-e29b-41d4-a716-446655440000"
+    }
+]
+```
+
+**Get Multe By UUID**
+
+
+*Rotta:*
+
+```bash
+GET multe/550e8400-e29b-41d4-a716-446655440000
+```
+
+*Richiesta:*
+
+```bash
+Authorization: Bearer {authToken}
+```
+
+*Risposta:*
+
+```bash
+![](example_bollettino.png)
+```
+
+### Pagamenti
+
+**Pay Multa**
+
+
+*Rotta:*
+
+```bash
+```
+
+*Richiesta:*
+
+```bash
+```
+
+*Risposta:*
+
+```bash
+```
+
+**Recharge Tokens**
+
+
+*Rotta:*
+
+```bash
+```
+
+*Richiesta:*
+
+```bash
+```
+
+*Risposta:*
+
+```bash
+```
+
+**Check Token**
+
+
+*Rotta:*
+
+```bash
+```
+
+*Richiesta:*
+
+```bash
+```
+
+*Risposta:*
+
+```bash
+```
 
 ## ⚙️ Set-up
 
