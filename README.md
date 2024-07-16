@@ -127,16 +127,20 @@ graph TD
     Operatore ---|Gestione| GestioneTransiti(fa:fa-folder-open Gestione_Transiti)
     Operatore ---|Eliminazione| EliminazioneTransiti(fa:fa-folder-open Eliminazione_e_Update_Transiti)
 
-    GestioneTransiti ----|Include| InserimentoTransiti(fa:fa-folder-open Inserimento_Transiti)
-    GestioneTransiti ---|Include| EliminazioneTransiti
+    GestioneTransiti ---|Include| InserimentoTransiti(fa:fa-folder-open Inserimento_Transiti)
+    GestioneTransiti ---|Include| EliminazioneTransiti(fa:fa-folder-open Eliminazione_Transiti)
     GestioneTransiti ---|Include| CreazioneAutomaticaMulta(fa:fa-folder-open Creazione_Automatica_Multa)
-    Varco(fa:fa-road Varco) ---|Inserimento| InserimentoTransiti
-
-    Automobilista(fa:fa-user-lock Automobilista) ---|Verifica| VerificaMulte(fa:fa-folder-open Verifica_Multe)
-    Automobilista ---|Scarica| ScaricaBollettino(fa:fa-folder-open Scarica_Bollettino)
-    Automobilista ---|Pagamento| PagamentoMulta(fa:fa-folder-open Pagamento_Multa)
 
     VerificaMulte ----|Controlla| CreazioneAutomaticaMulta
+    Varco(fa:fa-road Varco) ---|Inserimento| InserimentoTransiti
+
+    Automobilista(fa:fa-user-lock Automobilista) ---|Gestione| GestioneContabilita(fa:fa-folder-open Gestione_Contabilita)
+
+    GestioneContabilita(fa:fa-folder-open Gestione_Contabilita) ---|Include| VerificaMulte(fa:fa-folder-open Verifica_Multe)
+    GestioneContabilita ---|Include| PagamentoMulta(fa:fa-folder-open Pagamento_Multa)
+
+    Admin(fa:fa-user-lock Admin) ---|Ricarica| TokenRimanenti(fa:fa-folder-open Token_Rimanenti)
+    Automobilista ----|Controlla| TokenRimanenti
 ```
 
 ### 🗂️ Diagramma E-R
@@ -144,6 +148,8 @@ graph TD
 Il RDBMS scelto per la realizzazione del sistema è **PostgreSQL**, un database open source che gode di una solida reputazione per affidabilità, flessibilità e scalabilità. In particolare, in un contesto di backend puro come quello del sistema sviluppato, in cui è necessaria l'autenticazione dei dati e la velocità di lettura/scrittura, PostgreSQL è uno dei sistemi di basi di dati più efficiente e ottimizzato. 
 
 Di seguito, viene mostrato il diagramma "Entity-Relationship"(E-R) di rappresentazione concettuale e grafica delle classi all'interno del database utilizzato.
+
+La realizzazione del progetto si concentra prevalentemente sulla gestione dei transiti che avvengono attraverso i varci delle ZTL, per questo motivo, per non appesantire ulteriormente la gestione del DB, si è deciso di non gestire lo storico degli orari di apertura e chiusura dei varchi delle ZTL.
 
 ```mermaid
 erDiagram
@@ -2024,6 +2030,25 @@ Authorization: Bearer {authToken}
 ## ⚙️ Set-up
 
 ## 📘 Scelte implementative da sottolineare
+
+Ai fini della realizzazione del presente progetto sono state effettuate alcune scelte implementative, volte ad agevolare il suo sviluppo a livello didattico. 
+
+Un veicolo potrebbe entrare in una ZTL durante un periodo di apertura, per poi uscire in un momento in cui questa sia chiusa. A tal fine, è utile chiarire che la gestione di questi casi esula dallo scopo del presente progetto. Pertanto, il `transito` che viene registrato è da intendersi come il solo transito in ingresso in una ZTL attraverso un varco.
+
+Un’ulteriore scelta riguarda la gestione del pagamento delle multe. Sebbene ogni utente di tipo `automobilista` possa visualizzare solo ed esclusivamente le multe dei veicoli a esso intestati, può effettuare il pagamento di qualsiasi multa, purché sia in possesso dell’UUID della stessa.
+
+Come già sottolineato nel capitolo relativo all’Architettura dei servizi, l’intero sistema è stato implementato all’insegna della modularità, resa possibile dallo sviluppo di due backend completamente indipendenti. Per permettere l’integrazione e la comunicazione tra questi due servizi, è stato utilizzato **Axios**, una libreria basata su Promises per JavaScript, utilizzata principalmente per eseguire richieste HTTP asincrone verso un endpoint. È particolarmente utile per le applicazioni web e mobile per la sua semplicità e capacità di gestire le richieste in modo efficiente.
+
+Nel contesto di questo progetto, Axios è stato utilizzato per effettuare chiamate HTTP tra i due backend, garantendo una comunicazione fluida e modulare. Ad esempio, quando un utente tenta di pagare una multa, il backend responsabile della gestione delle transazioni invia una richiesta HTTP al backend che gestisce le informazioni sulle multe, utilizzando Axios. Questo approccio permette di mantenere i servizi indipendenti e modulari, facilitando la manutenzione e l’espansione del sistema.
+
+Data la natura del progetto che non prevede lo sviluppo di un frontend, le rotte di cui sopra sono state verificate in Postman. Ciascuna rotta prevede l'autenticazione e l'autorizzazione dell'utente, a seconda del ruolo che esso ricopre. Per agevolare le richieste è stato utilizzato in Postman un piccolo script che permettesse di settare in automatico una variabile di ambiente `authToken` contenente il token di autenticazione dell'utente.
+```javascript
+pm.test("Save token", function () {
+    var jsonData = pm.response.json();
+    pm.environment.set("authToken", jsonData.token);
+});
+```
+Questo script di Postman salva un token di autenticazione dalla risposta di una richiesta HTTP in una variabile di ambiente, rendendolo disponibile per successive richieste. È un esempio semplice ma potente di come automatizzare la gestione dei token di autenticazione nei test delle API, migliorando l’efficienza e riducendo la possibilità di errori manuali.
 
 ## 🛠️ Strumenti utilizzati
 
