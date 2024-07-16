@@ -1918,14 +1918,17 @@ Authorization: Bearer {authToken}
 
 *Risposta:*
 
+Se il bollettino è in stato `Non pagato`:
+
 ![](https://github.com/Arianna6400/Adv_Prog/blob/master/images/example_bollettino.png)
 
-> Se il bollettino ha lo stato pagamento aggiornato a `Pagato`, il colore del bollettino cambia in verde.
+Se il bollettino è in stato `Pagato`:
+
+![](https://github.com/Arianna6400/Adv_Prog/blob/master/images/example_bollettino_pagato.png)
 
 ### Pagamenti
 
 **Pay Multa**
-
 
 *Rotta:*
 
@@ -2004,7 +2007,6 @@ Nel body:
 ```
 
 **Check Token**
-
 
 *Rotta:*
 
