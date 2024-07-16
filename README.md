@@ -2052,6 +2052,27 @@ Questo script di Postman salva un token di autenticazione dalla risposta di una 
 
 ## 🛠️ Strumenti utilizzati
 
+Per lo sviluppo dell'applicazione presentata sono stati utilizzati i seguenti strumenti di lavoro:
+
+* [Typescript](https://www.typescriptlang.org/) come linguaggio di programmazione principale;
+
+* [Express.js](https://expressjs.com/) come framework per applicazioni Web per Node.js;
+
+* [Node.js](https://nodejs.org/en) come sistema per la gestione di moduli e pacchetti;
+
+* [Sequelize](https://sequelize.org/) per l'Object Relational Mapping (ORM);
+
+* [Docker](https://www.docker.com/) come sistema di containerizzazione per il deployment dell'applicazione;
+
+* [PostgreSQL](https://www.postgresql.org/) come database;
+
+* [Postman](https://www.postman.com/) per il testing delle rotte API;
+
+* [GitHub](https://github.com/) come piattaforma di condivisione e versioning del codice;
+
+* [Visual Studio Code](https://code.visualstudio.com/) come editor di codice.
+
+
 [![](https://skillicons.dev/icons?i=ts,express,nodejs,sequelize,docker,postgres,postman,github,vscode)](https://skillicons.dev)
 
 ## 👥 Autori 
