@@ -1,6 +1,8 @@
 # Progetto Programmazione Avanzata A.A. 23/24
 
-![](https://github.com/Arianna6400/Adv_Prog/blob/master/logo.png)
+<div align="center">
+    <align src="https://github.com/Arianna6400/Adv_Prog/blob/master/logo.png">
+</div>
 
 ![Typescript](https://img.shields.io/badge/Typescript-007ACC?style=for-the-badge&logo=typescript&logoColor=white) ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)![Sequelize](https://img.shields.io/badge/Sequelize-52B0E7?style=for-the-badge&logo=sequelize&logoColor=white)![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)![VSCode](https://img.shields.io/badge/VSCode-0078D4?style=for-the-badge&logo=visualstudiocode&logoColor=white)
 
@@ -13,7 +15,7 @@
    - [Diagramma E-R](#-diagramma-e-r)
    - [Pattern utilizzati](#-pattern-utilizzati)
    - [Diagrammi delle sequenze](#-diagrammi-delle-sequenze)
-- [API](#-api)
+- [API Routes](#-api-routes)
 - [Set-up](#-set-up)
 - [Scelte implementative da sottolineare](#-scelte-implementative-da-sottolineare)
 - [Strumenti utilizzati](#-strumenti-utilizzati)
@@ -929,7 +931,32 @@ sequenceDiagram
     end
 ```
 
-## 🔌 API
+## 🔌 API Routes
+
+All'interno del sistema sono state predisposte le rotte mostrate in tabella; ogni rotta prevede il processo di autenticazione tramite JWT e, oltretutto, sono previste autorizzazioni per ruolo diverse a seconda della rotta.
+
+
+| Tipo | Rotta | Autenticazione | Autorizzazione | 
+|-----------|--------|-----------|--------|
+| `POST` | /login | ✔️ |    |
+| `GET`  | /varcoZtl/:id?/:transiti? | ✔️ | Operatore |
+| `POST`  | /varcoZtl | ✔️ | Operatore |
+| `PUT`  | /varcoZtl/:id | ✔️ | Operatore |
+| `DELETE`  | /varcoZtl/:id | ✔️ | Operatore |
+| `GET`  | /zonaZtl/:id?/:transiti? | ✔️ | Operatore |
+| `POST`  | /zonaZtl | ✔️ | Operatore |
+| `PUT`  | /zonaZtl/:id | ✔️ | Operatore |
+| `DELETE`  | /zonaZtl/:id | ✔️ | Operatore |
+| `GET`  | /transito/:id? | ✔️ | Operatore |
+| `POST`  | /transito | ✔️ | Operatore, Varco |
+| `PUT`  | /transito/:id | ✔️ | Operatore |
+| `DELETE`  | /transito/:id | ✔️ | Operatore |
+| `GET`  | /multe/:uuid? | ✔️ | Automobilista |
+| `GET`  | /tokenresidui | ✔️ | Automobilista |
+| `POST`  | /pagamulta | ✔️ | Automobilista |
+| `POST`  | /ricaricatoken/:id | ✔️ | Admin |
+
+> **Nota**: Sono state implementate delle rotte aggiuntive all'interno del sistema, per permettere di visualizzare, aggiungere, aggiornare o cancellare informazioni ulteriori direttamente su Postman. Le CRUD aggiuntive riguardano le classi `veicolo`, `tipoVeicolo`, `orarioChiusura`, `utente`. Le suddette rotte sono state implementate solamente per scopi di completezza e di possibilità di personalizzazione in fase di test. 
 
 ## ⚙️ Set-up
 
