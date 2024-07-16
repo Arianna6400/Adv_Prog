@@ -88,7 +88,7 @@ export const deleteVarcoZtl = async (req: Request, res: Response, next: NextFunc
         // Cancella il varco ZTL esistente usando l'ID fornito
         const deleted = await varcoZtlRepository.deleteVarcoZtl(id);
         if (deleted) {
-            res.status(StatusCodes.NO_CONTENT).send();
+            res.status(StatusCodes.OK).json({ message: `Varco ${id} eliminato con successo` });
         } else {
             return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Varco ZTL non trovato'));
         }

@@ -96,7 +96,7 @@ export const deleteZonaZtl = async (req: Request, res: Response, next: NextFunct
             const deleted = await zonaZtlRepository.deleteZonaZtl(id);
             console.log
             if (deleted) {
-                res.status(StatusCodes.NO_CONTENT).json({ message: `Zona ${id} eliminata con successo` });
+                res.status(StatusCodes.OK).json({ message: `Zona ${id} eliminata con successo` });
             }else{
                 return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
             }

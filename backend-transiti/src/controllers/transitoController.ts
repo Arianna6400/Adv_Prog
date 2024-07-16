@@ -71,7 +71,7 @@ export const deleteTransito = async (req: Request, res: Response, next: NextFunc
         // Cancella il transito esistente usando l'ID fornito
         const deleted = await transitoRepository.deleteTransito(id);
         if (deleted) {
-            res.status(StatusCodes.NO_CONTENT).send();
+            res.status(StatusCodes.OK).json({ message: `transito ${id} eliminato con successo` });
         } else {
             return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Transito non trovato'));
         }
