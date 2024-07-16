@@ -2012,7 +2012,7 @@ Authorization: Bearer {authToken}
 
 *Risposta:*
 
-```bash
+```json
 {
     "utente": "arianna.agresta@gmail.com",
     "token_rimanenti": 15
