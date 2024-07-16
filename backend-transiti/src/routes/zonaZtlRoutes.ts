@@ -24,7 +24,7 @@ router.use(authMiddleware);
  * Definizione delle rotte con relative validazioni ed autorizzazioni
  */
 // Rotta combinata per gestire tutte le richieste alle zone ZTL
-router.get('/zonaZtl/:id?/:transiti?', authorize(['operatore']), validateHandleZonaZtlRequests, handleZonaZtlRequests);
+router.get('/zonaZtl/:id?/:transiti?', authorize(['operatore']), validateHandleZonaZtlRequests, handleZonaZtlRequests); // Rotta combinata per gestire tutte le richieste alle zone ZTL
 router.post('/zonaZtl',authorize(['operatore']), validateCreateZonaZtl, createZonaZtl); // rotta per creare una zona ZTL
 router.put('/zonaZtl/:id',authorize(['operatore']), validateUpdateZonaZtl, updateZonaZtl); // rotta per modificare le informazioni di una zona ZTL
 router.delete('/zonaZtl/:id',authorize(['operatore']), validateDeleteZonaZtl, deleteZonaZtl); // rotta per eliminare una zona ZTL
