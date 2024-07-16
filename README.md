@@ -227,7 +227,7 @@ Per la gestione delle risorse condivise, come la connessione al DB, questo patte
 
 ### 🔄 Diagrammi delle sequenze
 
-I diagrammi delle sequenze permettono di illustrare la sequenza di messaggi di richiesta e risposta tra un gruppo di oggetti che interagiscono tra di loro. Essi offrono una rappresentazione utile alla comprensione della comunicazione tra le varie entità, perciò sono particolarmente consigliati per mostrare il processo di interazione in un contesto basato su rotte API. Poiché il sistema sviluppato presenta numerose rotte relative alle principali operazioni CRUD (Create, Read, Update, Delete), è stato deciso di mostrare solamente i diagrammi delle rotte più significative e complesse per entrambi i backend sviluppati.
+I diagrammi delle sequenze permettono di illustrare la sequenza di messaggi di richiesta e risposta tra un gruppo di oggetti che interagiscono tra di loro. Essi offrono una rappresentazione utile alla comprensione della comunicazione tra le varie entità, perciò sono particolarmente consigliati per mostrare il processo di interazione in un contesto basato su rotte API. Poiché il sistema sviluppato presenta numerose rotte relative alle principali operazioni CRUD (Create, Read, Update, Delete), è stato deciso di mostrare solamente i diagrammi delle rotte più significative e complesse per entrambi i backend sviluppati. In particolare, vengono mostrate rotte di tipo GET e/o POST, più l'aggiunta di una DELETE; le rotte PUT per l'Update non sono state inserite, essendo tutte molto simili tra loro.
 
 🚌 **Backend-Transiti**
 
@@ -270,7 +270,7 @@ sequenceDiagram
 
 * __GET /varchi/:id/transiti__
 
-L'utente invia una richiesta con un token all'`authMiddleware`, il quale verifica il token e il ruolo dell'utente. Se il token è valido e l'utente è autorizzato, Auth passa il controllo al Controller, il quale invia una richiesta al Repository per ottenere il varco ZTL e i suoi transiti, fornendo l'ID del varco. Il repository contatta il DAO del varco ZTL per ottenere il varco ZTL per ID. Se il varco viene trovato, il DAO lo restituisce al Repository; in caso contrario, restituisce *null*, e il Repository comunica al Controller che il varco ZTL non è stato trovato, il quale a sua volta informa l'utente.
+Questa rotta rappresenta una chiamata di tipo GET, relativa alla stampa delle informazioni relative ai varchi ZTL. L'utente invia una richiesta con un token all'`authMiddleware`, il quale verifica il token e il ruolo dell'utente. Se il token è valido e l'utente è autorizzato, Auth passa il controllo al Controller, il quale invia una richiesta al Repository per ottenere il varco ZTL e i suoi transiti, fornendo l'ID del varco. Il repository contatta il DAO del varco ZTL per ottenere il varco ZTL per ID. Se il varco viene trovato, il DAO lo restituisce al Repository; in caso contrario, restituisce *null*, e il Repository comunica al Controller che il varco ZTL non è stato trovato, il quale a sua volta informa l'utente.
 
 Successivamente, il Repository invia una richiesta al DAO della zona ZTL per ottenere la zona ZTL per ID del varco ZTL. Se la zona viene trovata, il DAO la restituisce al Repository; se non viene trovata, restituisce *null*, e il Repository comunica al Controller che la zona ZTL non è stata trovata, il quale informa l'utente. Lo stesso processo viene ripetuto per ottenere l'orario di chiusura tramite il DAO dell'orario di chiusura. Se l'orario di chiusura viene trovato, viene restituito al Repository; se non viene trovato, viene restituito *null*, e il Repository comunica al Controller che l'orario di chiusura non è stato trovato, il quale informa l'utente.
 
@@ -365,6 +365,16 @@ sequenceDiagram
 
 * __POST /varcoZtl__
 
+Nella seguente rotta di tipo POST, relativa alla creazione di un nuovo varco ZTL, l'utente invia una richiesta con il proprio token al middleware di autenticazione, che ne verifica la validità e il ruolo dell'utente stesso. Se l'utente è autorizzato, `authMiddleware` passa il controllo al Controller, che richiede al Repository di creare un nuovo varco ZTL utilizzando i dati forniti nella richiesta.
+
+Il Repository ottiene un'istanza del database e avvia una transazione. Successivamente, il repository chiama il DAO del varco ZTL per creare un nuovo varco ZTL con i dati forniti. Se il varco viene creato con successo, il DAO restituisce il nuovo varco al Repository. Se la creazione del varco fallisce, il Repository effettua un *rollback* della transazione, comunica l'errore al Controller, che a sua volta genera un errore e informa l'utente.
+
+Dopo la creazione del varco, il Repository chiama il DAO dell'utente per creare un nuovo utente associato al varco. Se l'utente viene creato con successo, il DAO restituisce il nuovo utente al Repository. Se la creazione dell'utente fallisce, il Repository effettua un *rollback* della transazione, comunica l'errore al Controller, che genera un errore e informa l'utente.
+
+Infine, il Repository chiama il DAO dell'associazione `is_varco` per creare l'associazione tra il varco e l'utente. Se l'associazione viene creata con successo, il DAO restituisce l'associazione al Repository, che effettua il *commit* della transazione e comunica al Controller che il varco è stato creato con successo. Il Controller informa quindi l'utente del successo. Se la creazione dell'associazione fallisce, il Repository effettua un *rollback* della transazione, comunica l'errore al controller, che genera un errore e informa l'utente.
+
+Se l'utente non è autorizzato, il middleware comunica il fallimento dell'autorizzazione al Controller, che genera un errore e informa l'utente che l'accesso non è autorizzato.
+
 ```mermaid
 sequenceDiagram
     participant U as Utente
@@ -440,6 +450,16 @@ sequenceDiagram
 
 * __DELETE /zonaZtl/:id__   
 
+In questa rotta di tipo DELETE, l'utente invia una richiesta con un token al middleware di autenticazione, che verifica la validità del token e il ruolo dell'utente. Se l'utente è autorizzato, il middleware passa il controllo al Controller, il quale richiede al Repository di eliminare una zona ZTL specificata dall'ID.
+
+Il Repository interroga il DAO del varco ZTL per verificare se ci sono varchi associati alla zona ZTL; se vengono identificati dei varchi associati, il DAO lo comunica al Repository, che a sua volta informa il controller dell'impossibilità di eliminare la zona con varchi associati. Il Controller genera un errore tramite l'`errorHandler` e l'utente viene informato dell'impossibilità di eliminare la zona.
+
+Se non vengono trovati varchi associati, il DAO lo comunica al Repository. A questo punto, il Repository chiama il DAO della zona ZTL per eliminare la zona ZTL specificata. Se la zona viene eliminata con successo, il DAO lo comunica al Repository, che a sua volta informa il Controller del successo dell'operazione. Quest'ultimo informa quindi l'utente che la zona ZTL è stata eliminata con successo.
+
+Se la zona non viene trovata, il DAO lo comunica al Repository, che informa il Controller dell'errore, il quale genera un errore tramite il gestore degli errori e l'utente viene informato che la zona ZTL non è stata trovata.
+
+Se l'utente non è autorizzato, `authMiddleware` comunica il fallimento dell'autorizzazione al Controller, che genera un errore tramite il gestore degli errori e informa l'utente che l'accesso non è autorizzato.
+
 ```mermaid
 sequenceDiagram
     participant U as Utente
@@ -491,6 +511,16 @@ sequenceDiagram
 ```
 
 * __GET /transiti/:id__
+
+La seguente rotta GET riguarda la stampa delle informazioni associate ad un transito con un determinato ID, inserito dall'utente steesso. L'utente invia una richiesta con un token al middleware di autenticazione, che verifica la validità del token e il ruolo dell'utente. Se l'utente è autorizzato, passa il controllo al Controller, che richiede al Repository dei transiti di ottenere un transito specificato dall'ID.
+
+Il Repository interroga il DAO del transito per ottenere il transito corrispondente all'ID fornito. Se il transito viene trovato, il DAO lo restituisce al Repository, che a sua volta lo comunica al Controller. Se il transito non viene trovato, il DAO restituisce *null* al Repository, che informa il Controller dell'errore. Il Controller genera un errore tramite il gestore degli errori e l'utente viene informato che il transito non è stato trovato.
+
+Successivamente, il Repository interroga il DAO del veicolo per ottenere i dettagli del veicolo associato al transito. Se il veicolo viene trovato, il DAO lo restituisce al Repository. Se il veicolo non viene trovato, il DAO restituisce *null* al Repository, che informa il Controller dell'errore. Il Controller genera un errore tramite il gestore degli errori e l'utente viene informato che il veicolo non è stato trovato.
+
+Il Repository interroga poi il DAO del varco ZTL per ottenere i dettagli del varco associato al transito. Se il varco viene trovato, il DAO lo restituisce al Repository; se non viene trovato, il DAO restituisce *null* al Repository, che informa il Controller dell'errore. Il Controller genera un errore tramite il gestore degli errori e l'utente viene informato che il varco ZTL non è stato trovato.
+
+Se tutti i dettagli del transito, del veicolo e del varco ZTL vengono trovati, il Repository restituisce queste informazioni al Controller, che a sua volta le comunica all'utente, fornendo i dettagli completi del transito. Se l'utente non è autorizzato, il middleware comunica il fallimento dell'autorizzazione al Controller, che genera un errore tramite il gestore degli errori e informa l'utente che l'accesso non è autorizzato.
 
 ```mermaid
 sequenceDiagram
@@ -557,6 +587,18 @@ sequenceDiagram
 ```
 
 * __POST /transiti__
+
+Questa chiamata di tipo POST si riferisce all'inserimento di un nuovo transito. L'utente invia una richiesta con un token all'`authMiddleware`, che verifica la validità del token e il ruolo dell'utente. Se l'utente è autorizzato, passa il controllo al Controller, che richiede al Repository dei transiti di creare un nuovo transito utilizzando i dati forniti nella richiesta.
+
+Il Repository ottiene un'istanza del database e avvia una transazione. Successivamente, il Repository chiama il DAO del transito per creare un nuovo transito con i dati forniti. Il DAO crea il nuovo transito e lo restituisce al Repository.
+
+Il Repository quindi interroga il DAO del veicolo per ottenere i dettagli del veicolo associato al transito. Se il veicolo viene trovato, il DAO lo restituisce al Repository. Se il veicolo non viene trovato, il DAO restituisce *null* al Repository, che effettua un *rollback* della transazione e informa il Controller dell'errore. Il Controller genera un errore tramite il gestore degli errori e l'utente viene informato dell'errore nella creazione del transito.
+
+Successivamente, il Repository interroga il DAO del varco ZTL per ottenere i dettagli del varco associato al transito. Se il varco viene trovato, il DAO lo restituisce al Repository. Se il varco non viene trovato, il DAO restituisce *null* al Repository, che effettua un *rollback* della transazione e informa il Controller dell'errore. Il Controller genera un errore tramite il gestore degli errori e l'utente viene informato dell'errore nella creazione del transito.
+
+Se tutti i dettagli del transito, del veicolo e del varco ZTL vengono trovati, il Repository verifica se è necessario calcolare una multa per il nuovo transito. Se è necessario, il Repository chiama il DAO della multa per calcolare e creare la multa. Il DAO calcola e crea la multa, restituendola al Repository. Il Repository effettua il *commit* della transazione e comunica al Controller che il nuovo transito e la multa sono stati creati con successo. Il Controller informa quindi l'utente del successo dell'operazione. Invece, se non è necessario calcolare una multa, il Repository effettua il *commit* della transazione e comunica al Controller che il nuovo transito è stato creato con successo. Il Controller informa quindi l'utente del successo dell'operazione.
+
+Se l'utente non è autorizzato, il middleware di autenticazione comunica il fallimento dell'autorizzazione al Controller, che genera un errore tramite il gestore degli errori e informa l'utente che l'accesso non è autorizzato.
 
 ```mermaid
 sequenceDiagram
@@ -637,6 +679,18 @@ sequenceDiagram
 
 * __GET /multe/bollettino/:uuid__
 
+La seguente chiamata GET si riferisce alla stampa di un bollettino di pagamento in formato PDF, contenente le informazioni associate ad una multa con un dato UUID. L'utente invia una richiesta con un token al middleware di autenticazione, che verifica la validità del token e il ruolo dell'utente. Se l'utente è autorizzato, viene passato il controllo al Controller, il quale richiede al Repository delle multe di ottenere i dettagli di una multa specificata dall'UUID e dall'ID dell'utente.
+
+Il Repository interroga il DAO della multa per ottenere la multa corrispondente all'UUID fornito. Se la multa viene trovata, il DAO la restituisce al Repository. Se la multa non viene trovata, il DAO restituisce *null* al Repository, che informa il Controller dell'errore. Il Controller genera un errore tramite l'`errorHandler` e l'utente viene informato che la multa non è stata trovata.
+
+Successivamente, il Repository interroga il DAO del transito per ottenere i dettagli del transito associato alla multa. Se il transito viene trovato, il DAO lo restituisce al Repository. Se il transito non viene trovato, il DAO restituisce *null* al Repository, che informa il Controller dell'errore. Il Controller genera un errore tramite il gestore degli errori e l'utente viene informato che il transito non è stato trovato.
+
+Il Repository interroga poi il DAO del veicolo per ottenere i dettagli del veicolo associato al transito. Se il veicolo viene trovato, il DAO lo restituisce al Repository. Se il veicolo non viene trovato, il DAO restituisce *null* al Repository, che informa il controller dell'errore. Il Controller genera un errore tramite il gestore degli errori e l'utente viene informato che il veicolo non è stato trovato.
+
+Se tutti i dettagli della multa, del transito e del veicolo vengono trovati, il Repository restituisce queste informazioni al Controller. Il Controller richiede quindi la generazione di un codice QR con una stringa specifica. Una volta generato, il codice QR viene restituito al Controller il quale, successivamente, chiede la creazione di un documento PDF contenente la multa, il transito, il veicolo e il codice QR. Il PDF viene creato e restituito all'utente come bollettino PDF.
+
+Se l'utente non è autorizzato, il middleware comunica il fallimento dell'autorizzazione al Controller, che genera un errore tramite il gestore degli errori e informa l'utente che l'accesso non è autorizzato.
+
 ```mermaid
 sequenceDiagram
     participant U as Utente
@@ -709,6 +763,20 @@ sequenceDiagram
 💳 **Backend-Pagamenti**
 
 * __POST /pagamulta__
+
+Questa chiamata di tipo POST si riferisce all'operazione di pagamento di una multa attraverso i crediti di un utente. Quest'ultimo invia una richiesta con token al middleware di autenticazione, che ne verifica la validità e il ruolo dell'utente. Se l'utente è autorizzato, passa il controllo al controller che richiede un'istanza del database e avvia una transazione.
+
+Il Controller interroga il DAO delle multe per ottenere la multa corrispondente all'UUID fornito, utilizzando la transazione avviata. Se la multa viene trovata, il DAO la restituisce al controller. Se la multa non viene trovata, il DAO restituisce *null* al controller, che effettua un *rollback* della transazione, genera un errore tramite il gestore degli errori e informa l'utente che la multa non è stata trovata.
+
+Se la multa viene trovata, il Controller verifica se la multa è già stata pagata. In tal caso, il Controller effettua un *rollback* della transazione, genera un errore tramite il gestore degli errori e informa l'utente che la multa è già stata pagata.
+
+Se la multa non è stata pagata, il Controller interroga il DAO degli utenti per ottenere i dettagli dell'utente associato all'ID fornito, utilizzando la transazione avviata. Se l'utente viene trovato, il DAO lo restituisce al Controller. Se l'utente non viene trovato, il DAO restituisce *null* al Controller, che effettua un *rollback* della transazione, genera un errore tramite il gestore degli errori e informa l'utente che l'utente non è stato trovato.
+
+Se l'utente viene trovato, il Controller verifica se esso ha un numero sufficiente di crediti per pagare la multa. Se l'utente ha credito sufficiente, il Controller aggiorna i crediti dell'utente e segna la multa come pagata. Successivamente, il Controller effettua il *commit* della transazione e informa l'utente che il pagamento è stato effettuato con successo.
+
+Se l'utente non ha credito sufficiente, il Controller effettua un *rollback* della transazione, genera un errore tramite il gestore degli errori e informa l'utente che i crediti sono insufficienti.
+
+Se l'utente non è autorizzato, l'`authMiddleware` comunica il fallimento dell'autorizzazione al Controller, che genera un errore tramite il gestore degli errori e informa l'utente che l'accesso non è autorizzato.
 
 ```mermaid
 sequenceDiagram
@@ -784,6 +852,14 @@ sequenceDiagram
 
 * __POST /ricaricatoken/:id__
 
+Questa rotta POST si riferisce al processo di ricarica dei crediti di un certo utente, dato il suo ID. L'utente invia una richiesta con un token al middleware di autenticazione, che verifica la validità del token e il ruolo dell'utente. Se l'utente è autorizzato, viene passato il controllo al Controller, che richiede al DAO degli utenti di ricaricare i crediti per l'utente specificato dall'ID, utilizzando la quantità di token fornita nella richiesta.
+
+Il DAO degli utenti cerca l'utente corrispondente all'ID fornito. Se l'utente viene trovato, il DAO aggiorna i token dell'utente e restituisce l'utente aggiornato al Controller. Il Controller informa quindi l'utente che i crediti sono stati ricaricati con successo.
+
+Se l'utente non viene trovato, il DAO restituisce *null* al Controller, che genera un errore tramite l'`errorHandler` e informa che l'utente non è stato trovato.
+
+Se l'utente non è autorizzato, il middleware comunica il fallimento dell'autorizzazione al Controller, che genera un errore tramite il gestore degli errori e informa l'utente che l'accesso non è autorizzato.
+
 ```mermaid
 sequenceDiagram
     participant U as Utente
@@ -817,6 +893,8 @@ sequenceDiagram
 ## 🔌 API
 
 ## ⚙️ Set-up
+
+## 📘 Scelte implementative da sottolineare
 
 ## 🛠️ Strumenti utilizzati
 
