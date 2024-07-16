@@ -63,7 +63,43 @@ Il diagramma rappresenta l'intera architettura del sistema sviluppato. All'inter
 
 Il container Transiti ospita un servizio chiamato "**backend-transiti**", accessibile all'indirizzo `transiti:3000`, mentre il container Pagamenti contiene il servizio "**backend-pagamenti**", accessibile all'indirizzo `pagamenti:3001`. Il container del DB, invece, contiene un database **PostgreSQL** accessibile all'indirizzo `db:5432`.
 
-L'utente finale, rappresentato da un elemento separato nel diagramma, interagisce con il sistema inviando chiamate API sia al servizio backend-transiti sia al servizio backend-pagamenti. Entrambi questi servizi backend dipendono dal database PostgreSQL, il che significa che per funzionare correttamente devono poter accedere ai dati memorizzati in esso. Questa struttura permette una chiara separazione dei servizi e una gestione centralizzata dei dati tramite il database PostgreSQL.
+L'utente finale, rappresentato da un elemento separato nel diagramma, interagisce con il sistema inviando chiamate API alla rete backend. Entrambi questi i servizi introdotti dipendono dal database PostgreSQL, il che significa che per funzionare correttamente devono poter accedere ai dati memorizzati in esso. Questa struttura permette una chiara separazione dei servizi e una gestione centralizzata dei dati tramite il database PostgreSQL.
+
+L'architettura dei servizi si riflette sulla struttura stessa dell'intero progetto. Le directory, infatti, sono organizzate come di seguito:
+
+```plaintext
+project
+├── backend-pagamenti
+│   ├── src
+│   │   ├── controllers
+│   │   ├── dao
+│   │   ├── middleware
+│   │   ├── models
+│   │   ├── routes
+│   │   ├── utils
+│   │   └── app.ts
+│   │   └── server.ts
+│   ├── Dockerfile
+│   ├── package.json
+│   └── tsconfig.json
+├── backend-transiti
+│   ├── src
+│   │   ├── controllers
+│   │   ├── dao
+│   │   ├── middleware
+│   │   ├── models
+│   │   ├── repositories
+│   │   ├── routes
+│   │   ├── utils
+│   │   └── app.ts
+│   │   └── server.ts
+│   ├── Dockerfile
+│   ├── package.json
+│   └── tsconfig.json
+├── database
+│   ├── init.sql
+└── docker-compose.yml
+```
 
 ### 📊 Diagramma dei casi d'uso
 
