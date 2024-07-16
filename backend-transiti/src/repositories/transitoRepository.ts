@@ -24,23 +24,14 @@ class TransitoRepository {
     public async getAllTransiti(): Promise<any[]> {
         try {
             const transiti = await transitoDao.getAll();
-            const results = await Promise.all(transiti.map(async (transito) => {
-                const veicolo = await veicoloDao.getById(transito.veicolo);
-                const varcoZtl = await varcoZtlDao.getById(transito.varco);
-                return {
-                    ...transito.dataValues,
-                    veicolo: veicolo ? veicolo.dataValues : null,
-                    varco: varcoZtl ? varcoZtl.dataValues : null
-                };
-            }));
-            return results;
+            return await Promise.all(transiti.map(transito => this._enrichTransitoData(transito)));
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile recuperare i transiti');
         }
     }
 
     /**
-     * Recupera un trandito per ID.
+     * Recupera un transito per ID.
      * 
      * @param {number} id L'ID del transito. 
      * @returns {Promise<any | null>} Una Promise che risolve più Promise combinate o null se non trovato.
@@ -51,13 +42,7 @@ class TransitoRepository {
             if (!transito) {
                 return null;
             }
-            const veicolo = await veicoloDao.getById(transito.veicolo);
-            const varcoZtl = await varcoZtlDao.getById(transito.varco);
-            return {
-                ...transito.dataValues,
-                veicolo: veicolo ? veicolo.dataValues : null,
-                varco: varcoZtl ? varcoZtl.dataValues : null
-            };
+            return await this._enrichTransitoData(transito);
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il transito con id ${id}`);
         }
@@ -79,10 +64,10 @@ class TransitoRepository {
             const newTransito = await transitoDao.create(data, { transaction });
 
             // Verifica se è necessario calcolare la multa
-            const shouldCalculateMulta = await this.shouldCalculateMulta(newTransito);
+            const shouldCalculateMulta = await this._shouldCalculateMulta(newTransito);
 
             if (shouldCalculateMulta) {
-                const multa: MultaCreationAttributes = await this.calcolaMulta(newTransito);
+                const multa: MultaCreationAttributes = await this._calcolaMulta(newTransito);
                 await multaDao.create(multa, { transaction }); // Crea la multa nel database all'interno della transazione
             }
 
@@ -111,32 +96,50 @@ class TransitoRepository {
         }
     }
 
-/**
- * Cancella un transito per ID.
- * 
- * @param {number} id L'ID del transito. 
- * @returns {Promise<number>} Una Promise che risolve il numero di righe cancellate.
- */
-public async deleteTransito(id: number): Promise<number> {
-    try {
-        // Verifica l'esistenza del transito
-        const transito = await transitoDao.getById(id);
-        if (!transito) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Transito con id ${id} non trovato`);
-        }
+    /**
+     * Cancella un transito per ID.
+     * 
+     * @param {number} id L'ID del transito. 
+     * @returns {Promise<number>} Una Promise che risolve il numero di righe cancellate.
+     */
+    public async deleteTransito(id: number): Promise<number> {
+        try {
+            // Verifica l'esistenza del transito
+            const transito = await transitoDao.getById(id);
+            if (!transito) {
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Transito con id ${id} non trovato`);
+            }
 
-        // Recupera tutte le multe e verifica se ce n'è una associata al transito
-        const multaAssociata = (await multaDao.getAll()).find(multa => multa.transito === id);
-        if (multaAssociata) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile eliminare il transito con id ${id}, poichè associato ad una multa`);
-        }
+            // Recupera tutte le multe e verifica se ce n'è una associata al transito
+            const multaAssociata = (await multaDao.getAll()).find(multa => multa.transito === id);
+            if (multaAssociata) {
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile eliminare il transito con id ${id}, poichè associato ad una multa`);
+            }
 
-        // Procedi con l'eliminazione del transito
-        return await transitoDao.delete(id);
-    } catch (error) {
-        throw (error);
+            // Procedi con l'eliminazione del transito
+            return await transitoDao.delete(id);
+        } catch (error) {
+            throw (error);
+        }
     }
-}
+
+    // HELPER PRIVATI
+
+    /**
+     * Metodo privato per la stampa delle informazioni arricchite.
+     * 
+     * @param {Transito} transito Il transito per il quale stampare le informazioni.
+     * @returns {Promise<any[]>} Una Promise che risolve più array di Promise.
+     */
+    private async _enrichTransitoData(transito: Transito): Promise<any> {
+        const veicolo = await veicoloDao.getById(transito.veicolo);
+        const varcoZtl = await varcoZtlDao.getById(transito.varco);
+        return {
+            ...transito.dataValues,
+            veicolo: veicolo ? veicolo.dataValues : null,
+            varco: varcoZtl ? varcoZtl.dataValues : null
+        };
+    }
 
     /**
      * Metodo privato per verificare se è necessario calcolare una multa.
@@ -144,7 +147,7 @@ public async deleteTransito(id: number): Promise<number> {
      * @param {Transito} transito Il transito per il quale verificare la necessità di calcolare la multa.
      * @returns {Promise<boolean>} Una Promise che risolve true se la multa deve essere calcolata, false altrimenti.
      */
-    private async shouldCalculateMulta(transito: Transito): Promise<boolean> {
+    private async _shouldCalculateMulta(transito: Transito): Promise<boolean> {
         const veicolo = await veicoloDao.getById(transito.veicolo);
         if (!veicolo) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Veicolo non trovato');
@@ -208,7 +211,7 @@ public async deleteTransito(id: number): Promise<number> {
      * @param {Transito} transito Il transito per il quale calcolare la multa. 
      * @returns {Promise<MultaCreationAttributes>} Una Promise che risolve gli attributi della multa da creare.
      */
-    private async calcolaMulta(transito: Transito): Promise<MultaCreationAttributes> {
+    private async _calcolaMulta(transito: Transito): Promise<MultaCreationAttributes> {
         const veicolo = await veicoloDao.getById(transito.veicolo);
         if (!veicolo) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Veicolo non trovato');

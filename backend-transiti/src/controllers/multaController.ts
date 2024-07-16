@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import PDFDocument from 'pdfkit';
 import QRCode from 'qrcode';
-import { JwtPayload } from 'jsonwebtoken';
 import multaRepository from '../repositories/multaRepository';
 import { StatusCodes } from "http-status-codes";
 

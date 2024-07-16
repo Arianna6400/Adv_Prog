@@ -1,6 +1,8 @@
 import { body, param } from 'express-validator';
 import validateRequest from './validateRequestMiddleware';
-
+/**
+ * Validazioni per rotte aggiuntive
+*/
 // Espressione regolare per validare la targa del veicolo
 const targaRegex = /^[A-Z]{2}[0-9]{3}[A-Z]{2}$/;
 

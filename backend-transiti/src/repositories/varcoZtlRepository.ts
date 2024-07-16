@@ -23,18 +23,7 @@ class VarcoZtlRepository {
     public async getAllVarcoZtl(): Promise<any[]> {
         try {
             const varchiZtl = await varcoZtlDao.getAll();
-            
-            const results = await Promise.all(varchiZtl.map(async (varcoZtl) => {
-                const zonaZtl = await zonaZtlDao.getById(varcoZtl.zona_ztl);
-                const orarioChiusura = await orarioChiusuraDao.getById(varcoZtl.orario_chiusura);
-                
-                return {
-                    ...varcoZtl.dataValues,
-                    zona_ztl: zonaZtl ? zonaZtl.dataValues : null,
-                    orario_chiusura: orarioChiusura ? orarioChiusura.dataValues : null
-                };
-            }));
-            return results;
+            return await Promise.all(varchiZtl.map(varco => this._enrichVarcoZtl(varco)));
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile recuperare i varchi ZTL');
         }
@@ -52,13 +41,7 @@ class VarcoZtlRepository {
             if (!varcoZtl) {
                 throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il varco ZTL con id ${id}`);
             }
-            const zonaZtl = await zonaZtlDao.getById(varcoZtl.zona_ztl);
-            const orarioChiusura = await orarioChiusuraDao.getById(varcoZtl.orario_chiusura);
-            return {
-                ...varcoZtl.dataValues,
-                zona_ztl: zonaZtl ? zonaZtl.dataValues : null,
-                orario_chiusura: orarioChiusura ? orarioChiusura.dataValues : null
-            };
+            return await this._enrichVarcoZtl(varcoZtl);
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il varco ZTL con id ${id}`);
         }
@@ -76,29 +59,9 @@ class VarcoZtlRepository {
             if (!varcoZtl) {
                 throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il varco ZTL con id ${id}`);
             }
-            const zonaZtl = await zonaZtlDao.getById(varcoZtl.zona_ztl);
-            
-            const orarioChiusura = await orarioChiusuraDao.getById(varcoZtl.orario_chiusura);
-
-            const transiti = (await transitoDao.getAll()).filter(transito => transito.varco === id);
-
-            // mappa il nuovo contenuto sull'array dei transiti precedentemente filtrato in base al varco
-            const transitiWithDetails = await Promise.all(transiti.map(async (transito) => {
-                const veicolo = await veicoloDao.getById(transito.veicolo);
-                return {
-                    ...transito.dataValues,
-                    id_transito: undefined, // rimuovo la visualizzazione dell'id del transito
-                    varco: undefined, // rimuovo la visualizzazione del varco
-                    veicolo: veicolo ? veicolo.dataValues : null,
-                };
-            }));
-
-            return {
-                ...varcoZtl.dataValues,
-                zona_ztl: zonaZtl ? zonaZtl.dataValues : null,
-                orario_chiusura: orarioChiusura ? orarioChiusura.dataValues : null,
-                transiti: transitiWithDetails,
-            };
+            const enrichedVarco = await this._enrichVarcoZtl(varcoZtl);
+            enrichedVarco.transiti = await this._getTransitiWithDetails(id);
+            return enrichedVarco;
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il varco ZTL con id ${id}`);
         }
@@ -215,6 +178,43 @@ class VarcoZtlRepository {
             await transaction.rollback();
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile cancellare il varco ZTL con id ${id}`);
         }
+    }
+
+    // HELPER PRIVATI
+
+    /**
+     * Metodo privato per la stampa delle informazioni arricchite.
+     * 
+     * @param {VarcoZtl} varcoZtl Il varco per il quale stampare le informazioni.
+     * @returns {Promise<any[]>} Una Promise che risolve più array di Promise.
+     */
+    private async _enrichVarcoZtl(varcoZtl: VarcoZtl): Promise<any> {
+        const zonaZtl = await zonaZtlDao.getById(varcoZtl.zona_ztl);
+        const orarioChiusura = await orarioChiusuraDao.getById(varcoZtl.orario_chiusura);
+        return {
+            ...varcoZtl.dataValues,
+            zona_ztl: zonaZtl ? zonaZtl.dataValues : null,
+            orario_chiusura: orarioChiusura ? orarioChiusura.dataValues : null
+        };
+    }
+
+    /**
+     * Metodo privato per la stampa delle informazioni arricchite.
+     * 
+     * @param {number} varcoId L'ID del varco per cui stampare le informazioni.
+     * @returns {Promise<any[]>} Una Promise che risolve più array di Promise.
+     */
+    private async _getTransitiWithDetails(varcoId: number): Promise<any[]> {
+        const transiti = (await transitoDao.getAll()).filter(transito => transito.varco === varcoId);
+        return await Promise.all(transiti.map(async transito => {
+            const veicolo = await veicoloDao.getById(transito.veicolo);
+            return {
+                ...transito.dataValues,
+                id_transito: undefined,
+                varco: undefined,
+                veicolo: veicolo ? veicolo.dataValues : null,
+            };
+        }));
     }
 }
 

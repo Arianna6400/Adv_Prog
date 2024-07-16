@@ -13,6 +13,7 @@
    - [Diagrammi delle sequenze](#-diagrammi-delle-sequenze)
 - [API](#-api)
 - [Set-up](#-set-up)
+- [Scelte implementative da sottolineare](#-scelte-implementative-da-sottolineare)
 - [Strumenti utilizzati](#-strumenti-utilizzati)
 - [Autori](#-autori)
 

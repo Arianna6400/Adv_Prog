@@ -1,6 +1,8 @@
 import { param, body } from "express-validator";
 import validateRequest from './validateRequestMiddleware';
-
+/**
+ * Validazioni per rotte aggiuntive
+ */
 export const validateGetUtenteById = [
     param('id').isInt({ min: 1 }).withMessage('ID deve essere un intero positivo'),
     validateRequest
