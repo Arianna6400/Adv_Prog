@@ -1,18 +1,16 @@
 import { Router } from 'express';
+import { authMiddleware, authorize} from '../middleware/authMiddleware';
 import {
-    getAllVarcoZtl,
-    getVarcoZtlById,
-    getVarcoZtlWithTransiti,
+    handleVarcoZtlRequests,
     createVarcoZtl,
     updateVarcoZtl,
     deleteVarcoZtl
 } from '../controllers/varcoZtlController';
-import { authMiddleware, authorize} from '../middleware/authMiddleware';import {
-    validateGetVarcoZtlById,
+import {
     validateCreateVarcoZtl,
     validateUpdateVarcoZtl,
     validateDeleteVarcoZtl,
-    validategetVarcoZtlWithTransiti
+    validateHandleVarcoZtlRequests
 } from '../middleware/validate/varcoZtlValidate';
 
 const router = Router();
@@ -25,9 +23,7 @@ router.use(authMiddleware);
 /**
  * Definizione delle rotte con relative validazioni ed autorizzazioni
  */
-router.get('/varcoZtl', authorize(['operatore']), getAllVarcoZtl); // rotta per visualizzare tutti i varchi ZTL
-router.get('/varcoZtl/:id', authorize(['operatore']), validateGetVarcoZtlById, getVarcoZtlById); // rotta per visualizzare uno specifico varco ZTL
-router.get('/varchi/:id/transiti', validategetVarcoZtlWithTransiti, getVarcoZtlWithTransiti); // rotta per ottenere un varco con tutti i transiti associati
+router.get('/varcoZtl/:id?/:transiti?', authorize(['operatore']),validateHandleVarcoZtlRequests, handleVarcoZtlRequests); // Rotta combinata per gestire tutte le richieste ai varchi ZTL
 router.post('/varcoZtl', authorize(['operatore']), validateCreateVarcoZtl, createVarcoZtl); // rotta per creare un varco ZTL
 router.put('/varcoZtl/:id', authorize(['operatore']), validateUpdateVarcoZtl, updateVarcoZtl); // rotta per modificare le informazioni di un varcco ZTL
 router.delete('/varcoZtl/:id', authorize(['operatore']), validateDeleteVarcoZtl, deleteVarcoZtl); // rotta per eliminare un varco ZTL

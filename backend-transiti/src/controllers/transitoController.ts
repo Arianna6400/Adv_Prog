@@ -4,31 +4,24 @@ import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import { StatusCodes } from 'http-status-codes';
 
 /**
- * Funzione per ottenere tutti i transiti.
+ * Funzione per gestire le richieste relative ai transiti.
  */
-export const getAllTransiti = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        // Recupera tutti i transiti dal repository
-        const transiti = await transitoRepository.getAllTransiti();
-        res.status(StatusCodes.OK).json(transiti);
-    } catch (error) {
-        return next(error);
-    }
-};
-
-/**
- * Funzione per ottenere un transito per ID.
- */
-export const getTransitoById = async (req: Request, res: Response, next: NextFunction) => {
-    const id = parseInt(req.params.id);
+export const handleTransitoRequests = async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id ? parseInt(req.params.id) : null;
 
     try {
-        // Recupera il transito dal repository usando l'ID
-        const transito = await transitoRepository.getTransitoById(id);
-        if (transito) {
-            res.status(StatusCodes.OK).json(transito);
+        if (id) {
+            // Recupera il transito dal repository usando l'ID
+            const transito = await transitoRepository.getTransitoById(id);
+            if (transito) {
+                return res.status(StatusCodes.OK).json(transito);
+            } else {
+                return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Transito non trovato'));
+            }
         } else {
-            return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Transito non trovato'));
+            // Recupera tutti i transiti dal repository
+            const transiti = await transitoRepository.getAllTransiti();
+            return res.status(StatusCodes.OK).json(transiti);
         }
     } catch (error) {
         return next(error);

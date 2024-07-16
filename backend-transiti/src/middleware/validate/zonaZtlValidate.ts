@@ -2,20 +2,12 @@ import { param, body } from 'express-validator';
 import validateRequest from './validateRequestMiddleware';
 
 /**
- * Array di middleware di validazione per la rotta di visualizzazione di una zona, dato il suo ID
+ * Middleware di validazione per l'ID della zona ZTL.
  */
-export const validateGetZonaZtlById = [
-    param('id').isInt({ min: 1 }).withMessage('ID deve essere un intero positivo'),
+export const validateHandleZonaZtlRequests = [
+    param('id').optional().isInt({ min: 1 }).withMessage('ID deve essere un intero positivo'),
     validateRequest
 ];
-
-/**
- * Array di middleware di validazione per la rotta di visualizzazione di una zona, dato il suo ID, con i relativi transiti
- */
-export const validategetZonaZtlWithTransiti = [
-    param('id').isInt({ min: 1 }).withMessage('ID zona deve essere un intero positivo'),
-    validateRequest
-]
 
 /**
  * Array di middleware di validazione per la rotta di creazione di una nuova zona

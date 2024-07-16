@@ -2,18 +2,10 @@ import { body, param } from 'express-validator';
 import validateRequest from './validateRequestMiddleware';
 
 /**
- * Array di middleware di validazione per la rotta di viusalizzazione del varco, dato il suo ID
+ * Middleware di validazione per il get
  */
-export const validateGetVarcoZtlById = [
-    param('id').isInt({ min: 1 }).withMessage('ID deve essere un intero positivo'),
-    validateRequest
-];
-
-/**
- * Array di middleware di validazione per la rotta di visualizzazione del varco dato il suo ID, con i relativ itransiti
- */
-export const validategetVarcoZtlWithTransiti = [
-    param('id').isInt({ min: 1 }).withMessage('ID deve essere un intero positivo'),
+export const validateHandleVarcoZtlRequests = [
+    param('id').optional().isInt({ min: 1 }).withMessage('ID deve essere un intero positivo'),
     validateRequest
 ];
 

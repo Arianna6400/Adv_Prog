@@ -2,10 +2,10 @@ import { body, param } from 'express-validator';
 import validateRequest from './validateRequestMiddleware';
 
 /**
- * Array di middleware di validazione per la rotta di visualizzazione di un transito, dato il suo ID
+ * Middleware di validazione per l'ID del transito.
  */
-export const validateGetTransitoById = [
-    param('id').isInt({ min: 1 }).withMessage('ID deve essere un intero positivo'),
+export const validateHandleTransitoRequests = [
+    param('id').optional().isInt({ min: 1 }).withMessage('ID deve essere un intero positivo'),
     validateRequest
 ];
 

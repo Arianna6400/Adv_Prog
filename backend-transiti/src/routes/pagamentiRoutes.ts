@@ -12,8 +12,8 @@ router.use(authMiddleware);
 /**
  * Definizione delle rotte al backend-pagamenti
  */
+router.get('/tokenresidui', checkToken); // rotta per il controllo dei token residui dell'utente 
 router.post('/pagamulta', payMulta); // rotta per il pagamento di una multa
 router.post('/ricaricatoken/:id', rechargeTokens); // rotta per la ricarica dei token di un utente
-router.get('/tokenresidui', checkToken); // rotta per il controllo dei token residui dell'utente 
 
 export default router;

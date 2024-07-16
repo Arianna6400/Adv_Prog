@@ -7,38 +7,30 @@ import multaRepository from '../repositories/multaRepository';
 import { StatusCodes } from "http-status-codes";
 
 /**
- * Funzione per ottenere tutte le multe associate all'utente autenticato.
+ * Funzione per gestire le richieste relative alle multe.
  */
-export const getMulteByUtente = async (req: Request, res: Response, next: NextFunction) => {
+export const handleMulteRequests = async (req: Request, res: Response, next: NextFunction) => {
+    const uuid = req.params.uuid;
+    const utenteId = (req as any).user.id;
+
     try {
-        // Estrae l'ID utente dal payload JWT
-        const { id } = (req as any).user as JwtPayload;
-        // Recupera tutte le multe dell'utente dal repository
-        const multe = await multaRepository.getMulteByUtente(id);
-        res.status(StatusCodes.OK).json(multe);
-    } catch (error) {
-        return next(error);
-    }
-};
+        if (uuid) {
+            // Gestione della richiesta per scaricare il bollettino
+            const result = await multaRepository.getMultaWithDetailsByUUID(uuid, utenteId);
 
-/**
- * Funzione per scaricare il bollettino di una multa in formato PDF.
- */
-export const downloadBollettino = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const uuid = req.params.uuid;
-        const utenteId = (req as any).user.id;
+            if (result) {
+                const { multa, transito, veicolo } = result;
+                const qrString = `${multa.uuid_pagamento}|${multa.id_multa}|${veicolo.targa}|${multa.importo_token}`;
+                const qrCodeUrl = await generateQRCode(qrString);
 
-        const result = await multaRepository.getMultaWithDetailsByUUID(uuid, utenteId);
-
-        if (result) {
-            const { multa, transito, veicolo } = result;
-            const qrString = `${multa.uuid_pagamento}|${multa.id_multa}|${veicolo.targa}|${multa.importo_token}`;
-            const qrCodeUrl = await generateQRCode(qrString);
-
-            createPDF(res, next, { multa, transito, veicolo, qrCodeUrl });
+                createPDF(res, next, { multa, transito, veicolo, qrCodeUrl });
+            } else {
+                return next(ErrorFactory.createError(ErrorTypes.NotFound, `Multa con uuid ${uuid} non trovata`));
+            }
         } else {
-            return next(ErrorFactory.createError(ErrorTypes.NotFound, `Multa con uuid ${uuid} non trovata`));
+            // Gestione della richiesta per ottenere tutte le multe dell'utente autenticato
+            const multe = await multaRepository.getMulteByUtente(utenteId);
+            return res.status(StatusCodes.OK).json(multe);
         }
     } catch (error) {
         return next(error);

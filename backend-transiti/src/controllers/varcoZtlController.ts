@@ -4,50 +4,32 @@ import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import { StatusCodes } from 'http-status-codes';
 
 /**
- * Funzione per ottenere tutti i varchi ZTL
+ * Funzione per gestire le richieste ai varchi ZTL.
  */
-export const getAllVarcoZtl = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        // Recupera i varchi ZTL dal repository
-        const varchiZtl = await varcoZtlRepository.getAllVarcoZtl();
-        res.status(StatusCodes.OK).json(varchiZtl);
-    } catch (error) {
-        return next(error);
-    }
-};
-
-/**
- * Funzione per ottenere un varco ZTL per ID
- */
-export const getVarcoZtlById = async (req: Request, res: Response, next: NextFunction) => {
-    const id = parseInt(req.params.id);
+export const handleVarcoZtlRequests = async (req: Request, res: Response, next: NextFunction) => {
+    const { id, transiti } = req.params;
 
     try {
-        // Recupera il varco ZTL dal repository usando l'ID
-        const varcoZtl = await varcoZtlRepository.getVarcoZtlById(id);
-        if (varcoZtl) {
-            res.status(StatusCodes.OK).json(varcoZtl);
+        if (id && transiti === 'transiti') {
+            // Se c'è un ID e 'transiti', recupera il varco ZTL con i transiti associati
+            const varcoZtlWithTransiti = await varcoZtlRepository.getVarcoZtlWithTransiti(parseInt(id));
+            if (varcoZtlWithTransiti) {
+                return res.status(StatusCodes.OK).json(varcoZtlWithTransiti);
+            } else {
+                return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Varco ZTL non trovato'));
+            }
+        } else if (id) {
+            // Se c'è solo l'ID, recupera il varco ZTL specifico
+            const varcoZtl = await varcoZtlRepository.getVarcoZtlById(parseInt(id));
+            if (varcoZtl) {
+                return res.status(StatusCodes.OK).json(varcoZtl);
+            } else {
+                return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Varco ZTL non trovato'));
+            }
         } else {
-            return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Varco ZTL non trovato'));
-        }
-    } catch (error) {
-        return next(error);
-    }
-};
-
-/**
- * Funzione per ottenere un varco ZTL per ID con tutti i transiti associati.
- */
-export const getVarcoZtlWithTransiti = async (req: Request, res: Response, next: NextFunction) => {
-    const id = parseInt(req.params.id);
-
-    try {
-        // Recupera il varco ZTL con transiti dal repository usando l'ID
-        const varcoZtlWithTransiti = await varcoZtlRepository.getVarcoZtlWithTransiti(id);
-        if (varcoZtlWithTransiti) {
-            res.status(StatusCodes.OK).json(varcoZtlWithTransiti);
-        } else {
-            return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Varco ZTL non trovato'));
+            // Se non c'è un ID, recupera tutti i varchi ZTL
+            const varchiZtl = await varcoZtlRepository.getAllVarcoZtl();
+            return res.status(StatusCodes.OK).json(varchiZtl);
         }
     } catch (error) {
         return next(error);

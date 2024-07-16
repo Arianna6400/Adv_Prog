@@ -5,50 +5,33 @@ import zonaZtlRepository from '../repositories/zonaZtlRepository';
 import varcoZtlRepository from '../repositories/varcoZtlRepository';
 
 /**
- * Funzione per ottenere tutte le zone ZTL.
+ * Funzione per gestire le richieste relative alle zone ZTL.
  */
-export const getAllZonaZtl = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        // Recupera le zone ZTL dal repository
-        const zoneZtl = await zonaZtlRepository.getAllZonaZtl();
-        res.status(StatusCodes.OK).json(zoneZtl);
-    } catch (error) {
-        return next(error);
-    }
-};
-
-/**
- * Funzione per ottenere una zona ZTL per ID.
- */
-export const getZonaZtlById = async (req: Request, res: Response, next: NextFunction) => {
-    const id = parseInt(req.params.id);
+export const handleZonaZtlRequests = async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id ? parseInt(req.params.id) : null;
+    const includeTransiti = req.params.transiti === 'transiti';
 
     try {
-        // Recupera la zona ZTL dal DAO usando l'ID
-        const zonaZtl = await zonaZtlRepository.getZonaZtlById(id);
-        if (zonaZtl) {
-            res.status(StatusCodes.OK).json(zonaZtl);
+        if (id && includeTransiti) {
+            // Recupera la zona ZTL con transiti dal repository usando l'ID
+            const zonaZtl = await zonaZtlRepository.getZonaZtlWithTransiti(id);
+            if (zonaZtl) {
+                return res.status(StatusCodes.OK).json(zonaZtl);
+            } else {
+                return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
+            }
+        } else if (id) {
+            // Se c'è solo l'ID, recupera la zona ZTL dal repository usando l'ID
+            const zonaZtl = await zonaZtlRepository.getZonaZtlById(id);
+            if (zonaZtl) {
+                return res.status(StatusCodes.OK).json(zonaZtl);
+            } else {
+                return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
+            }
         } else {
-            return (ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
-        }
-    } catch (error) {
-        return next(error);
-    }
-};
-
-/**
- * Funzione per ottenere una zona ZTL per ID con tutti i transiti associati
- */
-export const getZonaZtlWithTransiti = async (req: Request, res: Response, next: NextFunction) => {
-    const id = parseInt(req.params.id);
-
-    try {
-        // Recupera la zona ZTL dal repository usando l'ID
-        const zonaZtl = await zonaZtlRepository.getZonaZtlWithTransiti(id);
-        if (zonaZtl) {
-            res.status(StatusCodes.OK).json(zonaZtl);
-        } else {
-            return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
+            // Recupera tutte le zone ZTL dal repository
+            const zoneZtl = await zonaZtlRepository.getAllZonaZtl();
+            return res.status(StatusCodes.OK).json(zoneZtl);
         }
     } catch (error) {
         return next(error);

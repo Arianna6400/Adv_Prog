@@ -1,20 +1,17 @@
 import { Router } from 'express';
+import { authMiddleware, authorize} from '../middleware/authMiddleware';
 import {
-    getAllZonaZtl,
-    getZonaZtlById,
-    getZonaZtlWithTransiti,
+    handleZonaZtlRequests,
     createZonaZtl,
     updateZonaZtl,
     deleteZonaZtl
 } from '../controllers/zonaZtlController';
 import {
-    validateGetZonaZtlById,
+    validateHandleZonaZtlRequests,
     validateCreateZonaZtl,
     validateUpdateZonaZtl,
-    validateDeleteZonaZtl,
-    validategetZonaZtlWithTransiti
+    validateDeleteZonaZtl
 } from '../middleware/validate/zonaZtlValidate';
-import { authMiddleware, authorize} from '../middleware/authMiddleware';
 
 const router = Router();
 
@@ -26,9 +23,8 @@ router.use(authMiddleware);
 /**
  * Definizione delle rotte con relative validazioni ed autorizzazioni
  */
-router.get('/zonaZtl', authorize(['operatore']), getAllZonaZtl); // rotta per visualizzare tutte le zone ZTL
-router.get('/zonaZtl/:id',authorize(['operatore']), validateGetZonaZtlById, getZonaZtlById); // rotta per visualizzare una specifica zona ZTL
-router.get('/zonaZtl/:id/transiti', authorize(['operatore']), validategetZonaZtlWithTransiti, getZonaZtlWithTransiti); // rotta per ottenere una zona con tutti i transiti associati
+// Rotta combinata per gestire tutte le richieste alle zone ZTL
+router.get('/zonaZtl/:id?/:transiti?', authorize(['operatore']), validateHandleZonaZtlRequests, handleZonaZtlRequests);
 router.post('/zonaZtl',authorize(['operatore']), validateCreateZonaZtl, createZonaZtl); // rotta per creare una zona ZTL
 router.put('/zonaZtl/:id',authorize(['operatore']), validateUpdateZonaZtl, updateZonaZtl); // rotta per modificare le informazioni di una zona ZTL
 router.delete('/zonaZtl/:id',authorize(['operatore']), validateDeleteZonaZtl, deleteZonaZtl); // rotta per eliminare una zona ZTL

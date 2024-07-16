@@ -1,14 +1,13 @@
 import { Router } from 'express';
+import { authMiddleware, authorize} from '../middleware/authMiddleware';
 import {
-    getAllTransiti,
-    getTransitoById,
+    handleTransitoRequests,
     createTransito,
     updateTransito,
     deleteTransito
 } from '../controllers/transitoController';
-import { authMiddleware, authorize} from '../middleware/authMiddleware';
 import {
-    validateGetTransitoById,
+    validateHandleTransitoRequests,
     validateCreateTransito,
     validateUpdateTransito,
     validateDeleteTransito
@@ -24,8 +23,8 @@ router.use(authMiddleware);
 /**
  * Definizione delle rotte con relative validazioni ed autorizzazioni
  */
-router.get('/transito', authorize(['operatore']), getAllTransiti);
-router.get('/transito/:id', authorize(['operatore']), validateGetTransitoById, getTransitoById);
+// Rotta combinata per gestire tutte le richieste ai transiti
+router.get('/transito/:id?', authorize(['operatore']), validateHandleTransitoRequests, handleTransitoRequests);
 router.post('/transito', authorize(['operatore','varco']), validateCreateTransito, createTransito);
 router.put('/transito/:id', authorize(['operatore']), validateUpdateTransito, updateTransito);
 router.delete('/transito/:id', authorize(['operatore']), validateDeleteTransito, deleteTransito);
