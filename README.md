@@ -127,7 +127,6 @@ graph TD
     Operatore ---|Gestione| GestioneTransiti([fa:fa-folder-open Gestione_Transiti])
 
     GestioneTransiti ----|Include| InserimentoTransiti([fa:fa-folder-open Inserimento_Transiti])
-    GestioneTransiti ----|Include| EliminazioneTransiti([fa:fa-folder-open Eliminazione_Transiti])
     GestioneTransiti ----|Include| CreazioneAutomaticaMulta([fa:fa-folder-open Creazione_Automatica_Multa])
 
     VerificaMulte ----|Controlla| CreazioneAutomaticaMulta
@@ -249,6 +248,8 @@ Per astrarre la logica di accesso ai dati, indipendentemente dal tipo di meccani
 Il DAO presenta diverse componenti: l'*interfaccia* di definizione dei metodi di accesso ai dati che devono essere implementati, l'*implementazione* concreta dei metodi definiti dall'interfaccia DAO che contiene il codice specifico di interazione con le fonti di dati e le *classi di entità*, cioè i Model, che rappresentano i dati che vengono manipolati dal DAO. Queste ultime classi sono mappate alle tabelle del database.
 
 L'utilità principale del pattern è rappresentata dal fatto che ad un singolo Model viene corrisposto un singolo DAO, garantendo l'accesso ai dati necessari, e, soprattutto, uno o più DAO possono essere richiamati da componenti superiori quali **Repository** (se previsto) o **Controller**, per l'utilizzo combinato dell'accesso ai dati. In questo modo, non solo è garantita un'elevata riutilizzabilità del codice in diverse parti dell'applicazione, ma soprattutto viene implementata una forte modularità e separazione delle responsabilità da parte di tutte le componenti.
+
+> All'interno del progetto, i DAO sono stati implementati per tutte le CRUD di tutte le classi di entità, indipendentemente dal fatto che servissero o meno ai fini dello scopo. 
 
 **Repository**
 
@@ -972,7 +973,7 @@ All'interno del sistema sono state predisposte le rotte mostrate in tabella; ogn
 | `POST`  | /pagamulta | ✔️ | Automobilista |
 | `POST`  | /ricaricatoken/:id | ✔️ | Admin |
 
-> **Nota**: Sono state implementate delle rotte aggiuntive all'interno del sistema, per permettere di visualizzare, aggiungere, aggiornare o cancellare informazioni ulteriori direttamente su Postman. Le CRUD aggiuntive riguardano le classi `veicolo`, `tipoVeicolo`, `orarioChiusura`, `utente`. Le suddette rotte sono state implementate solamente per scopi di completezza e di possibilità di personalizzazione in fase di test. 
+> **Nota**: Sono state implementate delle rotte aggiuntive all'interno del sistema, per permettere di visualizzare, aggiungere, aggiornare o cancellare informazioni ulteriori direttamente su Postman. Le CRUD aggiuntive riguardano le classi `veicolo`, `tipoVeicolo`, `orarioChiusura`, `utente`. Le suddette rotte sono state implementate solamente per scopi di completezza e di possibilità di personalizzazione in fase di test. Nel caso in cui vogliano essere provate, il modus operandi è identico alle rotte mostrate nella tabella, ovvero inserendo GET/POST/PUT/DELETE e aggiungendo la classe di entità che si vuole provare.
 
 ### Login
 
@@ -1890,9 +1891,9 @@ Authorization: Bearer {authToken}
             "id_transito": 1,
             "veicolo": "AB123CD",
             "varco": 1,
-            "data_ora": "2024-07-07T08:30:00.000Z"
+            "data_ora": "2024-07-08T08:30:00.000Z"
         },
-        "data_multa": "2024-07-07T10:00:00.000Z",
+        "data_multa": "2024-07-08T10:00:00.000Z",
         "pagata": false,
         "importo_token": "5.00",
         "uuid_pagamento": "550e8400-e29b-41d4-a716-446655440000"
@@ -2030,6 +2031,29 @@ Authorization: Bearer {authToken}
 
 ## ⚙️ Set-up
 
+Per utilizzare l'applicazione, è necessario seguire i seguenti passaggi:
+
+1. Il primo requisito fondamentale è l'installazione di [Docker](https://www.docker.com/) e [docker-compose](https://docs.docker.com/compose/).
+
+2. Successivamente, bisogna eseguire la *clone* della repository. Per far ciò, si può eseguire il seguente comando sul proprio terminale:
+
+```bash
+git clone https://github.com/Arianna6400/Adv_Prog
+cd Adv_Prog
+```
+
+3. Per utilizzare il sistema, è fondamentale importare il file `.env` all'interno della directory principale.
+
+4. A questo punto, attraverso la propria CLI, è possibile avviare l'applicazione digitando il seguente comando:
+
+```bash
+docker-compose up --build
+```
+
+Il sistema sarà in ascolto all'indirizzo `http://127.0.0.1:3000`. 
+
+5. Le rotte API mostrate nella sezione [API Routes](#-api-routes) possono essere testate tramite [Postman](https://www.postman.com/), utilizzando la collection `PA_2024_collection.postman_collection.json` e l'environment `PA_2024_environment.postman_environment.json`, reperibili nella directory `postman`.
+
 ## 📘 Scelte implementative da sottolineare
 
 Ai fini della realizzazione del presente progetto sono state effettuate alcune scelte implementative, volte ad agevolare il suo sviluppo a livello didattico. 
@@ -2038,7 +2062,7 @@ Un veicolo potrebbe entrare in una ZTL durante un periodo di apertura, per poi u
 
 Un’ulteriore scelta riguarda la gestione del pagamento delle multe. Sebbene ogni utente di tipo `automobilista` possa visualizzare solo ed esclusivamente le multe dei veicoli a esso intestati, può effettuare il pagamento di qualsiasi multa, purché sia in possesso dell’UUID della stessa.
 
-Come già sottolineato nel capitolo relativo all’Architettura dei servizi, l’intero sistema è stato implementato all’insegna della modularità, resa possibile dallo sviluppo di due backend completamente indipendenti. Per permettere l’integrazione e la comunicazione tra questi due servizi, è stato utilizzato **Axios**, una libreria basata su Promises per JavaScript, utilizzata principalmente per eseguire richieste HTTP asincrone verso un endpoint. È particolarmente utile per le applicazioni web e mobile per la sua semplicità e capacità di gestire le richieste in modo efficiente.
+Come già sottolineato nel capitolo relativo all’[Architettura dei servizi](#️-architettura-dei-servizi), l’intero sistema è stato implementato all’insegna della modularità, resa possibile dallo sviluppo di due backend completamente indipendenti. Per permettere l’integrazione e la comunicazione tra questi due servizi, è stato utilizzato **Axios**, una libreria basata su Promises per JavaScript, utilizzata principalmente per eseguire richieste HTTP asincrone verso un endpoint. È particolarmente utile per le applicazioni web e mobile per la sua semplicità e capacità di gestire le richieste in modo efficiente.
 
 Nel contesto di questo progetto, Axios è stato utilizzato per effettuare chiamate HTTP tra i due backend, garantendo una comunicazione fluida e modulare. Ad esempio, quando un utente tenta di pagare una multa, il backend responsabile della gestione delle transazioni invia una richiesta HTTP al backend che gestisce le informazioni sulle multe, utilizzando Axios. Questo approccio permette di mantenere i servizi indipendenti e modulari, facilitando la manutenzione e l’espansione del sistema.
 
