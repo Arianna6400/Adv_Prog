@@ -57,7 +57,12 @@ class TransitoRepository {
     public async createTransito(data: TransitoCreationAttributes): Promise<Transito> {
         const sequelize = Database.getInstance(); // Ottieni l'istanza del database
 
-        // Inizia una transazione
+        // verifico l'esistenza del varco associato
+        await varcoZtlDao.getById(data.varco);
+        // verifico l'esistenza del veicolo associato
+        await veicoloDao.getById(data.veicolo);
+
+        // Se il varco esiste, inizio una transazione per la creazione del transito
         const transaction: Transaction = await sequelize.transaction();
         try {
             // Crea il transito all'interno della transazione

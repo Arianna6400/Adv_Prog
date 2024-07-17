@@ -1,5 +1,5 @@
 import Veicolo from '../models/veicolo';
-import { ErrorFactory, ErrorTypes, HttpError } from '../utils/errorFactory';
+import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import { DAO } from './daoInterface';
 import { VeicoloAttributes, VeicoloCreationAttributes } from '../models/veicolo';
 import { Transaction } from 'sequelize';

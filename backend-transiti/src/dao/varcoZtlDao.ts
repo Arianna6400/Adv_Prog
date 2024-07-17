@@ -69,6 +69,10 @@ class VarcoZtlDao implements VarcoZtlDAO {
      */
     public async update(id: number, data: Partial<VarcoZtlAttributes>, options?: { transaction?: Transaction }): Promise<[number, VarcoZtl[]]> {
         try {
+            const varcoZtl = await VarcoZtl.findByPk(id);
+            if (!varcoZtl) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Varco ZTL con id ${id} non trovato`);
+            }
             const [affectedCount] = await VarcoZtl.update(data, { where: { id_varco: id }, returning: true });
             const updatedItems = await VarcoZtl.findAll({ where: { id_varco: id } });
             return [affectedCount, updatedItems];
@@ -87,9 +91,9 @@ class VarcoZtlDao implements VarcoZtlDAO {
      */
     public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
         try {
-            const varco = await VarcoZtl.findByPk(id);
-            if (!varco) {
-                throw ErrorFactory.createError(ErrorTypes.NotFound, `Varco con id ${id} non trovato`);
+            const varcoZtl = await VarcoZtl.findByPk(id);
+            if (!varcoZtl) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Varco ZTL con id ${id} non trovato`);
             }
             return await VarcoZtl.destroy({ where: { id_varco: id }, ...options});
         } catch (error) {

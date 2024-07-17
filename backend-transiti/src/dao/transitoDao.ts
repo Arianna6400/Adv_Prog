@@ -1,5 +1,5 @@
 import Transito from '../models/transito';
-import { ErrorFactory, ErrorTypes, HttpError } from '../utils/errorFactory';
+import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import { DAO } from './daoInterface';
 import { TransitoAttributes, TransitoCreationAttributes } from '../models/transito';
 import { Transaction } from 'sequelize';

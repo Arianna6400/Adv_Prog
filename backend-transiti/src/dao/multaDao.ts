@@ -1,5 +1,5 @@
 import Multa from '../models/multa';
-import { ErrorFactory, ErrorTypes, HttpError } from '../utils/errorFactory';
+import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import { DAO } from './daoInterface';
 import { MultaAttributes, MultaCreationAttributes } from '../models/multa';
 import { Transaction, FindOptions } from 'sequelize';

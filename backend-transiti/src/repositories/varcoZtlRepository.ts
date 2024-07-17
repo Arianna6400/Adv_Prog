@@ -23,7 +23,7 @@ class VarcoZtlRepository {
     public async getAllVarcoZtl(): Promise<any[]> {
         try {
             const varchiZtl = await varcoZtlDao.getAll();
-            // arricchisco le info di stampa del varco
+            // arricchisco le info di stampa del varco con metodo privato
             return await Promise.all(varchiZtl.map(varco => this._enrichVarcoZtl(varco)));
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile recuperare i varchi ZTL');
@@ -38,11 +38,12 @@ class VarcoZtlRepository {
      */
     public async getVarcoZtlById(id: number): Promise<any | null> {
         try {
+            // verifico l'esistenza del varco con l'ID
             const varcoZtl = await varcoZtlDao.getById(id);
             if (!varcoZtl) {
                 throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il varco ZTL con id ${id}`);
             }
-            // arricchiesco le info di stampa del varcco
+            // arricchiesco le info di stampa del varco con metodo privato
             return await this._enrichVarcoZtl(varcoZtl);
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il varco ZTL con id ${id}`);
@@ -57,6 +58,7 @@ class VarcoZtlRepository {
      */
     public async getVarcoZtlWithTransiti(id: number): Promise<any | null> {
         try {
+            // verifico l'esistenza del varco con l'ID
             const varcoZtl = await varcoZtlDao.getById(id);
             if (!varcoZtl) {
                 throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il varco ZTL con id ${id}`);
@@ -80,7 +82,14 @@ class VarcoZtlRepository {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
 
-        try {
+        // verifico l'esistenza della zona associata
+        await zonaZtlDao.getById(data.zona_ztl);
+        // verifico l'esistenza dell'orario di chiusura
+        await orarioChiusuraDao.getById(data.orario_chiusura);
+
+        // procedo con la creazione
+        try {    
+            const zona = await zonaZtlDao.getById(data.zona_ztl);
             // Crea il varco ZTL
             const varcoZtl = await varcoZtlDao.create(data, { transaction });
             if(! varcoZtl){

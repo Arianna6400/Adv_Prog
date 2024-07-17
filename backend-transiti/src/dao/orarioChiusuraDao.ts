@@ -97,7 +97,6 @@ class OrarioChiusuraDao implements OrarioChiusuraDAO {
             }
             return await OrarioChiusura.destroy({ where: { id_orario: id } });
         } catch (error) {
-            console.error(`Errore nella cancellazione dell'orario di chiusura con id ${id}:`, error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione dell'orario di chiusura con id ${id}`);
         }
     }
