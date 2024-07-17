@@ -1,0 +1,828 @@
+{
+	"info": {
+		"_postman_id": "da17f194-39ab-4d86-a6ad-9b76663f7f45",
+		"name": "PA_2024_collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20630772"
+	},
+	"item": [
+		{
+			"name": "login_operatore",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Save token\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.environment.set(\"authToken\", jsonData.token);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/login?email=andrea.iasenzaniro@gmail.com",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"login"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "andrea.iasenzaniro@gmail.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login_automobilista",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Save token\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.environment.set(\"authToken\", jsonData.token);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/login?email=arianna.agresta@gmail.com",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"login"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "arianna.agresta@gmail.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login_admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Save token\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.environment.set(\"authToken\", jsonData.token);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/login?email=giulia.verdi@example.com",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"login"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "giulia.verdi@example.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login_varco",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Save token\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.environment.set(\"authToken\", jsonData.token);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/login?email=varco.varco@example.com",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"login"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "varco.varco@example.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAllVarcoZtl",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/varcoZtl",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"varcoZtl"
+					]
+				},
+				"description": "Effettuare login **operatore**\n\nRotta combinata per gestire **get** sui varchi\n\nparametri **opzionali**: id, transiti"
+			},
+			"response": []
+		},
+		{
+			"name": "createVarcoZtl",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nome\": \"Varco 9\",\n    \"via\": \"Via...\",\n    \"zona_ztl\": 1,\n    \"orario_chiusura\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/varcoZtl",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"varcoZtl"
+					]
+				},
+				"description": "Effettuare login **operatore**\n\nRotta per creare un nuovo varco.\n\nEsempio di body:\n\n``` json\n{\n    \"nome\": \"Varco 5\",\n    \"via\": \"Via Romaaa\",\n    \"zona_ztl\": 1,\n    \"orario_chiusura\": 1\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "updateVarcoZtl",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nome\":\"Varco 8\",\n    \"via\": \"Nuova via\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/varcoZtl/8",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"varcoZtl",
+						"8"
+					]
+				},
+				"description": "Effettuare login **operatore**\n\nRotta per aggiornare le info di un varco\n\nEsempio di body: i parametri sono opzionali\n\n``` json\n{\n    \"nome\": \"nuovo nome\",\n    \"via\": \"nuova via\",\n    \"zona_ztl\": 1,\n    \"orario_chiusura\": 1\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "deleteVarcoZtl",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/varcoZtl/8",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"varcoZtl",
+						"8"
+					]
+				},
+				"description": "Effettuare login **operatore**\n\nRotta per eliminare un varco dato il suo id"
+			},
+			"response": []
+		},
+		{
+			"name": "getAllZonaZtl",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/zonaZtl",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"zonaZtl"
+					]
+				},
+				"description": "Effettuare login **operatore**\n\nRotta combinata per gestire **get** sulle zone\n\nparametri **opzionali**: id, transiti"
+			},
+			"response": []
+		},
+		{
+			"name": "createZonaZtl",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nome\": \"Zona aggiuntiva\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/zonaZtl",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"zonaZtl"
+					]
+				},
+				"description": "Effettuare login **operatore**\n\nRotta per creare una nuova zona.\n\nEsempio di body:\n\n``` json\n{\n    \"nome\": \"Zonaaggiuntamanualmente\"\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "updateZonaZtl",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nome\": \"Zona modificata\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/zonaZtl/4",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"zonaZtl",
+						"4"
+					]
+				},
+				"description": "Effettuare login **operatore**\n\nRotta per aggiornare le info di una zona\n\nEsempio di body:\n\n``` json\n{\n    \"nome\": \"Zona modificata manualmente\"\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "deleteZonaZtl",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/zonaZtl/7",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"zonaZtl",
+						"7"
+					]
+				},
+				"description": "Effettuare login **operatore**\n\nRotta per eliminare un varco dato il suo id"
+			},
+			"response": []
+		},
+		{
+			"name": "getAllTransiti",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/transito/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"transito",
+						"1"
+					]
+				},
+				"description": "Effettuare login **operatore**\n\nRotta combinata per gestire **get** sui transiti\n\nparametri **opzionali**: id"
+			},
+			"response": []
+		},
+		{
+			"name": "createTransito",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"veicolo\": \"AB123CD\",\n    \"varco\": 1\n    //\"data_ora\": \"2024-07-15T13:01:04.115Z\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/transito",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"transito"
+					]
+				},
+				"description": "Effettuare login **operatore** oppure **varco**\n\nRotta per creare un nuovo transito.\n\nEsempio di body: **data_ora** può essere opzionale\n\n``` json\n{\n    \"veicolo\": \"AB123CD\",\n    \"varco\": 1\n    \"data_ora\": \"2024-07-15T13:01:04.115Z\"\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "updateTransito",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"veicolo\": \"AB123CD\",\n    \"varco\": 1,\n    \"data_ora\": \"2024-07-15T12:01:04.115Z\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/transito/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"transito",
+						"1"
+					]
+				},
+				"description": "Effettuare login **operatore**\n\nRotta per aggiornare le info di un transito\n\nEsempio di body: i parametri sono opzionali\n\n``` json\n{\n    \"veicolo\": \"AB123CD\",\n    \"varco\": 1,\n    \"data_ora\": \"2024-07-15T12:01:04.115Z\"\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "deleteTransito",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/transito/5",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"transito",
+						"5"
+					]
+				},
+				"description": "Effettuare login **operatore**\n\nRotta per eliminare un transito il suo id"
+			},
+			"response": []
+		},
+		{
+			"name": "getMulteByUtente",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/multe/550e8400-e29b-41d4-a716-446655440001",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"multe",
+						"550e8400-e29b-41d4-a716-446655440001"
+					]
+				},
+				"description": "Effettuare login **automobilista**\n\nRotta per stampare le multe di un utente, oppure stampare il pdf di una multa dato il suo uuid  \n  \nParametri opzionali: **uuid**\n\n**esmepio uuid**: 550e8400-e29b-41d4-a716-446655440001"
+			},
+			"response": []
+		},
+		{
+			"name": "checkToken",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/tokenresidui",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"tokenresidui"
+					]
+				},
+				"description": "Effettuare login **automobilista**  \nRotta per verificare i token residui dell'utente autenticato"
+			},
+			"response": []
+		},
+		{
+			"name": "payMulta",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"uuid\": \"550e8400-e29b-41d4-a716-446655440001\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/pagamulta",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"pagamulta"
+					]
+				},
+				"description": "Effettuare login **automobilista**  \nRotta per pagare una multa.\n\nEsempio di body:\n\n``` json\n{\n  \"uuid\": \"550e8400-e29b-41d4-a716-446655440001\"\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "rechargeTokens",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"tokens\": 3.5\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:{{transiti_port}}/ricaricatoken/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{transiti_port}}",
+					"path": [
+						"ricaricatoken",
+						"1"
+					]
+				},
+				"description": "Effettuare login **automobilista**  \nRotta per ricaricare i token di un utente, dato il suo id.\n\nEsempio di body:\n\n``` json\n{\n    \"tokens\": 1\n}\n\n ```"
+			},
+			"response": []
+		}
+	]
+}
