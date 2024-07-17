@@ -131,6 +131,11 @@ class VarcoZtlRepository {
      */
     public async updateVarcoZtl(id: number, data: Partial<VarcoZtlAttributes>): Promise<[number, VarcoZtl[]]> {
         try {
+            // Verifica l'esistenza del varco
+            const varco = await varcoZtlDao.getById(id);
+            if(!varco){
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Varco con id ${id} non trovato`);
+            }
             return await varcoZtlDao.update(id, data);
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile aggiornare il varco ZTL con id ${id}`);
@@ -144,6 +149,13 @@ class VarcoZtlRepository {
      * @returns {Promise<number>} Una Promise che risolve il numero di righe cancellate.
      */
     public async deleteVarcoZtl(id: number): Promise<number> {
+
+        // Verifica come prima cosac he non ci siano transiti associati
+        const transitoAssociato = (await transitoDao.getAll()).find(transito => transito.varco === id);
+        if (transitoAssociato) {
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile eliminare il varco con id ${id}, poichè associato ad un transito`);
+        }
+
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
     

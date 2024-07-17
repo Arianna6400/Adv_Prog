@@ -90,6 +90,18 @@ class TransitoRepository {
      */
     public async updateTransito(id: number, data: Partial<TransitoAttributes>): Promise<[number, Transito[]]> {
         try {
+
+            // Verifica l'esistenza del transito
+            const transito = await transitoDao.getById(id);
+            if (!transito) {
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Transito con id ${id} non trovato`);
+            }
+
+            // Recupera tutte le multe e verifica se ce n'è una associata al transito
+            const multaAssociata = (await multaDao.getAll()).find(multa => multa.transito === id);
+            if (multaAssociata) {
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile aggiornare il transito con id ${id}, poichè associato ad una multa`);
+            }
             return await transitoDao.update(id, data);
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile aggiornare il transito con id ${id}`);

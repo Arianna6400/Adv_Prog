@@ -29,7 +29,7 @@ export const handleTransitoRequests = async (req: Request, res: Response, next: 
 };
 
 /**
- * Funzione per creare un nuovo trannsito.
+ * Funzione per creare un nuovo transito.
  */
 export const createTransito = async (req: Request, res: Response, next: NextFunction) => {
     try {
