@@ -69,7 +69,7 @@ class UtenteDao implements UtenteDAO<UtenteAttributes, number> {
             await utente.save();
             return utente;
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nell'aggiornamento dei token per l'utente con email ${id}`);
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nell'aggiornamento dei token per l'utente con id ${id}`);
         }
     }
 }

@@ -66,7 +66,15 @@ export const payMulta = async (req: Request, res: Response, next: NextFunction) 
 export const rechargeTokens = async (req: Request, res: Response, next: NextFunction) => {
     const id = parseInt(req.params.id); // ID dell'utente passato nel body della richiesta
     const tokens  = Number(req.body.tokens);
+
     try {
+        // Verifico esistenza dell'utente da ricaricare
+        const utenteTrovato = await utenteDao.getById(id);
+
+        // un varco non ha crediti associati, non è possibile ricaricarli
+        if (utenteTrovato?.ruolo === 'varco') {
+            throw ErrorFactory.createError(ErrorTypes.BadRequest, 'Non è possibile ricaricare i token di un varco.')
+        }
         const utente = await utenteDao.rechargeTokens(id, tokens);
         res.status(StatusCodes.OK).json({ 
             info: 'Token ricaricati con successo', 
