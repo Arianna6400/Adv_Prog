@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import transitoRepository from '../repositories/transitoRepository';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import { StatusCodes } from 'http-status-codes';
+import IsVarco from '../models/isVarco';
+import isVarcoDao from '../dao/isVarcoDao';
 
 /**
  * Funzione per gestire le richieste relative ai transiti.
@@ -33,6 +35,14 @@ export const handleTransitoRequests = async (req: Request, res: Response, next: 
  */
 export const createTransito = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        const user = (req as any).user; // Estrae l'utente dal payload JWT
+        const { ruolo, id } = user;
+        const varcoLog = await isVarcoDao.getById(id)
+        // Se l'utente è un varco, imposta l'attributo varco nel corpo della richiesta
+        if (ruolo === 'varco') {
+            req.body.varco = varcoLog?.id_varco;
+        }
+
         // Crea un nuovo transito con i dati forniti nel corpo della richiesta
         const nuovoTransito = await transitoRepository.createTransito(req.body);
         res.status(StatusCodes.CREATED).json(nuovoTransito);
@@ -71,7 +81,7 @@ export const deleteTransito = async (req: Request, res: Response, next: NextFunc
         // Cancella il transito esistente usando l'ID fornito
         const deleted = await transitoRepository.deleteTransito(id);
         if (deleted) {
-            res.status(StatusCodes.OK).json({ message: `transito ${id} eliminato con successo` });
+            res.status(StatusCodes.OK).json({ message: `Transito ${id} eliminato con successo` });
         } else {
             return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Transito non trovato'));
         }
