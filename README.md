@@ -122,24 +122,24 @@ Il diagramma dei casi d'uso mostrato di seguito offre una visualizzazione delle 
 
 ```mermaid
 graph TD
-    Operatore(fa:fa-user Operatore) ---|Gestione| GestioneZTL(fa:fa-folder-open Gestione_ZTL)
-    Operatore ---|Gestione| GestioneVarchi(fa:fa-folder-open Gestione_Varchi)
-    Operatore ---|Gestione| GestioneTransiti(fa:fa-folder-open Gestione_Transiti)
-    Operatore ---|Eliminazione| EliminazioneTransiti(fa:fa-folder-open Eliminazione_e_Update_Transiti)
+    Operatore(fa:fa-user Operatore) ---|Gestione| GestioneZTL([fa:fa-folder-open Gestione_ZTL])
+    Operatore ---|Gestione| GestioneVarchi([fa:fa-folder-open Gestione_Varchi])
+    Operatore ---|Gestione| GestioneTransiti([fa:fa-folder-open Gestione_Transiti])
+    Operatore ---|Eliminazione| EliminazioneTransiti([fa:fa-folder-open Eliminazione_e_Update_Transiti])
 
-    GestioneTransiti ---|Include| InserimentoTransiti(fa:fa-folder-open Inserimento_Transiti)
-    GestioneTransiti ---|Include| EliminazioneTransiti(fa:fa-folder-open Eliminazione_Transiti)
-    GestioneTransiti ---|Include| CreazioneAutomaticaMulta(fa:fa-folder-open Creazione_Automatica_Multa)
+    GestioneTransiti ---|Include| InserimentoTransiti([fa:fa-folder-open Inserimento_Transiti])
+    GestioneTransiti ---|Include| EliminazioneTransiti([fa:fa-folder-open Eliminazione_Transiti])
+    GestioneTransiti ---|Include| CreazioneAutomaticaMulta([fa:fa-folder-open Creazione_Automatica_Multa])
 
     VerificaMulte ----|Controlla| CreazioneAutomaticaMulta
     Varco(fa:fa-road Varco) ---|Inserimento| InserimentoTransiti
 
-    Automobilista(fa:fa-user-lock Automobilista) ---|Gestione| GestioneContabilita(fa:fa-folder-open Gestione_Contabilita)
+    Automobilista(fa:fa-user-lock Automobilista) ---|Gestione| GestioneContabilita([fa:fa-folder-open Gestione_Contabilita])
 
-    GestioneContabilita(fa:fa-folder-open Gestione_Contabilita) ---|Include| VerificaMulte(fa:fa-folder-open Verifica_Multe)
-    GestioneContabilita ---|Include| PagamentoMulta(fa:fa-folder-open Pagamento_Multa)
+    GestioneContabilita ---|Include| VerificaMulte([fa:fa-folder-open Verifica_Multe])
+    GestioneContabilita ---|Include| PagamentoMulta([fa:fa-folder-open Pagamento_Multa])
 
-    Admin(fa:fa-user-lock Admin) ---|Ricarica| TokenRimanenti(fa:fa-folder-open Token_Rimanenti)
+    Admin(fa:fa-user-lock Admin) ---|Ricarica| TokenRimanenti([fa:fa-folder-open Token_Rimanenti])
     Automobilista ----|Controlla| TokenRimanenti
 ```
 
