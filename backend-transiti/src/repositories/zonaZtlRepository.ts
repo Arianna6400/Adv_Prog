@@ -17,6 +17,7 @@ class ZonaZtlRepository {
     public async getAllZonaZtl(): Promise<any[]> {
         try {
             const zoneZtl = await zonaZtlDao.getAll();
+            // arricchisco le info di stampa della zona
             return await Promise.all(zoneZtl.map(zona => this._getZonaWithDetails(zona)));
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.BadRequest, 'Impossibile recuperare le zone ZTL');
@@ -35,6 +36,7 @@ class ZonaZtlRepository {
             if (!zona) {
                 throw ErrorFactory.createError(ErrorTypes.BadRequest, `Impossibile recuperare la zona ZTL con id ${id}`);
             }
+            // arricchisco le info di stampa della zona
             return await this._getZonaWithDetails(zona);
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.BadRequest, `Impossibile recuperare la zona ZTL con id ${id}`);
@@ -53,7 +55,7 @@ class ZonaZtlRepository {
             if (!zonaZtl) {
                 throw ErrorFactory.createError(ErrorTypes.BadRequest, `Impossibile recuperare la zona ZTL con id ${id}`);
             }
-
+            // arricchisco le info di stampa della zona con i transiti in essa
             const varchiNellaZona = await this._getVarchiByZona(zonaZtl.id_zona);
             const transitiWithDetails = await Promise.all(varchiNellaZona.map(async (varco) => {
                 const transiti = await this._getTransitiByVarco(varco.id_varco);

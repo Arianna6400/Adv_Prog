@@ -86,6 +86,10 @@ class IsVarcoDao implements IsVarcoDAO {
      */
     public async delete(id_utente: number, options?: { transaction?: Transaction }): Promise<number> {
         try {
+            const isVarco = await IsVarco.findByPk(id_utente);
+            if (!isVarco) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Associazione per utente ${id_utente} non trovata`);
+            }
             return await IsVarco.destroy({ where: { id_utente }, ...options });
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione dell'associazione is_varco con id_utente ${id_utente}`);

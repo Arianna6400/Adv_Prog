@@ -118,7 +118,7 @@ project
 
 ### 📊 Diagramma dei casi d'uso
 
-Il diagramma dei casi d'uso mostrato di seguito offre una visualizzazione delle funzioni e/o servizi offerti dal sistema sviluppato, a seconda del livello di utenza che interagisce col sistema stesso.
+Il diagramma dei casi d'uso del sistema complessivo viene mostrato nella figura segeunte. Questo mostra la prsenza di quattro attori: **operatore**, **automobilista**, **varco** e **admin**, ognuno dei quali interagisce con il sistema tramite funzioni dedicate.
 
 ```mermaid
 graph TD

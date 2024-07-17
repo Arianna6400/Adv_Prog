@@ -87,6 +87,10 @@ class VarcoZtlDao implements VarcoZtlDAO {
      */
     public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
         try {
+            const varco = await VarcoZtl.findByPk(id);
+            if (!varco) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Varco con id ${id} non trovato`);
+            }
             return await VarcoZtl.destroy({ where: { id_varco: id }, ...options});
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione del varco ZTL con id ${id}`);

@@ -107,6 +107,10 @@ class MultaDao implements MultaDAO {
      */
     public async delete(id: number, options?: { transaction?: Transaction }): Promise<number> {
         try {
+            const multa = await Multa.findByPk(id);
+            if (!multa) {
+                throw ErrorFactory.createError(ErrorTypes.NotFound, `Multa con id ${id} non trovata`);
+            }
             return await Multa.destroy({ where: { id_multa: id } });
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione della multa con id ${id}`);

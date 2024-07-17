@@ -23,6 +23,7 @@ class VarcoZtlRepository {
     public async getAllVarcoZtl(): Promise<any[]> {
         try {
             const varchiZtl = await varcoZtlDao.getAll();
+            // arricchisco le info di stampa del varco
             return await Promise.all(varchiZtl.map(varco => this._enrichVarcoZtl(varco)));
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile recuperare i varchi ZTL');
@@ -41,6 +42,7 @@ class VarcoZtlRepository {
             if (!varcoZtl) {
                 throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il varco ZTL con id ${id}`);
             }
+            // arricchiesco le info di stampa del varcco
             return await this._enrichVarcoZtl(varcoZtl);
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il varco ZTL con id ${id}`);
@@ -59,6 +61,7 @@ class VarcoZtlRepository {
             if (!varcoZtl) {
                 throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il varco ZTL con id ${id}`);
             }
+            // arricchisco le info di stampa del varco con i transiti in esso
             const enrichedVarco = await this._enrichVarcoZtl(varcoZtl);
             enrichedVarco.transiti = await this._getTransitiWithDetails(id);
             return enrichedVarco;
