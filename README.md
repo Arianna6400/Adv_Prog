@@ -125,11 +125,10 @@ graph TD
     Operatore(fa:fa-user Operatore) ---|Gestione| GestioneZTL([fa:fa-folder-open Gestione_ZTL])
     Operatore ---|Gestione| GestioneVarchi([fa:fa-folder-open Gestione_Varchi])
     Operatore ---|Gestione| GestioneTransiti([fa:fa-folder-open Gestione_Transiti])
-    Operatore ---|Eliminazione| EliminazioneTransiti([fa:fa-folder-open Eliminazione_e_Update_Transiti])
 
-    GestioneTransiti ---|Include| InserimentoTransiti([fa:fa-folder-open Inserimento_Transiti])
-    GestioneTransiti ---|Include| EliminazioneTransiti([fa:fa-folder-open Eliminazione_Transiti])
-    GestioneTransiti ---|Include| CreazioneAutomaticaMulta([fa:fa-folder-open Creazione_Automatica_Multa])
+    GestioneTransiti ----|Include| InserimentoTransiti([fa:fa-folder-open Inserimento_Transiti])
+    GestioneTransiti ----|Include| EliminazioneTransiti([fa:fa-folder-open Eliminazione_Transiti])
+    GestioneTransiti ----|Include| CreazioneAutomaticaMulta([fa:fa-folder-open Creazione_Automatica_Multa])
 
     VerificaMulte ----|Controlla| CreazioneAutomaticaMulta
     Varco(fa:fa-road Varco) ---|Inserimento| InserimentoTransiti
