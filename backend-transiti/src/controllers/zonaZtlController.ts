@@ -8,30 +8,32 @@ import varcoZtlRepository from '../repositories/varcoZtlRepository';
  * Funzione per gestire le richieste relative alle zone ZTL.
  */
 export const handleZonaZtlRequests = async (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params.id ? parseInt(req.params.id) : null;
-    const includeTransiti = req.params.transiti === 'transiti';
+    const { id, transiti } = req.params;
 
     try {
-        if (id && includeTransiti) {
-            // Recupera la zona ZTL con transiti dal repository usando l'ID
-            const zonaZtl = await zonaZtlRepository.getZonaZtlWithTransiti(id);
+        if (id && transiti === 'transiti') {
+            // Se c'è un ID e 'transiti', recupera la zona ZTL con i transiti associati
+            const zonaZtlWithTransiti = await zonaZtlRepository.getZonaZtlWithTransiti(parseInt(id));
+            if (zonaZtlWithTransiti) {
+                return res.status(StatusCodes.OK).json(zonaZtlWithTransiti);
+            } else {
+                return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
+            }
+        } else if (id && !transiti) {
+            // Se c'è solo l'ID, recupera la zona ZTL specifica
+            const zonaZtl = await zonaZtlRepository.getZonaZtlById(parseInt(id));
             if (zonaZtl) {
                 return res.status(StatusCodes.OK).json(zonaZtl);
             } else {
                 return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
             }
-        } else if (id) {
-            // Se c'è solo l'ID, recupera la zona ZTL dal repository usando l'ID
-            const zonaZtl = await zonaZtlRepository.getZonaZtlById(id);
-            if (zonaZtl) {
-                return res.status(StatusCodes.OK).json(zonaZtl);
-            } else {
-                return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Zona ZTL non trovata'));
-            }
-        } else {
-            // Recupera tutte le zone ZTL dal repository
+        } else if (!id && !transiti) {
+            // Se non c'è un ID, recupera tutte le zone ZTL
             const zoneZtl = await zonaZtlRepository.getAllZonaZtl();
             return res.status(StatusCodes.OK).json(zoneZtl);
+        } else {
+            // Se il parametro transiti è presente ma non è valido
+            return next(ErrorFactory.createError(ErrorTypes.BadRequest, 'Rotta non trovata'));
         }
     } catch (error) {
         return next(error);

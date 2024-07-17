@@ -11,14 +11,14 @@ export const handleVarcoZtlRequests = async (req: Request, res: Response, next: 
 
     try {
         if (id && transiti === 'transiti') {
-            // Se c'è un ID e 'transiti', recupera il varco ZTL con i transiti associati
+            // Se c'è un ID e 'transiti' è esattamente uguale a 'transiti', recupera il varco ZTL con i transiti associati
             const varcoZtlWithTransiti = await varcoZtlRepository.getVarcoZtlWithTransiti(parseInt(id));
             if (varcoZtlWithTransiti) {
                 return res.status(StatusCodes.OK).json(varcoZtlWithTransiti);
             } else {
                 return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Varco ZTL non trovato'));
             }
-        } else if (id) {
+        } else if (id && !transiti) {
             // Se c'è solo l'ID, recupera il varco ZTL specifico
             const varcoZtl = await varcoZtlRepository.getVarcoZtlById(parseInt(id));
             if (varcoZtl) {
@@ -26,10 +26,13 @@ export const handleVarcoZtlRequests = async (req: Request, res: Response, next: 
             } else {
                 return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Varco ZTL non trovato'));
             }
-        } else {
+        } else if (!id && !transiti) {
             // Se non c'è un ID, recupera tutti i varchi ZTL
             const varchiZtl = await varcoZtlRepository.getAllVarcoZtl();
             return res.status(StatusCodes.OK).json(varchiZtl);
+        } else {
+            // Se il parametro transiti è presente ma non è valido
+            return next(ErrorFactory.createError(ErrorTypes.NotFound, 'Rotta non trovata'));
         }
     } catch (error) {
         return next(error);

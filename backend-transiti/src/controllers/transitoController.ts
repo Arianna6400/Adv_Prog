@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import transitoRepository from '../repositories/transitoRepository';
 import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import { StatusCodes } from 'http-status-codes';
-import IsVarco from '../models/isVarco';
 import isVarcoDao from '../dao/isVarcoDao';
 
 /**
