@@ -181,7 +181,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:{{transiti_port}}/login?email=varco.varco@example.com",
+					"raw": "http://127.0.0.1:{{transiti_port}}/login?email=varco_1@example.com",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -196,7 +196,7 @@
 					"query": [
 						{
 							"key": "email",
-							"value": "varco.varco@example.com"
+							"value": "varco_1@example.com"
 						}
 					]
 				}

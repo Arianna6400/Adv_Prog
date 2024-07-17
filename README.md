@@ -1224,6 +1224,8 @@ Nel body:
 }
 ```
 
+> La creazione di un nuovo varco prevede l'inserimento in automatico di un utente con ruolo `varco` associato ad esso.
+
 **Update Varco**
 
 *Rotta:*
@@ -1293,6 +1295,8 @@ Authorization: Bearer {authToken}
     "message": "Varco 5 eliminato con successo"
 }
 ```
+
+> Non è possibile eliminare un varco che presenta dei transiti associati.
 
 ### ZonaZtl
 
@@ -1635,6 +1639,7 @@ Authorization: Bearer {authToken}
     "message": "Zona 4 eliminata con successo"
 }
 ```
+> Non è possibile eliminare una zona che presenta varchi associati.
 
 ### Transito
 
@@ -1785,7 +1790,9 @@ Nel body:
     //"data_ora": "2024-07-15T13:01:04.115Z"
 }
 ```
-> `data_ora` è commentato poiché opzionale; se non inserito verrà preso in considerazione il valore *datetime* attuale. Inoltre, se il transito inserito rispetta i criteri per la generazione della multa (orario e giorno chiusura, veicolo non esente), prevede in automatico la generazione della multa associata al transito.
+> `data_ora` è commentato poiché opzionale; se non inserito verrà preso in considerazione il valore *datetime* attuale. Inoltre, se il transito inserito rispetta i criteri per la generazione della multa (orario e giorno chiusura, veicolo non esente), prevede in automatico la generazione della multa associata al transito. 
+
+> `varco` può essere opzionale se l'utente autenticato ha ruolo `varco`. In questo caso, in fase di inserimento di un nuovo transito, il valore dell'attributo `varco` sarà settato in automatico sul valore dell'ID del varco autenticato, a prescindere dal valore inserito nel body.
 
 *Risposta:*
 
@@ -1844,6 +1851,8 @@ Nel body:
 }
 ```
 
+> Non è possibile aggiornare un transito che presenta multe associate.
+
 **Delete Transito**
 
 
@@ -1866,6 +1875,8 @@ Authorization: Bearer {authToken}
     "message": "Transito 5 eliminato con successo"
 }
 ```
+
+> Non è possibile eliminare un transito che presenta multe associate.
 
 ### Multe
 
@@ -1902,6 +1913,8 @@ Authorization: Bearer {authToken}
     }
 ]
 ```
+
+> L'utente autenticato potrà vedere solo ed esclusivamente le multe associate ai veicoli ad esso collegati.
 
 **Get Multe By UUID**
 
@@ -1968,9 +1981,9 @@ Nel body:
     "token_rimanenti": 15
 }
 ```
+> Sebbene ogni utente di tipo `automobilista` possa visualizzare solo ed esclusivamente le multe dei veicoli ad esso collegati, può effettuare il pagamento di qualsiasi multa, purché sia in possesso dell’UUID della stessa.
 
 **Recharge Tokens**
-
 
 *Rotta:*
 
@@ -2061,8 +2074,6 @@ Il sistema sarà a questo punto in ascolto all'indirizzo `http://127.0.0.1:3000`
 Ai fini della realizzazione del presente progetto sono state effettuate alcune scelte implementative, volte ad agevolare il suo sviluppo a livello didattico. 
 
 Un veicolo potrebbe entrare in una ZTL durante un periodo di apertura, per poi uscire in un momento in cui questa sia chiusa. A tal fine, è utile chiarire che la gestione di questi casi esula dallo scopo del presente progetto; pertanto, il `transito` che viene registrato è da intendersi come il solo transito in ingresso in una ZTL attraverso un varco.
-
-Un’ulteriore scelta adottata riguarda la gestione del pagamento delle multe. Sebbene ogni utente di tipo `automobilista` possa visualizzare solo ed esclusivamente le multe dei veicoli ad esso collegati, può effettuare il pagamento di qualsiasi multa, purché sia in possesso dell’UUID della stessa.
 
 Come già sottolineato nella sezione relativa all’[Architettura dei servizi](#️-architettura-dei-servizi), l’intero sistema è stato implementato all’insegna della modularità, resa possibile dallo sviluppo di due backend completamente indipendenti. 
 
