@@ -975,7 +975,7 @@ All'interno del sistema sono state predisposte le rotte riportate nella seguente
 | `POST`  | /pagamulta | ✔️ | Automobilista |
 | `POST`  | /ricaricatoken/:id | ✔️ | Admin |
 
-> **Nota**: All'intero del sistema sono presenti delle rotte aggiuntive per permettere di visualizzare, aggiungere, aggiornare o cancellare informazioni ulteriori direttamente su Postman. Le CRUD aggiuntive riguardano le classi `veicolo`, `tipoVeicolo`, `orarioChiusura`, `utente`. Le suddette rotte sono state implementate solamente per scopi di completezza e di possibilità di personalizzazione in fase di test. Nel caso in cui vogliano essere provate, il modus operandi è identico alle rotte mostrate nella tabella, ovvero inserendo GET/POST/PUT/DELETE e aggiungendo la classe di entità che si vuole provare.
+> **Nota**: All'intero del sistema sono presenti delle rotte aggiuntive per permettere di visualizzare, aggiungere, aggiornare o cancellare informazioni ulteriori direttamente su Postman. Le CRUD aggiuntive riguardano le classi `veicolo`, `tipoVeicolo`, `orarioChiusura`, `utente`. Le suddette rotte sono state implementate solamente per scopi di completezza e di possibilità di personalizzazione in fase di test; non presentano lo stesso grado di dettaglio e verifica previsto nelle rotte principali. Nel caso in cui vogliano essere provate, il modus operandi è identico alle rotte mostrate nella tabella, ovvero inserendo GET/POST/PUT/DELETE e aggiungendo la classe di entità che si vuole provare.
 
 ### Login
 
@@ -1206,7 +1206,7 @@ Nel body:
 ```json
 {
     "nome": "Varco 5",
-    "via": "Via Romaaa",
+    "via": "Via Ancona",
     "zona_ztl": 1,
     "orario_chiusura": 1
 }
@@ -1218,7 +1218,7 @@ Nel body:
 {
     "id_varco": 5,
     "nome": "Varco 5",
-    "via": "Via Romaaa",
+    "via": "Via Ancona",
     "zona_ztl": 1,
     "orario_chiusura": 1
 }
@@ -1940,6 +1940,8 @@ Se il bollettino è in stato `Non pagato`:
 Se il bollettino è in stato `Pagato`:
 
 ![](https://github.com/Arianna6400/Adv_Prog/blob/master/images/example_bollettino_pagato.png)
+
+> L'utente autenticato potrà stampare solo ed esclusivamente bollettini associati alle multe in suo possesso.
 
 ### Pagamenti
 

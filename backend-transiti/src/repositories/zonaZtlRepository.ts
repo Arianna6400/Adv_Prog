@@ -17,7 +17,7 @@ class ZonaZtlRepository {
     public async getAllZonaZtl(): Promise<any[]> {
         try {
             const zoneZtl = await zonaZtlDao.getAll();
-            // arricchisco le info di stampa della zona con metodo privato
+            // Arricchisce le info di stampa della zona con metodo privato
             return await Promise.all(zoneZtl.map(zona => this._getZonaWithDetails(zona)));
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.BadRequest, 'Impossibile recuperare le zone ZTL');
@@ -32,12 +32,12 @@ class ZonaZtlRepository {
      */
     public async getZonaZtlById(id: number): Promise<any | null> {
         try {
-            // verifico l'esistenza della zona con l'ID
+            // Verifica l'esistenza della zona con l'ID
             const zona = await zonaZtlDao.getById(id);
             if (!zona) {
                 throw ErrorFactory.createError(ErrorTypes.BadRequest, `Impossibile recuperare la zona ZTL con id ${id}`);
             }
-            // arricchisco le info di stampa della zona con metodo privato
+            // Arricchisce le info di stampa della zona con metodo privato
             return await this._getZonaWithDetails(zona);
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.BadRequest, `Impossibile recuperare la zona ZTL con id ${id}`);
@@ -52,12 +52,12 @@ class ZonaZtlRepository {
      */
     public async getZonaZtlWithTransiti(id: number): Promise<any | null> {
         try {
-            // verifico l'esistenza della zona con l'ID
+            // Verifica l'esistenza della zona con l'ID
             const zonaZtl = await zonaZtlDao.getById(id);
             if (!zonaZtl) {
                 throw ErrorFactory.createError(ErrorTypes.BadRequest, `Impossibile recuperare la zona ZTL con id ${id}`);
             }
-            // arricchisco le info di stampa della zona con i transiti in essa
+            // Arricchisce le info di stampa della zona con i transiti in essa
             const varchiNellaZona = await this._getVarchiByZona(zonaZtl.id_zona);
             const transitiWithDetails = await Promise.all(varchiNellaZona.map(async (varco) => {
                 const transiti = await this._getTransitiByVarco(varco.id_varco);

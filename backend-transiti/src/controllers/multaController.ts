@@ -39,7 +39,6 @@ export const handleMulteRequests = async (req: Request, res: Response, next: Nex
 /**
  * Crea un PDF con le informazioni fornite e lo invia come risposta.
  * 
- * @param {Response} res La risposta HTTP.
  * @param {Object} data I dati per popolare il PDF.
  * @param {Object} data.multa Le informazioni sulla multa.
  * @param {Object} data.transito Le informazioni sul transito.

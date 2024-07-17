@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS "is_varco" (
 
 -- SEEDING DEL DATABASE --
 
--- Inserisci dati nella tabella UTENTE
+-- Inserisce dati nella tabella UTENTE
 INSERT INTO "utente" (nome, cognome, email, ruolo, token_rimanenti) VALUES
 ('Arianna', 'Agresta', 'arianna.agresta@gmail.com', 'automobilista', 20.00),
 ('Andrea', 'Iasenzaniro', 'andrea.iasenzaniro@gmail.com', 'operatore', 20.00),
@@ -96,7 +96,7 @@ INSERT INTO "utente" (nome, cognome, email, ruolo, token_rimanenti) VALUES
 ('Elena', 'Blu', 'elena.blu@example.com', 'automobilista', 40.00),
 ('Giulia', 'Verdi', 'giulia.verdi@example.com', 'admin', 20.00);
 
--- Inserisci dati nella tabella TIPO_VEICOLO
+-- Inserisce dati nella tabella TIPO_VEICOLO
 INSERT INTO "tipo_veicolo" (descrizione, tariffa_base) VALUES
 ('Moto', 3.00),
 ('Furgone', 7.50),
@@ -105,7 +105,7 @@ INSERT INTO "tipo_veicolo" (descrizione, tariffa_base) VALUES
 ('Camion', 10.00),
 ('Autobus', 8.00);
 
--- Inserisci dati nella tabella VEICOLO
+-- Inserisce dati nella tabella VEICOLO
 INSERT INTO "veicolo" (targa, esente, tipo_veicolo, utente) VALUES
 ('AB123CD', FALSE, 1, 1),
 ('IJ789KL', TRUE, 2, 1),
@@ -115,7 +115,7 @@ INSERT INTO "veicolo" (targa, esente, tipo_veicolo, utente) VALUES
 ('KL678MN', TRUE, 6, 12),
 ('OP901QR', FALSE, 5, 13);
 
--- Inserisci dati nella tabella ZONA_ZTL
+-- Inserisce dati nella tabella ZONA_ZTL
 INSERT INTO "zona_ztl" (nome) VALUES
 ('Centro Storico'),
 ('Zona Industriale'),
@@ -123,7 +123,7 @@ INSERT INTO "zona_ztl" (nome) VALUES
 ('Zona Universitaria'),
 ('Zona Commerciale');
 
--- Inserisci dati nella tabella ORARIO_CHIUSURA
+-- Inserisce dati nella tabella ORARIO_CHIUSURA
 INSERT INTO "orario_chiusura" (giorno_chiusura, orario_inizio_f, orario_fine_f, orario_inizio_l, orario_fine_l, tariffa_f, tariffa_l) VALUES
 ('lunedì', '08:00:00', '18:00:00', '08:00:00', '18:00:00', 2.00, 1.50),
 ('sabato', '10:00:00', '20:00:00', '10:00:00', '20:00:00', 3.00, 2.50),
@@ -132,7 +132,7 @@ INSERT INTO "orario_chiusura" (giorno_chiusura, orario_inizio_f, orario_fine_f, 
 ('mercoledì', '07:30:00', '19:30:00', '07:30:00', '19:30:00', 3.00, 2.25),
 ('giovedì', '08:00:00', '18:00:00', '08:00:00', '18:00:00', 2.00, 1.50);
 
--- Inserisci dati nella tabella VARCO_ZTL
+-- Inserisce dati nella tabella VARCO_ZTL
 INSERT INTO "varco_ztl" (nome, via, zona_ztl, orario_chiusura) VALUES
 ('Varco 1', 'Via Roma', 1, 1),
 ('Varco 2', 'Via Milano', 1, 2),
@@ -142,7 +142,7 @@ INSERT INTO "varco_ztl" (nome, via, zona_ztl, orario_chiusura) VALUES
 ('Varco 6', 'Via Pescara', 3, 5),
 ('Varco 7', 'Via Termoli', 5, 6);
 
--- Inserisci dati nella tabella TRANSITO
+-- Inserisce dati nella tabella TRANSITO
 INSERT INTO "transito" (veicolo, varco, data_ora) VALUES
 ('AB123CD', 1, '2024-07-08 08:30:00'),
 ('IJ789KL', 2, '2024-07-07 09:00:00'),
@@ -152,13 +152,14 @@ INSERT INTO "transito" (veicolo, varco, data_ora) VALUES
 ('KL678MN', 5, '2024-07-08 09:00:00'),
 ('OP901QR', 3, '2024-07-08 10:00:00');
 
--- Inserisci dati nella tabella MULTA
+-- Inserisce dati nella tabella MULTA
 INSERT INTO "multa" (transito, data_multa, pagata, importo_token, uuid_pagamento) VALUES
 (1, '2024-07-08 10:00:00', FALSE, 5, '550e8400-e29b-41d4-a716-446655440000'),
 (3, '2024-07-07 11:00:00', FALSE, 3, '550e8400-e29b-41d4-a716-446655440001'),
 (5, '2024-07-08 12:30:00', FALSE, 6, '550e8400-e29b-41d4-a716-446655440002'),
 (7, '2024-07-08 13:45:00', TRUE, 2, '550e8400-e29b-41d4-a716-446655440003');
 
+-- Inserisce dati nella tabella IS_VARCO
 INSERT INTO "is_varco" (id_utente, id_varco) VALUES
 (4, 1),
 (5, 2),

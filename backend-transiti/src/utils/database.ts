@@ -11,10 +11,10 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') }); // il percorso perm
 class Database {
   private static instance: Sequelize;
 
-  // costruttore privato per impedire accesso esterno
+  // Costruttore privato per impedire accesso esterno
   private constructor() {}
 
-  // metodo statico per ottenere istanza singleton di connessione
+  // Metodo statico per ottenere istanza singleton di connessione
   public static getInstance(): Sequelize {
     if (!Database.instance) {
       const dbName: string = process.env.DB_NAME || '';

@@ -97,7 +97,6 @@ class TransitoDao implements TransitoDAO {
             }
             return await Transito.destroy({ where: { id_transito: id } });
         } catch (error) {
-            console.error(`Errore nella cancellazione del transito con id ${id}:`, error);
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Errore nella cancellazione del transito con id ${id}`);
         }
     }

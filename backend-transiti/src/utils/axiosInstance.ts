@@ -5,14 +5,15 @@ const axiosInstance = axios.create({
 });
 
 /**
- *  imposta il token come intestazione di autorizzazione per tutte le richieste Axios.
- * @param token token jwt
+ *  Imposta il token come intestazione di autorizzazione per tutte le richieste Axios.
+ * 
+ * @param {string} token Il token JWT
  */
 export const setAuthToken = (token: string) => {
   if (token) {
     axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   } else {
-    delete axiosInstance.defaults.headers.common['Authorization']; // se il token non è fornito viene rimossa l'intestazione Authorization
+    delete axiosInstance.defaults.headers.common['Authorization']; // Se il token non è fornito viene rimossa l'intestazione Authorization
   }
 };
 

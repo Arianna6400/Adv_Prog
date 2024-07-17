@@ -82,14 +82,13 @@ class VarcoZtlRepository {
         const sequelize = Database.getInstance();
         const transaction = await sequelize.transaction();
 
-        // verifico l'esistenza della zona associata
+        // Verifica l'esistenza della zona associata
         await zonaZtlDao.getById(data.zona_ztl);
-        // verifico l'esistenza dell'orario di chiusura
+        // Verifica l'esistenza dell'orario di chiusura
         await orarioChiusuraDao.getById(data.orario_chiusura);
 
-        // procedo con la creazione
+        // Procedo con la creazione
         try {    
-            const zona = await zonaZtlDao.getById(data.zona_ztl);
             // Crea il varco ZTL
             const varcoZtl = await varcoZtlDao.create(data, { transaction });
             if(! varcoZtl){

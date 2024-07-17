@@ -1,4 +1,3 @@
-import { STATUS_CODES } from 'http';
 import { StatusCodes } from 'http-status-codes';
 
 /**
