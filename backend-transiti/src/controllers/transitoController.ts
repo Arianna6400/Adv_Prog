@@ -37,9 +37,10 @@ export const createTransito = async (req: Request, res: Response, next: NextFunc
     try {
         const user = (req as any).user; // Estrae l'utente dal payload JWT
         const { ruolo, id } = user;
-        const varcoLog = await isVarcoDao.getById(id)
+        
         // Se l'utente è un varco, imposta l'attributo varco nel corpo della richiesta
         if (ruolo === 'varco') {
+            const varcoLog = await isVarcoDao.getById(id)
             req.body.varco = varcoLog?.id_varco;
         }
 
