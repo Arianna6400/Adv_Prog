@@ -74,11 +74,11 @@ graph TD;
 Il diagramma rappresenta la struttura dell'architettura del sistema sviluppato. L'intera rete backend prevede l'orchestrazione, tramite `docker-compose`, di tre container rappresentati da servizi `Docker`.
 
 Il container Transiti ospita il servizio "**backend-transiti**", accessibile all'indirizzo `transiti:3000`, che è responsabile della gestione delle zone ztl, dei varchi, dei veicoli e dell’emissione delle multe. 
-Il container Pagamenti ospita il servizio "**backend-pagamenti**", accessibile all'indirizzo `pagamenti:3001`,responsabile della gestione dei crediti degli utenti e dei pagamenti delle multe. 
-Il container del DB, invece, contiene un database **PostgreSQL** accessibile all'indirizzo `db:5432`, è il responsabile della gestione della persistenza dei dati.
+Il container Pagamenti ospita il servizio "**backend-pagamenti**", accessibile all'indirizzo `pagamenti:3001`, responsabile della gestione dei crediti degli utenti e dei pagamenti delle multe. 
+Il container del DB, che è il responsabile della gestione della persistenza dei dati, contiene un database **PostgreSQL**, accessibile all'indirizzo `db:5432`.
 
-Entrambe i backend sono pensati e sviluppati in modo tale da poter funzionare indipendentemente l'uno dall'altro. L'utente finale, rappresentato da un elemento separato nel diagramma, interagisce con il sistema inviando chiamate API al backend-transiti, il quale provvede autonomamente a comunicare, quando necessario, con il backend-pagamenti. 
-Entrambi questi i servizi introdotti dipendono dal database PostgreSQL, il che significa che per funzionare correttamente devono poter accedere ai dati memorizzati in esso. Questa struttura permette una chiara separazione dei servizi e una gestione centralizzata dei dati tramite il database PostgreSQL.
+Entrambi i backend sono pensati e sviluppati in modo tale da poter funzionare indipendentemente l'uno dall'altro. L'utente finale, rappresentato da un elemento separato nel diagramma, interagisce con il sistema inviando chiamate API al backend-transiti, il quale provvede autonomamente a comunicare, quando necessario, con il backend-pagamenti. 
+Entrambi questi servizi introdotti dipendono dal database PostgreSQL, il che significa che per funzionare correttamente devono poter accedere ai dati memorizzati in esso. Questa struttura permette una netta separazione dei servizi e una gestione centralizzata dei dati tramite il database PostgreSQL.
 
 L'architettura dei servizi si riflette sulla struttura stessa dell'intero progetto. Le directory, infatti, sono organizzate come di seguito:
 
@@ -118,7 +118,7 @@ project
 
 ### 📊 Diagramma dei casi d'uso
 
-Il diagramma dei casi d'uso del sistema complessivo viene mostrato nella figura segeunte. Questo mostra la prsenza di quattro attori: **operatore**, **automobilista**, **varco** e **admin**, ognuno dei quali interagisce con il sistema tramite funzioni dedicate.
+Il diagramma dei casi d'uso del sistema complessivo viene mostrato nella figura seguente. Sono evidenziati quattro attori: **operatore**, **automobilista**, **varco** e **admin**, ognuno dei quali interagisce con il sistema tramite funzioni dedicate.
 
 ```mermaid
 graph TD
@@ -147,7 +147,7 @@ Il RDBMS scelto per la realizzazione del sistema è **PostgreSQL**, un database 
 
 Di seguito, viene mostrato il diagramma "Entity-Relationship"(E-R) di rappresentazione concettuale e grafica delle classi all'interno del database utilizzato.
 
-La realizzazione del progetto si concentra prevalentemente sulla gestione dei transiti che avvengono attraverso i varci delle ZTL, per questo motivo, per non appesantire ulteriormente la gestione del DB, si è deciso di non gestire lo storico degli orari di apertura e chiusura dei varchi delle ZTL.
+La realizzazione del progetto si concentra prevalentemente sulla gestione dei transiti che avvengono attraverso i varchi delle ZTL, per questo motivo, per non appesantire ulteriormente la gestione del DB, si è deciso di non inserire una ulteriore tabella per la gestione dello storico degli orari di apertura e chiusura dei varchi delle ZTL.
 
 ```mermaid
 erDiagram
@@ -243,11 +243,11 @@ Il pattern architetturale scelto per la struttura del sistema è il **Model-View
 
 **Data Access Object (DAO)**
 
-Per astrarre la logica di accesso ai dati, indipendentemente dal tipo di meccanismo di memorizzazione utilizzato, è stato scelto il pattern **Data Access Object** (**DAO**). Esso fornisce un'interfaccia astratta comune per eseguire operazioni CRUD e altre operazioni di accesso ai dati, isolando il codice di accesso ai dati dal codice di business.
+Per astrarre la logica di accesso ai dati, indipendentemente dal tipo di meccanismo di memorizzazione utilizzato, è stato scelto il pattern **Data Access Object** (**DAO**). Esso fornisce un'interfaccia astratta comune per eseguire operazioni CRUD e altre operazioni di accesso ai dati, isolando il codice di accesso ai dati dalla logica di business.
 
-Il DAO presenta diverse componenti: l'*interfaccia* di definizione dei metodi di accesso ai dati che devono essere implementati, l'*implementazione* concreta dei metodi definiti dall'interfaccia DAO che contiene il codice specifico di interazione con le fonti di dati e le *classi di entità*, cioè i Model, che rappresentano i dati che vengono manipolati dal DAO. Queste ultime classi sono mappate alle tabelle del database.
+Il DAO presenta diverse componenti: l'*interfaccia* di definizione dei metodi di accesso ai dati che devono essere implementati, l'*implementazione* concreta dei metodi definiti dall'interfaccia DAO, che contiene il codice specifico di interazione con le fonti di dati e le *classi di entità*, cioè i Model, che rappresentano i dati che vengono manipolati dal DAO. Queste ultime classi sono mappate alle tabelle del database.
 
-L'utilità principale del pattern è rappresentata dal fatto che ad un singolo Model viene corrisposto un singolo DAO, garantendo l'accesso ai dati necessari, e, soprattutto, uno o più DAO possono essere richiamati da componenti superiori quali **Repository** (se previsto) o **Controller**, per l'utilizzo combinato dell'accesso ai dati. In questo modo, non solo è garantita un'elevata riutilizzabilità del codice in diverse parti dell'applicazione, ma soprattutto viene implementata una forte modularità e separazione delle responsabilità da parte di tutte le componenti.
+L'utilità principale del pattern è rappresentata dal fatto che ad un singolo Model viene corrisposto un singolo DAO, garantendo l'accesso ai dati necessari, e, soprattutto, uno o più DAO possono essere richiamati da componenti superiori quali **Repository** (se previsti), per l'utilizzo combinato dell'accesso ai dati. In questo modo, non solo è garantita un'elevata riutilizzabilità del codice in diverse parti dell'applicazione, ma soprattutto viene implementata una forte modularità e separazione delle responsabilità da parte di tutte le componenti.
 
 > All'interno del progetto, i DAO sono stati implementati per tutte le CRUD di tutte le classi di entità, indipendentemente dal fatto che servissero o meno ai fini dello scopo. 
 
@@ -255,7 +255,7 @@ L'utilità principale del pattern è rappresentata dal fatto che ad un singolo M
 
 Per avere una centralizzazione della logica di accesso ai dati e offrire un'interfaccia coerente per il resto dell'applicazione, è stato utilizzato il pattern **Repository**, il quale fornisce un'astrazione dell'accesso ai dati, nascondendo i dettagli di come i dati vengono effettivamente recuperati o memorizzati. 
 
-Centralizzando la logica di accesso ai dati, un Repository permette di trattare le entità come se fossero raccolte di memoria, fornendo metodi per aggiungere, rimuovere e recuperare oggetti. Al suo interno, il Repository fornisce l'implementazione concreta dei metodi necessari, utilizzando i DAO come tecnica di persistenza per l'interazione con le classi di dato.
+Centralizzando la logica di accesso ai dati, un Repository permette di trattare le entità come se fossero raccolte di memoria, fornendo metodi per aggiungere, rimuovere e recuperare oggetti. Al suo interno, il Repository fornisce l'implementazione concreta dei metodi necessari, utilizzando i DAO come tecnica di persistenza per l'interazione con le classi di dati.
 
 Mentre il DAO lavora ad un livello più basso, vicino al database, per eseguire operazioni CRUD, il Repository fornisce un livello di astrazione superiore, incapsulando la logica di accesso ai dati e utilizzando uno o più DAO per realizzare le operazioni di persistenza. Il vantaggio principale del Repository consiste proprio nella capacità di astrazione sopra il livello di persistenza, consentendo di cambiare facilmente l'implementazione senza influenzare il resto dell'applicazione.
 
@@ -263,17 +263,17 @@ Mentre il DAO lavora ad un livello più basso, vicino al database, per eseguire 
 
 Il pattern **Chain of Responsability** (**COR**) è un design pattern comportamentale che permette di passare le richieste lungo catene di gestori, che sono rappresentati da oggetti che possono gestire la richiesta o passarla all'oggetto successivo della catena. L'utilizzo di questo pattern permette una gestione accurata delle richieste, senza l'effettiva conoscenza degli oggetti coinvolti da parte del mittente.
 
-I *middleware*, in particolare, permettono la creazione della catena di responsabilità, poiché [Express.js](https://expressjs.com/) stesso fa un ampio uso di questo pattern. I middleware, infatti, sono funzioni che vengono eseguite in sequenza per gestire le richieste HTTP. Sfruttando il COR, sono state implementate le seguuenti funzionalità dei middleware:
+I *middleware*, in particolare, permettono la creazione della catena di responsabilità, poiché [Express.js](https://expressjs.com/) stesso fa un ampio uso di questo pattern. I middleware, infatti, sono funzioni che vengono eseguite in sequenza per gestire le richieste HTTP. Sfruttando il COR, sono state implementate le seguenti funzionalità dei middleware:
 
-* **Middleware di autenticazione**: Verifica se l'utente è autenticato e autorizzato a eseguire l'operazione richiesta, sfruttando la verifica tramite **JWT**. Se non lo è, restituisce una risposta di errore; altrimenti, passa la richiesta al prossimo middleware.
+* **Middleware di autenticazione**: Verifica se l'utente è autenticato e autorizzato ad eseguire l'operazione richiesta, sfruttando la verifica tramite **JWT**. Se non lo è, restituisce una risposta d'errore; altrimenti, passa la richiesta al middleware successivo.
 
-* **Middleware di validazione**: Viene utilizzato per validare i dati di una richiesta, che possono essere passati come `param` o `body`. Se i dati non sono validi, restituisce una risposta di errore; altrimenti, passa la richiesta al prossimo middleware.
+* **Middleware di validazione**: Viene utilizzato per validare i dati di una richiesta, che possono essere passati come `param` o `body`. Se i dati non sono validi, restituisce una risposta d'errore; altrimenti, passa la richiesta al middleware successivo.
 
-* **Middleware di gestione degli errori**: Intercetta eventuali errori verificatisi nei middleware precedenti e restituisce una risposta di errore appropriata, sfruttando un `errorHandler` personalizzato con il pattern **Factory**.
+* **Middleware di gestione degli errori**: Intercetta eventuali errori verificatisi nei middleware precedenti e restituisce una risposta d'errore appropriata, sfruttando un `errorHandler` personalizzato con il pattern **Factory**.
 
 **Factory**
 
-Per la gestione personalizzata degli errori è stato scelto l'utilizzo del design pattern comportamentale **Factory**, il quale permette di delegare la creazione di oggetti a una factory (fabbrica), che decide quale tipo di oggetto creare in base a certi parametri. 
+Per la gestione personalizzata degli errori è stato scelto l'utilizzo del design pattern comportamentale **Factory**, il quale permette di delegare la creazione di oggetti a una factory (fabbrica), che decide quale tipo di oggetto creare in base a determinati parametri parametri forniti. 
 
 All'interno del sistema sviluppato, il pattern è stato utilizzato per la creazione di errori personalizzati attraverso l'`errorFactory`, che fornisce un metodo per creare istanze di errori `HttpError` con diversi tipi e messaggi, sfruttando anche l'utilizzo della libreria `http-status-code` per la stampa dei codici di errore, incapsulando la logica di creazione degli errori in un'unica classe. In questo modo, risulta particolarmente facilitata la gestione e la possibile estensione degli errori, essendo l'intera logica localizzata in un unico punto.
 
@@ -281,11 +281,13 @@ All'interno del sistema sviluppato, il pattern è stato utilizzato per la creazi
 
 Poiché l'intero sistema è composto da due backend distinti che condividono i dati dello stesso database e, di conseguenza, attingono dalla stessa fonte, è stato necessario l'utilizzo di un design pattern creazionale, chiamato **Singleton**, che garantisce la presenza di una classe con una sola istanza, che fornisce un punto di accesso globale ad essa. L'implementazione del pattern è stata eseguita proprio attraverso l'utilizzo del metodo `getInstance()`, il quale garantisce l'istanza di connessione condivisa al database.
 
-Per la gestione delle risorse condivise, come la connessione al DB, questo pattern risulta particolarmente efficace. In questo modo, oltre a garantire una sola connessione condivisa tra le varie parti dell'applicazione, vengono evitati problemi di concorrenza e viene migliorata l'efficienza delle risorse.
+Per la gestione delle risorse condivise, come ad esempio la connessione al DB, questo pattern risulta particolarmente efficace. In questo modo, oltre a garantire una sola connessione condivisa tra le varie parti dell'applicazione, vengono evitati problemi di concorrenza e viene migliorata l'efficienza delle risorse.
 
 ### 🔄 Diagrammi delle sequenze
 
-I diagrammi delle sequenze permettono di illustrare la sequenza di messaggi di richiesta e risposta tra un gruppo di oggetti che interagiscono tra di loro. Essi offrono una rappresentazione utile alla comprensione della comunicazione tra le varie entità, perciò sono particolarmente consigliati per mostrare il processo di interazione in un contesto basato su rotte API. Poiché il sistema sviluppato presenta numerose rotte relative alle principali operazioni CRUD (Create, Read, Update, Delete), è stato deciso di mostrare solamente i diagrammi delle rotte più significative e complesse per entrambi i backend sviluppati. In particolare, vengono mostrate rotte di tipo GET e/o POST, più l'aggiunta di una DELETE; le rotte PUT per l'Update non sono state inserite, essendo tutte molto simili tra loro.
+I diagrammi delle sequenze permettono di illustrare la sequenza di messaggi di richiesta e risposta tra un gruppo di oggetti che interagiscono tra di loro. Essi offrono una rappresentazione utile alla comprensione della comunicazione tra le varie entità, perciò sono particolarmente consigliati per mostrare il processo di interazione in un contesto basato su rotte API. 
+
+Poiché il sistema sviluppato presenta numerose rotte relative alle principali operazioni CRUD (Create, Read, Update, Delete), è stato deciso di mostrare solamente i diagrammi delle rotte più significative e complesse per entrambi i backend sviluppati. In particolare, vengono mostrate rotte di tipo GET e/o POST, più l'aggiunta di una DELETE; le rotte PUT per l'Update non sono state inserite, essendo tutte molto simili tra loro.
 
 🚌 **Backend-Transiti**
 
@@ -950,7 +952,7 @@ sequenceDiagram
 
 ## 🔌 API Routes
 
-All'interno del sistema sono state predisposte le rotte mostrate in tabella; ogni rotta prevede il processo di autenticazione tramite JWT e, oltretutto, sono previste autorizzazioni per ruolo diverse a seconda della rotta.
+All'interno del sistema sono state predisposte le rotte riportate nella seguente tabella; ogni rotta prevede il processo di autenticazione, nonchè di autorizzazione, tramite JWT, del ruolo dell'utente, a seconda della rotta utilizzata.
 
 
 | Tipo | Rotta | Autenticazione | Autorizzazione | 
@@ -973,7 +975,7 @@ All'interno del sistema sono state predisposte le rotte mostrate in tabella; ogn
 | `POST`  | /pagamulta | ✔️ | Automobilista |
 | `POST`  | /ricaricatoken/:id | ✔️ | Admin |
 
-> **Nota**: Sono state implementate delle rotte aggiuntive all'interno del sistema, per permettere di visualizzare, aggiungere, aggiornare o cancellare informazioni ulteriori direttamente su Postman. Le CRUD aggiuntive riguardano le classi `veicolo`, `tipoVeicolo`, `orarioChiusura`, `utente`. Le suddette rotte sono state implementate solamente per scopi di completezza e di possibilità di personalizzazione in fase di test. Nel caso in cui vogliano essere provate, il modus operandi è identico alle rotte mostrate nella tabella, ovvero inserendo GET/POST/PUT/DELETE e aggiungendo la classe di entità che si vuole provare.
+> **Nota**: All'intero del sistema sono presenti delle rotte aggiuntive per permettere di visualizzare, aggiungere, aggiornare o cancellare informazioni ulteriori direttamente su Postman. Le CRUD aggiuntive riguardano le classi `veicolo`, `tipoVeicolo`, `orarioChiusura`, `utente`. Le suddette rotte sono state implementate solamente per scopi di completezza e di possibilità di personalizzazione in fase di test. Nel caso in cui vogliano essere provate, il modus operandi è identico alle rotte mostrate nella tabella, ovvero inserendo GET/POST/PUT/DELETE e aggiungendo la classe di entità che si vuole provare.
 
 ### Login
 
@@ -2031,18 +2033,18 @@ Authorization: Bearer {authToken}
 
 ## ⚙️ Set-up
 
-Per utilizzare l'applicazione, è necessario seguire i seguenti passaggi:
+Per utilizzare l'applicazione è necessario seguire i seguenti passaggi preliminari:
 
-1. Il primo requisito fondamentale è l'installazione di [Docker](https://www.docker.com/) e [docker-compose](https://docs.docker.com/compose/).
+1. Come prima cosa è necessario installare [Docker](https://www.docker.com/) e [docker-compose](https://docs.docker.com/compose/).
 
-2. Successivamente, bisogna eseguire la *clone* della repository. Per far ciò, si può eseguire il seguente comando sul proprio terminale:
+2. Successivamente, bisogna eseguire la *clone* della repository. Per far ciò, è sufficiente eseguire i seguenti comandi sul proprio terminale:
 
 ```bash
 git clone https://github.com/Arianna6400/Adv_Prog
 cd Adv_Prog
 ```
 
-3. Per utilizzare il sistema, è fondamentale importare il file `.env` all'interno della directory principale.
+3. Per utilizzare correttamente il sistema, è fondamentale, poi, importare il file `.env` all'interno della directory principale.
 
 4. A questo punto, attraverso la propria CLI, è possibile avviare l'applicazione digitando il seguente comando:
 
@@ -2050,7 +2052,7 @@ cd Adv_Prog
 docker-compose up --build
 ```
 
-Il sistema sarà in ascolto all'indirizzo `http://127.0.0.1:3000`. 
+Il sistema sarà a questo punto in ascolto all'indirizzo `http://127.0.0.1:3000`. 
 
 5. Le rotte API mostrate nella sezione [API Routes](#-api-routes) possono essere testate tramite [Postman](https://www.postman.com/), utilizzando la collection `PA_2024_collection.postman_collection.json` e l'environment `PA_2024_environment.postman_environment.json`, reperibili nella directory `postman`.
 
@@ -2058,22 +2060,26 @@ Il sistema sarà in ascolto all'indirizzo `http://127.0.0.1:3000`.
 
 Ai fini della realizzazione del presente progetto sono state effettuate alcune scelte implementative, volte ad agevolare il suo sviluppo a livello didattico. 
 
-Un veicolo potrebbe entrare in una ZTL durante un periodo di apertura, per poi uscire in un momento in cui questa sia chiusa. A tal fine, è utile chiarire che la gestione di questi casi esula dallo scopo del presente progetto. Pertanto, il `transito` che viene registrato è da intendersi come il solo transito in ingresso in una ZTL attraverso un varco.
+Un veicolo potrebbe entrare in una ZTL durante un periodo di apertura, per poi uscire in un momento in cui questa sia chiusa. A tal fine, è utile chiarire che la gestione di questi casi esula dallo scopo del presente progetto; pertanto, il `transito` che viene registrato è da intendersi come il solo transito in ingresso in una ZTL attraverso un varco.
 
-Un’ulteriore scelta riguarda la gestione del pagamento delle multe. Sebbene ogni utente di tipo `automobilista` possa visualizzare solo ed esclusivamente le multe dei veicoli a esso intestati, può effettuare il pagamento di qualsiasi multa, purché sia in possesso dell’UUID della stessa.
+Un’ulteriore scelta adottata riguarda la gestione del pagamento delle multe. Sebbene ogni utente di tipo `automobilista` possa visualizzare solo ed esclusivamente le multe dei veicoli ad esso collegati, può effettuare il pagamento di qualsiasi multa, purché sia in possesso dell’UUID della stessa.
 
-Come già sottolineato nel capitolo relativo all’[Architettura dei servizi](#️-architettura-dei-servizi), l’intero sistema è stato implementato all’insegna della modularità, resa possibile dallo sviluppo di due backend completamente indipendenti. Per permettere l’integrazione e la comunicazione tra questi due servizi, è stato utilizzato **Axios**, una libreria basata su Promises per JavaScript, utilizzata principalmente per eseguire richieste HTTP asincrone verso un endpoint. È particolarmente utile per le applicazioni web e mobile per la sua semplicità e capacità di gestire le richieste in modo efficiente.
+Come già sottolineato nella sezione relativa all’[Architettura dei servizi](#️-architettura-dei-servizi), l’intero sistema è stato implementato all’insegna della modularità, resa possibile dallo sviluppo di due backend completamente indipendenti. 
 
-Nel contesto di questo progetto, Axios è stato utilizzato per effettuare chiamate HTTP tra i due backend, garantendo una comunicazione fluida e modulare. Ad esempio, quando un utente tenta di pagare una multa, il backend responsabile della gestione delle transazioni invia una richiesta HTTP al backend che gestisce le informazioni sulle multe, utilizzando Axios. Questo approccio permette di mantenere i servizi indipendenti e modulari, facilitando la manutenzione e l’espansione del sistema.
+Per permettere l’integrazione e la comunicazione tra questi due servizi, è stata scelta **Axios**, una libreria basata su Promises per JavaScript, utilizzata principalmente per eseguire richieste HTTP asincrone verso un endpoint. È particolarmente utile per le applicazioni web e mobile per la sua semplicità e capacità di gestire le richieste in modo efficiente.
 
-Data la natura del progetto che non prevede lo sviluppo di un frontend, le rotte di cui sopra sono state verificate in Postman. Ciascuna rotta prevede l'autenticazione e l'autorizzazione dell'utente, a seconda del ruolo che esso ricopre. Per agevolare le richieste è stato utilizzato in Postman un piccolo script che permettesse di settare in automatico una variabile di ambiente `authToken` contenente il token di autenticazione dell'utente.
+Nel contesto di questo progetto, Axios è stato utilizzato per effettuare chiamate HTTP tra i due backend, garantendo una comunicazione fluida e modulare. Ad esempio, quando un utente tenta di pagare una multa, il backend responsabile della gestione dei transiti invia una richiesta HTTP al backend che gestisce le informazioni sulle multe, utilizzando Axios. Questo approccio permette di mantenere i servizi indipendenti e modulari, facilitando la manutenzione e l’espansione del sistema.
+
+Data la natura del progetto che non prevede lo sviluppo di un frontend, le rotte di cui sopra sono state verificate in Postman. Ciascuna rotta prevede l'autenticazione e l'autorizzazione dell'utente, a seconda del ruolo che esso ricopre. 
+
+Per agevolare le richieste è stato utilizzato in Postman un script in javascript che permettesse di settare in automatico la variabile di ambiente `authToken` contenente il token di autenticazione dell'utente.
 ```javascript
 pm.test("Save token", function () {
     var jsonData = pm.response.json();
     pm.environment.set("authToken", jsonData.token);
 });
 ```
-Questo script di Postman salva un token di autenticazione dalla risposta di una richiesta HTTP in una variabile di ambiente, rendendolo disponibile per successive richieste. È un esempio semplice ma potente di come automatizzare la gestione dei token di autenticazione nei test delle API, migliorando l’efficienza e riducendo la possibilità di errori manuali.
+Questo script di Postman salva un token di autenticazione dalla risposta di una richiesta HTTP in una variabile di ambiente, rendendolo disponibile per successive richieste. È un esempio semplice, ma potente, di come automatizzare la gestione dei token di autenticazione nei test delle API, migliorando l’efficienza e riducendo la possibilità di errori manuali.
 
 ## 🛠️ Strumenti utilizzati
 
