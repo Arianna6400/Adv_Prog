@@ -86,8 +86,12 @@ class MultaRepository {
      * @returns {Promise<Veicolo[]>} Una Promise che risolve con un array di veicoli dell'utente.
      */
     private async _getVeicoliByUtente(utenteId: number): Promise<Veicolo[]> {
-        const veicoli = await veicoloDao.getAll();
-        return veicoli.filter(veicolo => veicolo.utente === utenteId);
+        try{
+            const veicoli = await veicoloDao.getAll();
+            return veicoli.filter(veicolo => veicolo.utente === utenteId);
+        } catch (error) {
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore durante il recupero dei veicoli dell\'utente');
+        }
     }
 
     /**
@@ -97,8 +101,12 @@ class MultaRepository {
      * @returns {Promise<Transito[]>} Una Promise che risolve con un array di transiti dei veicoli dell'utente.
      */
     private async _getTransitiByVeicoli(veicoliUtente: Veicolo[]): Promise<Transito[]> {
-        const transiti = await transitoDao.getAll();
-        return transiti.filter(transito => veicoliUtente.some(veicolo => veicolo.targa === transito.veicolo));
+        try{
+            const transiti = await transitoDao.getAll();
+            return transiti.filter(transito => veicoliUtente.some(veicolo => veicolo.targa === transito.veicolo));
+        } catch (error){
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore durante il recupero dei transiti dei veicoli dell\'utente');
+        }
     }
 
     /**
@@ -108,8 +116,12 @@ class MultaRepository {
      * @returns {Promise<Multa[]>} Una Promise che risolve con un array di multe dei transiti dell'utente.
      */
     private async _getMulteByTransiti(transitiUtente: Transito[]): Promise<Multa[]> {
-        const multe = await multaDao.getAll();
-        return multe.filter(multa => transitiUtente.some(transito => transito.id_transito === multa.transito));
+        try{
+            const multe = await multaDao.getAll();
+            return multe.filter(multa => transitiUtente.some(transito => transito.id_transito === multa.transito));
+        } catch (error){
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore durante il recupero delle multe dei transiti dell\'utente');
+        }
     }
 }
 

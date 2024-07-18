@@ -199,7 +199,7 @@ class VarcoZtlRepository {
         } catch (error) {
             // Annulla la transazione in caso di errore
             await transaction.rollback();
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile cancellare il varco ZTL con id ${id}`);
+            throw (error);
         }
     }
 
@@ -212,13 +212,17 @@ class VarcoZtlRepository {
      * @returns {Promise<any[]>} Una Promise che risolve più array di Promise.
      */
     private async _enrichVarcoZtl(varcoZtl: VarcoZtl): Promise<any> {
-        const zonaZtl = await zonaZtlDao.getById(varcoZtl.zona_ztl);
-        const orarioChiusura = await orarioChiusuraDao.getById(varcoZtl.orario_chiusura);
-        return {
-            ...varcoZtl.dataValues,
-            zona_ztl: zonaZtl ? zonaZtl.dataValues : null,
-            orario_chiusura: orarioChiusura ? orarioChiusura.dataValues : null
-        };
+        try{
+            const zonaZtl = await zonaZtlDao.getById(varcoZtl.zona_ztl);
+            const orarioChiusura = await orarioChiusuraDao.getById(varcoZtl.orario_chiusura);
+            return {
+                ...varcoZtl.dataValues,
+                zona_ztl: zonaZtl ? zonaZtl.dataValues : null,
+                orario_chiusura: orarioChiusura ? orarioChiusura.dataValues : null
+            };
+        } catch (error){
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore durante il recupero delle informazioni relative al varco.');
+        }  
     }
 
     /**
@@ -228,16 +232,20 @@ class VarcoZtlRepository {
      * @returns {Promise<any[]>} Una Promise che risolve più array di Promise.
      */
     private async _getTransitiWithDetails(varcoId: number): Promise<any[]> {
-        const transiti = (await transitoDao.getAll()).filter(transito => transito.varco === varcoId);
-        return await Promise.all(transiti.map(async transito => {
-            const veicolo = await veicoloDao.getById(transito.veicolo);
-            return {
-                ...transito.dataValues,
-                id_transito: undefined,
-                varco: undefined,
-                veicolo: veicolo ? veicolo.dataValues : null,
-            };
-        }));
+        try {
+            const transiti = (await transitoDao.getAll()).filter(transito => transito.varco === varcoId);
+            return await Promise.all(transiti.map(async transito => {
+                const veicolo = await veicoloDao.getById(transito.veicolo);
+                return {
+                    ...transito.dataValues,
+                    id_transito: undefined,
+                    varco: undefined,
+                    veicolo: veicolo ? veicolo.dataValues : null,
+                };
+            }));
+        } catch(error){
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore durante il recupero delle informazioni relative ai transiti del varco.');
+        }
     }
 }
 

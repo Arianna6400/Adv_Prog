@@ -2023,6 +2023,8 @@ Nel body:
 }
 ```
 
+> Non è possibile ricaricare i crediti ad un utente con ruolo diverso da `automobilista`.
+
 **Check Token**
 
 *Rotta:*
@@ -2085,7 +2087,7 @@ Nel contesto di questo progetto, Axios è stato utilizzato per effettuare chiama
 
 Data la natura del progetto che non prevede lo sviluppo di un frontend, le rotte di cui sopra sono state verificate in Postman. Ciascuna rotta prevede l'autenticazione e l'autorizzazione dell'utente, a seconda del ruolo che esso ricopre. 
 
-Per agevolare le richieste è stato utilizzato in Postman un script in javascript che permettesse di settare in automatico la variabile di ambiente `authToken` contenente il token di autenticazione dell'utente.
+Per agevolare le richieste è stato utilizzato in Postman un script in JavaScript che permettesse di settare in automatico la variabile di ambiente `authToken` contenente il token di autenticazione dell'utente.
 ```javascript
 pm.test("Save token", function () {
     var jsonData = pm.response.json();

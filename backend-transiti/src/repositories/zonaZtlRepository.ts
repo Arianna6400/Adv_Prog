@@ -134,11 +134,15 @@ class ZonaZtlRepository {
      * @returns {Promise<any>} Una Promise che risolve con i dettagli completi della zona ZTL.
      */
     private async _getZonaWithDetails(zona: ZonaZtl): Promise<any> {
-        const varchiZona = await this._getVarchiByZona(zona.id_zona);
-        return {
-            ...zona.dataValues,
-            varchi: varchiZona
-        };
+        try{
+            const varchiZona = await this._getVarchiByZona(zona.id_zona);
+            return {
+                ...zona.dataValues,
+                varchi: varchiZona
+            };
+        } catch(error){
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore durante il recupero delle informazioni relative alla zona.');
+        }   
     }
 
     /**
@@ -148,16 +152,20 @@ class ZonaZtlRepository {
      * @returns {Promise<any[]>} Una Promise che risolve con un array di varchi e i loro dettagli.
      */
     private async _getVarchiByZona(zonaId: number): Promise<any[]> {
-        const varchi = await varcoZtlDao.getAll();
-        return await Promise.all(varchi
-            .filter(varco => varco.zona_ztl === zonaId)
-            .map(async (varco) => {
-                const orarioChiusura = await orarioChiusuraDao.getById(varco.orario_chiusura);
-                return {
-                    ...varco.dataValues,
-                    orario_chiusura: orarioChiusura ? orarioChiusura.dataValues : null
-                };
-            }));
+        try{
+            const varchi = await varcoZtlDao.getAll();
+            return await Promise.all(varchi
+                .filter(varco => varco.zona_ztl === zonaId)
+                .map(async (varco) => {
+                    const orarioChiusura = await orarioChiusuraDao.getById(varco.orario_chiusura);
+                    return {
+                        ...varco.dataValues,
+                        orario_chiusura: orarioChiusura ? orarioChiusura.dataValues : null
+                    };
+                }));
+        } catch(error){
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore durante il recupero delle informazioni relative ai varchi in una zona.');
+        }
     }
 
     /**
@@ -167,18 +175,22 @@ class ZonaZtlRepository {
      * @returns {Promise<any[]>} Una Promise che risolve con un array di transiti e i loro dettagli.
      */
     private async _getTransitiByVarco(varcoId: number): Promise<any[]> {
-        const transiti = await transitoDao.getAll();
-        return await Promise.all(transiti
-            .filter(transito => transito.varco === varcoId)
-            .map(async (transito) => {
-                const veicolo = await veicoloDao.getById(transito.veicolo);
-                return {
-                    ...transito.dataValues,
-                    veicolo: veicolo ? veicolo.dataValues : null,
-                    id_transito: undefined,
-                    varco: undefined
-                };
-            }));
+        try {
+            const transiti = await transitoDao.getAll();
+            return await Promise.all(transiti
+                .filter(transito => transito.varco === varcoId)
+                .map(async (transito) => {
+                    const veicolo = await veicoloDao.getById(transito.veicolo);
+                    return {
+                        ...transito.dataValues,
+                        veicolo: veicolo ? veicolo.dataValues : null,
+                        id_transito: undefined,
+                        varco: undefined
+                    };
+                }));
+        } catch(error){
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore durante il recupero delle informazioni relative ai transiti in una zona.');
+        }    
     }
 }
 

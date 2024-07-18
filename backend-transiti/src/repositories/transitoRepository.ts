@@ -151,13 +151,17 @@ class TransitoRepository {
      * @returns {Promise<any[]>} Una Promise che risolve più array di Promise.
      */
     private async _enrichTransitoData(transito: Transito): Promise<any> {
-        const veicolo = await veicoloDao.getById(transito.veicolo);
-        const varcoZtl = await varcoZtlDao.getById(transito.varco);
-        return {
-            ...transito.dataValues,
-            veicolo: veicolo ? veicolo.dataValues : null,
-            varco: varcoZtl ? varcoZtl.dataValues : null
-        };
+        try {
+            const veicolo = await veicoloDao.getById(transito.veicolo);
+            const varcoZtl = await varcoZtlDao.getById(transito.varco);
+            return {
+                ...transito.dataValues,
+                veicolo: veicolo ? veicolo.dataValues : null,
+                varco: varcoZtl ? varcoZtl.dataValues : null
+            };
+        } catch (error) {
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore durante l\'arricchimento dei dati del transito');
+        }
     }
 
     /**
@@ -167,62 +171,66 @@ class TransitoRepository {
      * @returns {Promise<boolean>} Una Promise che risolve true se la multa deve essere calcolata, false altrimenti.
      */
     private async _shouldCalculateMulta(transito: Transito): Promise<boolean> {
-        const veicolo = await veicoloDao.getById(transito.veicolo);
-        if (!veicolo) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Veicolo non trovato');
-        }
+        try {
+            const veicolo = await veicoloDao.getById(transito.veicolo);
+            if (!veicolo) {
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Veicolo non trovato');
+            }
 
-        // Se il veicolo è esente, non calcolare la multa
-        if (veicolo.esente) {
+            // Se il veicolo è esente, non calcolare la multa
+            if (veicolo.esente) {
+                return false;
+            }
+
+            const varcoZtl = await varcoZtlDao.getById(transito.varco);
+            if (!varcoZtl) {
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Varco ZTL non trovato');
+            }
+
+            const orarioChiusura = await orarioChiusuraDao.getById(varcoZtl.orario_chiusura);
+            if (!orarioChiusura) {
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Orario di chiusura non trovato');
+            }
+
+            const dataTransito = new Date(transito.data_ora);
+            const giornoSettimana = dataTransito.getDay(); // 0 (domenica) a 6 (sabato)
+            const oraTransito = dataTransito.toTimeString().split(' ')[0]; // Ottieni l'ora del transito in formato HH:MM:SS
+            
+            // Conversione dei nomi dei giorni in numeri (0 per domenica, 1 per lunedì, ecc.)
+            const giorni: { [key: string]: number } = {
+                'domenica': 0,
+                'lunedì': 1,
+                'martedì': 2,
+                'mercoledì': 3,
+                'giovedì': 4,
+                'venerdì': 5,
+                'sabato': 6
+            };
+
+            // Verifica se il transito avviene in un giorno di chiusura
+            // il giorno di giornoChiusura può includere una lista di giorni
+            const giornoChiusura = orarioChiusura.giorno_chiusura.split(',').map(g => giorni[g.trim().toLowerCase()]);
+            const isChiusura = giornoChiusura.includes(giornoSettimana);
+
+            // Se non è un giorno di chiusura, non calcolare la multa
+            if (!isChiusura) {
+                return false;
+            }
+
+            // Determina gli orari di chiusura per il giorno del transito
+            const isFestivo = (giornoSettimana === 0 || giornoSettimana === 6);
+            const oraInizio = isFestivo ? orarioChiusura.orario_inizio_f : orarioChiusura.orario_inizio_l;
+            const oraFine = isFestivo ? orarioChiusura.orario_fine_f : orarioChiusura.orario_fine_l;
+
+            // Verifica se l'ora del transito è all'interno degli orari di chiusura
+            if (oraTransito >= oraInizio && oraTransito <= oraFine) {
+                return true;
+            }
+
             return false;
+        } catch(error){
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore durante la verifica della necessità di calcolare una multa');
         }
-
-        const varcoZtl = await varcoZtlDao.getById(transito.varco);
-        if (!varcoZtl) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Varco ZTL non trovato');
-        }
-
-        const orarioChiusura = await orarioChiusuraDao.getById(varcoZtl.orario_chiusura);
-        if (!orarioChiusura) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Orario di chiusura non trovato');
-        }
-
-        const dataTransito = new Date(transito.data_ora);
-        const giornoSettimana = dataTransito.getDay(); // 0 (domenica) a 6 (sabato)
-        const oraTransito = dataTransito.toTimeString().split(' ')[0]; // Ottieni l'ora del transito in formato HH:MM:SS
-        
-        // Conversione dei nomi dei giorni in numeri (0 per domenica, 1 per lunedì, ecc.)
-        const giorni: { [key: string]: number } = {
-            'domenica': 0,
-            'lunedì': 1,
-            'martedì': 2,
-            'mercoledì': 3,
-            'giovedì': 4,
-            'venerdì': 5,
-            'sabato': 6
-        };
-
-        // Verifica se il transito avviene in un giorno di chiusura
-        // il giorno di giornoChiusura può includere una lista di giorni
-        const giornoChiusura = orarioChiusura.giorno_chiusura.split(',').map(g => giorni[g.trim().toLowerCase()]);
-        const isChiusura = giornoChiusura.includes(giornoSettimana);
-
-        // Se non è un giorno di chiusura, non calcolare la multa
-        if (!isChiusura) {
-            return false;
-        }
-
-        // Determina gli orari di chiusura per il giorno del transito
-        const isFestivo = (giornoSettimana === 0 || giornoSettimana === 6);
-        const oraInizio = isFestivo ? orarioChiusura.orario_inizio_f : orarioChiusura.orario_inizio_l;
-        const oraFine = isFestivo ? orarioChiusura.orario_fine_f : orarioChiusura.orario_fine_l;
-
-        // Verifica se l'ora del transito è all'interno degli orari di chiusura
-        if (oraTransito >= oraInizio && oraTransito <= oraFine) {
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -232,47 +240,51 @@ class TransitoRepository {
      * @returns {Promise<MultaCreationAttributes>} Una Promise che risolve gli attributi della multa da creare.
      */
     private async _calcolaMulta(transito: Transito): Promise<MultaCreationAttributes> {
-        const veicolo = await veicoloDao.getById(transito.veicolo);
-        if (!veicolo) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Veicolo non trovato');
+        try {
+            const veicolo = await veicoloDao.getById(transito.veicolo);
+            if (!veicolo) {
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Veicolo non trovato');
+            }
+
+            const tipoVeicolo = await tipoVeicoloDao.getById(veicolo.tipo_veicolo);
+            if (!tipoVeicolo) {
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Tipo veicolo non trovato');
+            }
+
+            const varcoZtl = await varcoZtlDao.getById(transito.varco);
+            if (!varcoZtl) {
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Varco ZTL non trovato');
+            }
+
+            const orarioChiusura = await orarioChiusuraDao.getById(varcoZtl.orario_chiusura);
+            if (!orarioChiusura) {
+                throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Orario di chiusura non trovato');
+            }
+
+            const dataTransito = new Date(transito.data_ora);
+            const giornoSettimana = dataTransito.getDay(); // 0 (domenica) a 6 (sabato)
+        
+            // Determina se è sabato o domenica
+            const isFestivo = (giornoSettimana === 0 || giornoSettimana === 6);
+
+            const tariffaVeicolo = isFestivo ? Number(orarioChiusura.tariffa_f) : Number(orarioChiusura.tariffa_l);
+            const tariffaBase = Number(tipoVeicolo.tariffa_base);
+
+            // Calcola l'importo totale della multa
+            const importo = tariffaBase + tariffaVeicolo;
+
+            const multa: MultaCreationAttributes = {
+                transito: transito.id_transito,
+                data_multa: new Date(),
+                importo_token: importo,
+                pagata: false,
+                uuid_pagamento: uuidv4(), // Genera un UUID per il pagamento
+            };
+
+            return multa;
+        } catch(error){
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore durante il calcolo della multa');
         }
-
-        const tipoVeicolo = await tipoVeicoloDao.getById(veicolo.tipo_veicolo);
-        if (!tipoVeicolo) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Tipo veicolo non trovato');
-        }
-
-        const varcoZtl = await varcoZtlDao.getById(transito.varco);
-        if (!varcoZtl) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Varco ZTL non trovato');
-        }
-
-        const orarioChiusura = await orarioChiusuraDao.getById(varcoZtl.orario_chiusura);
-        if (!orarioChiusura) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Orario di chiusura non trovato');
-        }
-
-        const dataTransito = new Date(transito.data_ora);
-        const giornoSettimana = dataTransito.getDay(); // 0 (domenica) a 6 (sabato)
-    
-        // Determina se è sabato o domenica
-        const isFestivo = (giornoSettimana === 0 || giornoSettimana === 6);
-
-        const tariffaVeicolo = isFestivo ? Number(orarioChiusura.tariffa_f) : Number(orarioChiusura.tariffa_l);
-        const tariffaBase = Number(tipoVeicolo.tariffa_base);
-
-        // Calcola l'importo totale della multa
-        const importo = tariffaBase + tariffaVeicolo;
-
-        const multa: MultaCreationAttributes = {
-            transito: transito.id_transito,
-            data_multa: new Date(),
-            importo_token: importo,
-            pagata: false,
-            uuid_pagamento: uuidv4(), // Genera un UUID per il pagamento
-        };
-
-        return multa;
     }
 }
 

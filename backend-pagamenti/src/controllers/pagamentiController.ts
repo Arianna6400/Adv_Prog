@@ -71,9 +71,9 @@ export const rechargeTokens = async (req: Request, res: Response, next: NextFunc
         // Verifico esistenza dell'utente da ricaricare
         const utenteTrovato = await utenteDao.getById(id);
 
-        // un varco non ha crediti associati, non è possibile ricaricarli
-        if (utenteTrovato?.ruolo === 'varco') {
-            throw ErrorFactory.createError(ErrorTypes.BadRequest, 'Non è possibile ricaricare i token di un varco.')
+        // Non permette di ricaricare i crediti ad un utente non automobilista
+        if (utenteTrovato?.ruolo !== 'automobilista') {
+            throw ErrorFactory.createError(ErrorTypes.BadRequest, 'Non è possibile ricaricare i token di un utente che non sia automobilista')
         }
         const utente = await utenteDao.rechargeTokens(id, tokens);
         res.status(StatusCodes.OK).json({ 

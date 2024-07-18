@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS "is_varco" (
 -- Inserisce dati nella tabella UTENTE
 INSERT INTO "utente" (nome, cognome, email, ruolo, token_rimanenti) VALUES
 ('Arianna', 'Agresta', 'arianna.agresta@gmail.com', 'automobilista', 20.00),
-('Andrea', 'Iasenzaniro', 'andrea.iasenzaniro@gmail.com', 'operatore', 20.00),
+('Andrea', 'Iasenzaniro', 'andrea.iasenzaniro@gmail.com', 'operatore', 0),
 ('Luca', 'Bianchi', 'luca.bianchi@example.com', 'automobilista', 20.00),
 ('', '', 'varco_1@example.com', 'varco', 0),
 ('', '', 'varco_2@example.com', 'varco', 0),
@@ -94,7 +94,7 @@ INSERT INTO "utente" (nome, cognome, email, ruolo, token_rimanenti) VALUES
 ('Marco', 'Rossi', 'marco.rossi@example.com', 'automobilista', 30.00),
 ('Stefano', 'Gialli', 'stefano.gialli@example.com', 'automobilista', 15.00),
 ('Elena', 'Blu', 'elena.blu@example.com', 'automobilista', 40.00),
-('Giulia', 'Verdi', 'giulia.verdi@example.com', 'admin', 20.00);
+('Giulia', 'Verdi', 'giulia.verdi@example.com', 'admin', 0);
 
 -- Inserisce dati nella tabella TIPO_VEICOLO
 INSERT INTO "tipo_veicolo" (descrizione, tariffa_base) VALUES
