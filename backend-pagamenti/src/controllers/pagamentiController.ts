@@ -64,7 +64,7 @@ export const payMulta = async (req: Request, res: Response, next: NextFunction) 
  * Funzione per ricaricare i token di un utente.
  */
 export const rechargeTokens = async (req: Request, res: Response, next: NextFunction) => {
-    const id = parseInt(req.params.id); // ID dell'utente passato nel body della richiesta
+    const id = parseInt(req.params.id); // ID dell'utente passato come param della richiesta
     const tokens  = Number(req.body.tokens);
 
     try {

@@ -24,6 +24,7 @@ class TransitoRepository {
     public async getAllTransiti(): Promise<any[]> {
         try {
             const transiti = await transitoDao.getAll();
+            // ritorno le info dei transiti arricchite nella stampa
             return await Promise.all(transiti.map(transito => this._enrichTransitoData(transito)));
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile recuperare i transiti');
@@ -42,6 +43,7 @@ class TransitoRepository {
             if (!transito) {
                 return null;
             }
+            // ritorno le info del transito arricchite nella stampa
             return await this._enrichTransitoData(transito);
         } catch (error) {
             throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il transito con id ${id}`);
@@ -201,6 +203,7 @@ class TransitoRepository {
         };
 
         // Verifica se il transito avviene in un giorno di chiusura
+        // il giorno di giornoChiusura può includere una lista di giorni
         const giornoChiusura = orarioChiusura.giorno_chiusura.split(',').map(g => giorni[g.trim().toLowerCase()]);
         const isChiusura = giornoChiusura.includes(giornoSettimana);
 
