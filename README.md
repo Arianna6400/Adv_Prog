@@ -4,7 +4,17 @@
     <img src="https://github.com/Arianna6400/Adv_Prog/blob/master/images/logo.png" alt="Logo">
 </div>
 
-![Typescript](https://img.shields.io/badge/Typescript-007ACC?style=for-the-badge&logo=typescript&logoColor=white) ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)![Sequelize](https://img.shields.io/badge/Sequelize-52B0E7?style=for-the-badge&logo=sequelize&logoColor=white)![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)![VSCode](https://img.shields.io/badge/VSCode-0078D4?style=for-the-badge&logo=visualstudiocode&logoColor=white)
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="https://img.shields.io/badge/Typescript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="Typescript">
+  <img src="https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express">
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js">
+  <img src="https://img.shields.io/badge/Sequelize-52B0E7?style=for-the-badge&logo=sequelize&logoColor=white" alt="Sequelize">
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
+  <img src="https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white" alt="Postman">
+  <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
+  <img src="https://img.shields.io/badge/VSCode-0078D4?style=for-the-badge&logo=visualstudiocode&logoColor=white" alt="VSCode">
+</div>
 
 # Indice
 
@@ -954,9 +964,8 @@ sequenceDiagram
 
 All'interno del sistema sono state predisposte le rotte riportate nella seguente tabella; ogni rotta prevede il processo di autenticazione, nonchè di autorizzazione, tramite JWT, del ruolo dell'utente, a seconda della rotta utilizzata.
 
-
 | Tipo | Rotta | Autenticazione | Autorizzazione | 
-|-----------|--------|-----------|--------|
+|:----:|:-----:|:--------------:|:--------------:|
 | `POST` | /login | ✔️ |    |
 | `GET`  | /varcoZtl/:id?/:transiti? | ✔️ | Operatore |
 | `POST`  | /varcoZtl | ✔️ | Operatore |
@@ -2125,5 +2134,5 @@ Per lo sviluppo dell'applicazione presentata sono stati utilizzati i seguenti st
 
 |Nome | GitHub |
 |-----------|--------|
-| 👩 **Agresta Arianna** | [Click here](https://github.com/Arianna6400) |
-| 👨 **Iasenzaniro Andrea** | [Click here](https://github.com/AndreaIasenzaniro) |
+| 👩 `Agresta Arianna` | [Click here](https://github.com/Arianna6400) |
+| 👨 `Iasenzaniro Andrea` | [Click here](https://github.com/AndreaIasenzaniro) |
