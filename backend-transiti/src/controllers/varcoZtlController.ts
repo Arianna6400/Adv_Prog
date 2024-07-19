@@ -68,6 +68,15 @@ export const updateVarcoZtl = async (req: Request, res: Response, next: NextFunc
     const id = parseInt(req.params.id);
     
     try {
+
+        // normalizzo in minuscolo togliendo spazi per confrontare i nomei
+        const normalizedName = (req.body.nome).replace(/\s+/g, '').toLowerCase();
+        // Controlla se esiste già un varco con lo stesso nome
+        const existingVarco = (await varcoZtlRepository.getAllVarcoZtl()).find(varco => (varco.nome).replace(/\s+/g, '').toLowerCase() === normalizedName);
+        if(existingVarco){
+            return next(ErrorFactory.createError(ErrorTypes.BadRequest, 'Un varco con questo nome esiste già'));
+        }
+        
         // Aggiorna il varco ZTL esistente con i dati forniti nel corpo della richesta
         const [updated] = await varcoZtlRepository.updateVarcoZtl(id, req.body);
         if (updated) {

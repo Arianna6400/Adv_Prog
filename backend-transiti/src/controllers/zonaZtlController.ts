@@ -69,6 +69,14 @@ export const updateZonaZtl = async (req: Request, res: Response, next: NextFunct
     const id = parseInt(req.params.id);
 
     try {
+        // normalizzo in minuscolo togliendo spazi per confrontare i nomei
+        const normalizedName = (req.body.nome).replace(/\s+/g, '').toLowerCase();
+        // Controlla se esiste già una zona con lo stesso nome
+        const existingZona = (await zonaZtlRepository.getAllZonaZtl()).find(zona => (zona.nome).replace(/\s+/g, '').toLowerCase() === normalizedName);
+        
+        if (existingZona) {
+            return next(ErrorFactory.createError(ErrorTypes.BadRequest, 'Una zona con questo nome esiste già'));
+        }
         // Aggiorna la zona ZTL esistente con i dati forniti nel corpo della richiesta
         const [updated] = await zonaZtlRepository.updateZonaZtl(id, req.body);
         if (updated) {
