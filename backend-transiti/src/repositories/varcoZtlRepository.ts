@@ -10,6 +10,7 @@ import { ErrorFactory, ErrorTypes } from '../utils/errorFactory';
 import Database from '../utils/database';
 import transitoDao from '../dao/transitoDao';
 import veicoloDao from '../dao/veicoloDao';
+import { error } from 'console';
 
 /**
  * Classe VarcoZtlRepository per gestire le operazioni CRUD sui varchi ZTL.
@@ -26,7 +27,7 @@ class VarcoZtlRepository {
             // arricchisco le info di stampa del varco con metodo privato
             return await Promise.all(varchiZtl.map(varco => this._enrichVarcoZtl(varco)));
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile recuperare i varchi ZTL');
+            throw (error);
         }
     }
 
@@ -46,7 +47,7 @@ class VarcoZtlRepository {
             // arricchiesco le info di stampa del varco con metodo privato
             return await this._enrichVarcoZtl(varcoZtl);
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il varco ZTL con id ${id}`);
+            throw (error);
         }
     }
 
@@ -68,7 +69,7 @@ class VarcoZtlRepository {
             enrichedVarco.transiti = await this._getTransitiWithDetails(id);
             return enrichedVarco;
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il varco ZTL con id ${id}`);
+            throw (error);
         }
     }
 
@@ -105,7 +106,7 @@ class VarcoZtlRepository {
             };
             const utente = await UtenteDao.create(utenteData, { transaction });
             if (!utente){
-                throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione del varco ZTL');
+                throw (error);
             }
             
             // Crea l'associazione nella tabella is_varco
@@ -126,7 +127,7 @@ class VarcoZtlRepository {
         } catch (error) {
             // Annulla la transazione in caso di errore
             await transaction.rollback();
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella creazione del varco ZTL');
+            throw (error);
         }
     }
 
@@ -144,9 +145,17 @@ class VarcoZtlRepository {
             if(!varco){
                 throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Varco con id ${id} non trovato`);
             }
+            // se c'è l'id del varco verifico che esista
+            if (data.zona_ztl){
+                await zonaZtlDao.getById(Number(data.zona_ztl));
+            }
+            // se c'è l'orario di chiusura verifico che esista
+            if (data.orario_chiusura){
+                await orarioChiusuraDao.getById(Number(data.orario_chiusura));
+            }
             return await varcoZtlDao.update(id, data);
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile aggiornare il varco ZTL con id ${id}`);
+            throw (error);
         }
     }
 

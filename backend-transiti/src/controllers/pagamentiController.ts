@@ -55,7 +55,7 @@ export const rechargeTokens = async (req: Request, res: Response, next: NextFunc
         if (axios.isAxiosError(error)) {
             return next(ErrorFactory.createError(ErrorTypes.BadRequest, error.response?.data?.error.message)); // ritorno il messaggio della funzione chiamata
         }
-        return next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nella ricarica'));
+        return next(error);
     }
 };
 
@@ -81,6 +81,6 @@ export const checkToken = async (req: Request, res: Response, next: NextFunction
         if (axios.isAxiosError(error)) {
             return next(ErrorFactory.createError(ErrorTypes.BadRequest, error.response?.data?.error.message)); // ritorno il messaggio della funzione chiamata
         }
-        return next(ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore nel recupero dei token'));
+        return next(error);
     }
 };

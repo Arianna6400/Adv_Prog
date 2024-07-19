@@ -73,7 +73,7 @@ class MultaRepository {
 
             return { multa, transito, veicolo };
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare la multa con id ${uuid} per l'utente ${utenteId}`);
+            throw (error);
         }
     }
 
@@ -90,7 +90,7 @@ class MultaRepository {
             const veicoli = await veicoloDao.getAll();
             return veicoli.filter(veicolo => veicolo.utente === utenteId);
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore durante il recupero dei veicoli dell\'utente');
+            throw (ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore durante il recupero dei veicoli dell\'utente'));
         }
     }
 

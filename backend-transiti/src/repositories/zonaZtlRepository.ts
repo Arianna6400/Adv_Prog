@@ -20,7 +20,7 @@ class ZonaZtlRepository {
             // Arricchisce le info di stampa della zona con metodo privato
             return await Promise.all(zoneZtl.map(zona => this._getZonaWithDetails(zona)));
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.BadRequest, 'Impossibile recuperare le zone ZTL');
+            throw (error);
         }
     }
 
@@ -40,7 +40,7 @@ class ZonaZtlRepository {
             // Arricchisce le info di stampa della zona con metodo privato
             return await this._getZonaWithDetails(zona);
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.BadRequest, `Impossibile recuperare la zona ZTL con id ${id}`);
+            throw (error);
         }
     }
 
@@ -86,7 +86,7 @@ class ZonaZtlRepository {
         try {
             return await zonaZtlDao.create(data);
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.BadRequest, 'Impossibile creare la zona ZTL');
+            throw (error);
         }
     }
 
@@ -101,7 +101,7 @@ class ZonaZtlRepository {
         try {
             return await zonaZtlDao.update(id, data);
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.BadRequest, `Impossibile aggiornare la zona ZTL con id ${id}`);
+            throw (error);
         }
     }
 

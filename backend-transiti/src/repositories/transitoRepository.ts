@@ -27,7 +27,7 @@ class TransitoRepository {
             // ritorno le info dei transiti arricchite nella stampa
             return await Promise.all(transiti.map(transito => this._enrichTransitoData(transito)));
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile recuperare i transiti');
+            throw (error);
         }
     }
 
@@ -46,7 +46,7 @@ class TransitoRepository {
             // ritorno le info del transito arricchite nella stampa
             return await this._enrichTransitoData(transito);
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile recuperare il transito con id ${id}`);
+            throw (error);
         }
     }
 
@@ -84,7 +84,7 @@ class TransitoRepository {
         } catch (error) {
             // Annulla la transazione in caso di errore
             await transaction.rollback();
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Impossibile creare il transito');
+            throw (error);
         }
     }
 
@@ -109,9 +109,17 @@ class TransitoRepository {
             if (multaAssociata) {
                 throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile aggiornare il transito con id ${id}, poichè associato ad una multa`);
             }
+            // se c'è il varco verifica che esista
+            if (data.varco){
+                await varcoZtlDao.getById(Number(data.varco));
+            }
+            // se c'è il varco verifca che esista
+            if (data.veicolo){
+                await veicoloDao.getById(String(data.veicolo));
+            }
             return await transitoDao.update(id, data);
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, `Impossibile aggiornare il transito con id ${id}`);
+            throw (error);
         }
     }
 
@@ -160,7 +168,7 @@ class TransitoRepository {
                 varco: varcoZtl ? varcoZtl.dataValues : null
             };
         } catch (error) {
-            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore durante l\'arricchimento dei dati del transito');
+            throw ErrorFactory.createError(ErrorTypes.InternalServerError, 'Errore durante l\'arricchimento dei dati del transito.');
         }
     }
 
