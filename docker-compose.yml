@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   transiti:
     container_name: transiti
