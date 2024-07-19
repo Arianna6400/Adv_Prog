@@ -4,7 +4,7 @@
   "description": "Backend per la gestione dei transiti ZTL",
   "main": "dist/server.js",
   "scripts": {
-    "start": "ts-node-dev src/server.ts",
+    "start": "ts-node src/server.ts",
     "build": "tsc",
     "serve": "node dist/server.js"
   },
